@@ -1,21 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+.hero-bg {
+  background: linear-gradient( 165deg,
+    #ff90a391 , 
+    #cbcbcb84 45%, 
+    #fe835ec9 65%, 
+    #ff90a2 85%, 
+    #87cfeb82 105%
+    ); 
+
+    /* background: linear-gradient(135deg, #A2D2FF, #C1E1C1); */
+
+    /* background: linear-gradient(135deg, #6A85B6, #A9C0E0); */
+
+    /* background: linear-gradient(135deg, #FF9A9E, #FAD0C4); */
+    /* background: linear-gradient(135deg, #87CEEB, #1E90FF); */
+    /* background: linear-gradient(135deg, #D3B9FF, #FFC3A0); */
+    /* background: linear-gradient(135deg, #FF6F61, #00B2CA); */
+    /* background: radial-gradient(circle, #FFB6C1, #FFC3A0, #FFDEAD); */
+    /* background: radial-gradient(circle, #87CEEB, #1E90FF, #4682B4); */
+    /* background: radial-gradient(circle, #DDA0DD, #BA55D3, #8A2BE2); */
+    /* background: radial-gradient(circle, #B0E0E6, #ADD8E6, #F0F8FF); */
+
+}
+
+.delay-500{
+  transition: 0.5s;
 }
