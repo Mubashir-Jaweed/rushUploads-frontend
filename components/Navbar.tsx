@@ -18,8 +18,8 @@ const Navbar = () => {
           </div>
 
           <div className='flex justify-end items-center gap-4 text-stone-800 w-72 '>
-            <Link href={'/'} className='text-[20px] font-medium'>Login</Link>
-            <Link href={'/'} target='_blank'>
+            <Link href={'/login'} className='text-[20px] font-medium'>Login</Link>
+            <Link href={'/signup'} target='_blank'>
               <PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">Get started for free</PulsatingButton>
             </Link>
           </div>

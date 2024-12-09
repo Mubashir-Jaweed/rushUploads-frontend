@@ -7,7 +7,7 @@ body {
 .hero-bg {
   background: linear-gradient( 165deg,
     #ff90a391 , 
-    #cbcbcb84 45%, 
+    #ffffff84 45%, 
     #fe835ec9 65%, 
     #ff90a2 85%, 
     #87cfeb82 105%
@@ -28,6 +28,48 @@ body {
 
 }
 
+.auth-bg {
+  background: linear-gradient( 195deg,
+    #ff90a3b6 , 
+    #cbcbcb84 45%, 
+    #fe835e57 65%, 
+    #ff90a317 85%, 
+    #87cfeb82 105%
+    ); 
+
+}
+
+.glass-bg{
+  background: rgba(255, 255, 255, 0.468); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+}
+
 .delay-500{
   transition: 0.5s;
+}
+
+
+.h-line{
+  border: 0.5px solid #3535354c;
+  width: 280px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.h-line::after{
+  content: 'OR';
+  position: absolute;
+  color: #3535358e;
+  background: #fad7cd;
+  border-radius: 50px;
+  width: 33px;
+  height: 33px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -15px;
+  right: 45%;
 }
