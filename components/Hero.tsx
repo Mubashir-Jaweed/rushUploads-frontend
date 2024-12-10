@@ -4,6 +4,7 @@ import GridPattern from "@/components/ui/grid-pattern";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 import React from 'react'
 
 const Hero = () => {
@@ -51,11 +52,12 @@ const Hero = () => {
 
         {/* <button className="bg-white rounded-full px-7 py-3 text-lg font-medium">Get Started</button> */}
         <BlurIn duration={1.2}>
-          <PulsatingButton className="text-lg font-medium px-10 py-3 rounded-full flex justify-center items-center">Upload Files
-          </PulsatingButton>
+          <Link href={'/upload'}>
+            <PulsatingButton className="text-lg font-medium px-10 py-3 rounded-full flex justify-center items-center">Upload Files
+            </PulsatingButton></Link>
         </BlurIn>
 
-       
+
 
       </div>
     </div>

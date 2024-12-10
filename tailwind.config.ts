@@ -58,7 +58,8 @@ export default {
   		},
   		animation: {
   			gradient: 'gradient 8s linear infinite',
-  			pulse: 'pulse var(--duration) ease-out infinite'
+  			pulse: 'pulse var(--duration) ease-out infinite',
+  			shine: 'shine var(--duration) infinite linear'
   		},
   		keyframes: {
   			gradient: {
@@ -72,6 +73,17 @@ export default {
   				},
   				'50%': {
   					boxShadow: '0 0 0 8px var(--pulse-color)'
+  				}
+  			},
+  			shine: {
+  				'0%': {
+  					'background-position': '0% 0%'
+  				},
+  				'50%': {
+  					'background-position': '100% 100%'
+  				},
+  				to: {
+  					'background-position': '0% 0%'
   				}
   			}
   		}
