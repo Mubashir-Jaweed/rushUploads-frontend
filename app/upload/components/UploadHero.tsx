@@ -1,9 +1,14 @@
+'use client'
+
 import GridPattern from '@/components/ui/grid-pattern'
+import PulsatingButton from '@/components/ui/pulsating-button'
 import { cn } from '@/lib/utils'
-import React from 'react'
+import React, { useState } from 'react'
 import { MdEmail } from 'react-icons/md'
 
 const UploadHero = () => {
+
+    const [isSentToEmail, setIsSentToEmail] = useState(true)
     return (
         <div className="bg-white h-screen w-full p-3" >
             <GridPattern
@@ -18,12 +23,12 @@ const UploadHero = () => {
             <div className="h-[100%] w-[100%] hero-bg rounded-xl flex  justify-center items-center">
 
 
-                <div className="glass-bg p-5 flex gap-1  w-[700px] flex-col items-center justify-start overflow-hidden rounded-2xl shadow-2xl "
+                <div className="glass-bg p-5 delay-5ms flex gap-1  w-[700px] flex-col items-center justify-start overflow-hidden rounded-2xl shadow-2xl "
                 >
                     <div className='w-full'>
                         <span className='text-2xl font-semibold text-stone-800'>Upload Files</span>
                     </div>
-                    <div className='flex justify-center items-center  border-[3px] border-zinc-400 border-dashed w-full h-[240px] rounded-xl mt-1'>
+                    <div className='flex justify-center items-center  border-[3px] border-zinc-400 border-dashed w-full h-[200px] rounded-xl mt-1'>
                         upload
                     </div>
                     <div className='flex justify-between items-center w-full text-[12px] text-zinc-600 '>
@@ -32,21 +37,23 @@ const UploadHero = () => {
                     </div>
                     <div className='w-full flex justify-start items-center gap-3 my-3'>
                         <label className='flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium'>
-                            <input type='radio' className='size-4' />
+                            <input type='radio' checked={isSentToEmail ? true : false} onClick={()=> setIsSentToEmail(true)} className='size-4' />
                             Send Email
                         </label>
                         <label className='flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium'>
-                            <input type='radio' className='size-4' />
+                            <input type='radio' checked={!isSentToEmail ? true : false} onClick={()=> setIsSentToEmail(false)} className='size-4' />
                             Create Link
                         </label>
                     </div>
                    <div className='w-full bg-transparent flex flex-col gap-2'>
                         <input type='email' placeholder='Your Email' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
-                        <input type='email' placeholder='Email to' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
+                        {isSentToEmail && <input type='email' placeholder='Email to' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />}
                         <input type='text' placeholder='Subject' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
-                        <textarea placeholder='Message' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl'>
+                        <textarea placeholder='Message' className='resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl'>
 
                         </textarea>
+                        <PulsatingButton className="text-lg font-medium p-5 my-2 rounded-full flex justify-center items-center">Transfer File
+                        </PulsatingButton>
                    </div>
                 </div>
 
