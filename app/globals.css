@@ -83,7 +83,34 @@ body {
 }
 
 .list-card{
-  background-color: #f5f5f52d;
   box-shadow: 0px 0px 10px 1px #8989892d;
   border: 0.1px solid #89898949;
 }
+
+.overflow-style{
+  overflow: auto;
+  scrollbar-gutter: stable;
+
+}
+
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track (the area the scrollbar moves along) */
+::-webkit-scrollbar-track {
+  background: #32323218;
+  border-radius: 10px;
+}
+
+/* Handle (the draggable part of the scrollbar) */
+::-webkit-scrollbar-thumb {
+  background: #3f3f4680;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+
+

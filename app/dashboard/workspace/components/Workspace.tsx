@@ -34,7 +34,7 @@ const Workspace = () => {
     }, [selectedTab]);
     return (
 
-        <div className=' border-black w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5'>
+        <div className='  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5'>
             <span className='text-base font-medium text-zinc-600'>helloworld@rushuploads.com</span>
             <span className='text-stone-800 text-3xl font-semibold' >My Workspace</span>
             <div className='relative w-full border-b my-5 pb-1 border-zinc-400 flex justify-between items-end'>
@@ -65,11 +65,11 @@ const Workspace = () => {
                 </div>
 
             </div>
-            <div className='rounded-[8px] upload-input flex justify-between items-center w-full'>
+            <div className='rounded-[8px] upload-input flex justify-between items-center w-full mb-4'>
                 <IoIosSearch className='text-2xl ml-3 text-stone-600' />
                 <input type='email' placeholder='Search by File Name' className='bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800' />
             </div>
-            <div className='w-full flex flex-wrap justify-start items-start gap-3'>
+            <div className='overflow-style p-2 w-full flex flex-wrap justify-start items-start gap-2'>
                 {files.map((val, i) => gridView ? <GridCard key={i} data={val} /> : <ListCard key={i} data={val} />)}
             </div>
 
@@ -81,6 +81,44 @@ export default Workspace
 
 
 const demoData = [
+    {
+        name: "world.doc",
+        size: "32.1 KB",
+        date: '2 dec 2024',
+        link: ''
+    },
+    {
+        name: "hello.png",
+        size: "64 MB",
+        date: '7 dec 2024',
+        link: ''
+    }
+    ,
+    {
+        name: "New.pdf",
+        size: "128 KB",
+        date: '1 nov 2024',
+        link: ''
+    },
+    {
+        name: "world.doc",
+        size: "32.1 KB",
+        date: '2 dec 2024',
+        link: ''
+    },
+    {
+        name: "hello.png",
+        size: "64 MB",
+        date: '7 dec 2024',
+        link: ''
+    }
+    ,
+    {
+        name: "New.pdf",
+        size: "128 KB",
+        date: '1 nov 2024',
+        link: ''
+    },
     {
         name: "world.doc",
         size: "32.1 KB",
