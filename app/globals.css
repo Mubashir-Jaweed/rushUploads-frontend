@@ -50,6 +50,9 @@ body {
 .delay-5ms{
   transition: 0.5s;
 }
+.delay-5ms{
+  transition: 0.3s;
+}
 
 
 .h-line{
@@ -79,3 +82,8 @@ body {
   background-color: rgba(255, 255, 255, 0.47);
 }
 
+.list-card{
+  background-color: #f5f5f52d;
+  box-shadow: 0px 0px 10px 1px #8989892d;
+  border: 0.1px solid #89898949;
+}
