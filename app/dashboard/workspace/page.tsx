@@ -10,7 +10,7 @@ const page = () => {
             <Navbar />
             <div className="h-screen w-full auth-bg flex  justify-center items-end gap-10">
                 <Workspace />
-                <Sidebar/>
+                {/* <Sidebar/> */}
             </div>
         </div>
     )
