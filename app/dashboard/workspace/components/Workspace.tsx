@@ -69,7 +69,7 @@ const Workspace = () => {
                 <IoIosSearch className='text-2xl ml-3 text-stone-600' />
                 <input type='email' placeholder='Search by file name' className='bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800' />
             </div>
-            <div className='overflow-style p-2 w-full flex flex-wrap justify-start items-start gap-2'>
+            <div className=' p-2 w-full flex flex-wrap justify-start items-start gap-2'>
                 {files.map((val, i) => gridView ? <GridCard status={tabs[selectedTab]} key={i} data={val} /> : <ListCard status={tabs[selectedTab]} key={i} data={val} />)}
             </div>
 
