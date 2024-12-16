@@ -113,4 +113,26 @@ body {
 }
 
 
+.list-btn-title-cont{
+position: relative;
+}
+
+.list-btn-title-cont:hover .list-btn-title{
+  color: white;
+  background-color: rgb(74, 72, 72);
+  pointer-events: none;
+
+
+}
+.list-btn-title{
+  /* font-size: 0px; */
+  position: absolute;
+  font-size: 12px;
+  top: -30px;
+  border-radius: 4px;
+  padding: 5px;
+  transition: 0.2s;
+  color: rgba(255, 255, 255, 0);
+  background-color: rgba(0, 0, 0, 0);
+}
 
