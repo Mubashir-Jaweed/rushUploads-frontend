@@ -3,7 +3,7 @@ import React from 'react'
 
 const ProfileSecurity = () => {
   return (
-    <div className='  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5'>
+    <div className=' w-[60%] flex flex-col gap-2 justify-start items-start p-5'>
       <span className='text-base font-medium text-zinc-600'>helloworld@rushuploads.com</span>
       <span className='text-stone-800 text-3xl font-semibold' >Profile & Security</span>
       <div className=' w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 '>
@@ -31,6 +31,7 @@ const ProfileSecurity = () => {
         <PulsatingButton className="text-lg font-medium py-3 px-5 my-1 rounded-full flex justify-center items-center" deleteBtn={true} >Delete account
         </PulsatingButton>
       </div>
+      
     </div>
   )
 }

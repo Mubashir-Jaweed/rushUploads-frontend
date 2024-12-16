@@ -8,8 +8,8 @@ const page = () => {
     return (
         <div>
             <Navbar />
-            <div className=" h-screen w-full auth-bg flex items-end">
-                <div className=' flex  justify-center items-end gap-10 border border-red-500 pt-20 overflow-style'>
+            <div className=" w-full h-screen auth-bg flex items-end">
+            <div className=' w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style'>
                     <Workspace />
                     <Sidebar />
                 </div>

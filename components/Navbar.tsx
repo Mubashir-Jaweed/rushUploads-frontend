@@ -4,7 +4,7 @@ import PulsatingButton from './ui/pulsating-button'
 
 const Navbar = () => {
   return (
-    <div className='absolute  w-full flex justify-center items-center'>
+    <div className='absolute  w-full h-[13vh] flex justify-center items-center'>
       <div className='w-full  m-5 flex justify-center items-center'>
 
         <div className='w-[80%] py-3  flex justify-between items-center z-10'>

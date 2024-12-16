@@ -3,7 +3,7 @@ import React from 'react'
 
 const Sidebar = () => {
   return (
-    <div className='w-[15%] h-[80vh] pl-10 p-5'>
+    <div className=' w-[15%]  pl-10 p-5'>
       <span className='text-xl font-semibold text-stone-800'>
         Dashboard
       </span>
