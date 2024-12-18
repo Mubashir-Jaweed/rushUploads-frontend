@@ -9,11 +9,11 @@ interface CardDataProps {
     link: string;
     date: string;
   };
-  status:string
+  status: string
   [key: string]: unknown;
 }
 
-const GridCard = ({ data,status }: CardDataProps) => {
+const GridCard = ({ data, status }: CardDataProps) => {
 
   const [menu, setMenu] = useState(false)
 
@@ -44,17 +44,20 @@ const GridCard = ({ data,status }: CardDataProps) => {
           <span className=' text-xs font-normal text-zinc-700'>|</span>
           <span className=' text-sm font-normal text-zinc-700'>({data.size})</span>
         </div>
-        <span onClick={()=>setMenu(!menu)} onBlur={()=>setMenu(false)} className='delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center'>
+        <span onClick={() => setMenu(!menu)} onBlur={() => setMenu(false)} className='delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center'>
           <HiDotsVertical className='size-5' />
         </span>
       </div>
-      {menu && <div ref={menuRef} className='absolute top-14 right-8 z-10  bg-[#ffffff] w-[100px] rounded-[8px] p-1 '>
-<span className=' hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center'>
-  Download
-  </span>
-<span className=' hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center'>
-  Delete
-  </span>
+      {menu && <div ref={menuRef} className='absolute top-14 right-8 z-10  bg-[#ffffff] w-[115px] rounded-[8px] p-1 '>
+        <span className=' hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center'>
+          Download
+        </span>
+        <span className=' hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center'>
+          Delete
+        </span>
+        <span className=' hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center'>
+          Create link
+        </span>
       </div>}
 
     </div>
