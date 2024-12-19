@@ -95,13 +95,13 @@ body {
 
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
   height: 10px;
 }
 
 /* Track (the area the scrollbar moves along) */
 ::-webkit-scrollbar-track {
-  background: #32323218;
+  background: #32323200;
   border-radius: 10px;
 }
 
