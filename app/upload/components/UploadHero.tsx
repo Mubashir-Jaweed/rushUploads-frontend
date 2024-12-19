@@ -19,13 +19,14 @@ import { IoCloudDoneOutline } from "react-icons/io5";
 const UploadHero = () => {
 
     const [files, setFiles] = useState<File[]>([]);
+    const [senderEmails, setSenderEmails] = useState<string[]>([]);
     const [email, setEmail] = useState('');
     const [emailTo, setEmailTo] = useState('');
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [isSentToEmail, setIsSentToEmail] = useState(true)
-    const [isLinkGenerated, setIsLinkGenerated] = useState(true)
-    const [isUploading, setIsUploading] = useState(true)
+    const [isFileUploaded, setIsFileUploaded] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
     const [responseId, setResponseId] = useState('')
     const [progress, setProgress] = useState(0)
     const API_URL = 'https://rushuploads-backend.onrender.com/'
@@ -41,29 +42,71 @@ const UploadHero = () => {
         maxSize: 10 * 1024 * 1024,
     })
 
-    const uploadFiles = async (data: FormData) => {
+    const createFileLink = async (data: FormData) => {
         console.log(data)
+        setIsUploading(true)
         try {
+            setIsUploading(true)
             const response = await axios.post(`${API_URL}files/link`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`,
                 },
                 onUploadProgress: (ProgressEvent) => {
-                    setIsUploading(true)
-                    console.log(ProgressEvent)
                     setProgress(
                         Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
                     )
                 },
             });
-            setProgress(0)
-            setFiles([])
-            setEmail('')
-            setEmailTo('')
-            setSubject('')
-            setMessage('')
-            return response.data;
+            console.log(response)
+
+            if (response) {
+                setResponseId(response.data.data.link.id)
+                setIsFileUploaded(true)
+                setProgress(0)
+                setFiles([])
+                setEmail('')
+                setEmailTo('')
+                setSubject('')
+                setMessage('')
+            }
+
+
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            throw error;
+        }
+    }
+
+    const sendToMail = async (data: FormData) => {
+        setIsUploading(true)
+        try {
+            setIsUploading(true)
+            const response = await axios.post(`${API_URL}files/mail`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                },
+                onUploadProgress: (ProgressEvent) => {
+                    setProgress(
+                        Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
+                    )
+                },
+            });
+            console.log(response)
+
+            if (response) {
+                // setResponseId(response.data.data.mail.id)
+                setIsFileUploaded(true)
+                setProgress(0)
+                setFiles([])
+                setEmail('')
+                setEmailTo('')
+                setSubject('')
+                setMessage('')
+            }
+
+
         } catch (error) {
             console.error('Error uploading files:', error);
             throw error;
@@ -74,20 +117,35 @@ const UploadHero = () => {
             console.log('no file selected')
             return
         };
+        var sendTo = ''
         const formData = new FormData();
 
         files.forEach((file) => formData.append('files', file));
         formData.append('title', subject);
         formData.append('message', message);
         formData.append('expiresInDays', '7');
+        if(isSentToEmail) {
+            
+            if(senderEmails.length > 0){
+                senderEmails.map((mail,i)=>{
+                    sendTo = sendTo+mail + ','
+                })
+                formData.append('to', sendTo);
+            }else{
+                formData.append('to', emailTo);
+
+            }
+        } 
+
 
         try {
-            const response = await uploadFiles(formData);
-            if(response.data.link.id){
-                setResponseId(response.data.link.id)
-                setIsLinkGenerated(true)
+            if (isSentToEmail) {
+                await sendToMail(formData);
+            } else {
+                await createFileLink(formData);
+
             }
-            console.log('Upload successful:', response.data.link.id);
+
         } catch (error) {
             console.error('Error:', error);
         }
@@ -109,15 +167,30 @@ const UploadHero = () => {
         setFiles(files.filter((val, i) => i !== idx))
     }
 
+    const removeSenderMails = (idx: number) => {
+        setSenderEmails(senderEmails.filter((val, i) => i !== idx))
+    }
+
     const mergeFiles = (newFiles: FileList | null) => {
         if (newFiles) {
             setFiles((prevFiles) => [...prevFiles, ...Array.from(newFiles)])
         }
     }
 
-    const sendMore = ()=>{
+    const addEmailsToSenderList = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && emailTo.length > 0) {
+            if (senderEmails.length < 5 && emailTo.includes('@') && emailTo.includes('.')) {
+
+                senderEmails.push(emailTo)
+                setEmailTo('');
+            }
+            return
+        }
+    }
+
+    const sendMore = () => {
         setIsUploading(false)
-        setIsLinkGenerated(false)
+        setIsFileUploaded(false)
     }
 
 
@@ -132,56 +205,62 @@ const UploadHero = () => {
                     "[mask-image:linear-gradient(to_bottom_top,white,transparent,transparent)] ",
                 )}
             />
-            <div className="h-[100%] w-[100%] hero-bg rounded-xl flex  justify-center items-center">
+            <div className="h-[100%] w-[100%]  hero-bg rounded-xl flex  justify-center items-center">
 
                 {/*if btn press shoew progress else show form */}
                 {isUploading ?
 
-                isLinkGenerated ? 
-                <div className='glass-bg p-5 delay-5ms flex gap-1  w-[700px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl'>
-                    <IoCloudDoneOutline className='size-32 m-2'/>
-                    <span className='text-2xl font-semibold text-stone-800'>
-                    That’s a wrap!
-                    </span>
-                    <span className='text-zinc-600 text-lg font-normal'>
-                    Grab your download link or explore your files!
-                    </span>
-                    <span className='text-zinc-700 text-base font-normal border border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]'>
-                    https://we.tl/t-ZMUM8B85BEhttps://we.tl/t-ZMUM8B85BE
-                    </span>
-                    <PulsatingButton onClick={handleUpload} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Copy link
-                    </PulsatingButton>
-                    <span onClick={()=>sendMore()} className='text-zinc-700 text-lg font-normal cursor-pointer underline'>
-                    Send one more?
-                    </span>
+                    isFileUploaded ?
+                        <div className='mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[700px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl'>
+                            <IoCloudDoneOutline className='size-32 m-2' />
+                            <span className='text-2xl font-semibold text-stone-800'>
+                                That’s a wrap!
+                            </span>
+                            {isSentToEmail ? <span>
+                                The email has been delivered. <span className='underline text-zinc-700'>Explore its contents</span>.
+                            </span>
+                                :
+                                <span className='text-zinc-600 text-lg font-normal'>
+                                    Grab your download link or <span className='underline text-zinc-700'>explore your files!</span>
+                                </span>}
+                            {!isSentToEmail && <span className='text-zinc-700 text-base font-normal border border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]'>
+                                https://we.tl/t-ZMUM8B85BEhttps://we.tl/t-ZMUM8B85BE
+                            </span>}
+                            {isSentToEmail ? <PulsatingButton onClick={handleUpload} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Go to dashboard
+                            </PulsatingButton> :
+                                <PulsatingButton onClick={handleUpload} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Copy link
+                                </PulsatingButton>}
+                            <span onClick={() => sendMore()} className='text-zinc-700 text-lg font-normal cursor-pointer underline'>
+                                Send more files?
+                            </span>
 
-                </div>
-                :
-                 <div className="glass-bg p-5 delay-5ms flex gap-2  w-[700px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
-                    <AnimatedCircularProgressBar
-                        max={100}
-                        min={0}
-                        value={progress}
-                        gaugePrimaryColor="#27272a"
-                        gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
-                    />
+                        </div>
+                        :
+                        <div className="mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[700px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
+                            <AnimatedCircularProgressBar
+                                max={100}
+                                min={0}
+                                value={progress}
+                                gaugePrimaryColor="#27272a"
+                                gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
+                            />
 
-                  <div className='flex flex-col justify-center items-center'>
-                  <span className='text-base text-zinc-700 font-medium text-center'>
-                        Sending {files.length} files
-                    </span>
-                    <WordRotate
-                    duration={3000}
-                        className="text-3xl font-bold text-stone-800 dark:text-white"
-                        words={[" Uploading...", " Almost completed...", " Finalizing..."]}
-                    />
-                    <span className='text-base text-zinc-500  text-center'>
-                        Do not close this window until the file uploaded
-                    </span>
-                    </div>
-                </div>
-                    : 
-                    <div className="glass-bg p-5 delay-5ms flex gap-1  w-[700px]  flex-col items-center justify-between overflow-hidden rounded-2xl shadow-2xl ">
+                            <div className='flex flex-col justify-center items-center'>
+                                <span className='text-base text-zinc-700 font-medium text-center'>
+                                    Sending {files.length} files
+                                </span>
+                                <WordRotate
+                                    duration={3000}
+                                    className="text-3xl font-bold text-stone-800 dark:text-white"
+                                    words={[" Uploading...", " Almost completed...", " Finalizing..."]}
+                                />
+                                <span className='text-base text-zinc-500  text-center'>
+                                    Do not close this window until the file uploaded
+                                </span>
+                            </div>
+                        </div>
+                    :
+                    <div className="mt-10 glass-bg p-5 delay-5ms flex gap-1  w-[700px]  flex-col items-center justify-between overflow-hidden rounded-2xl shadow-2xl ">
                         <div className='w-full'>
                             <span className='text-2xl font-semibold text-stone-800'>Upload Files</span>
                         </div>
@@ -251,8 +330,23 @@ const UploadHero = () => {
                             </label>
                         </div>
                         <div className='w-full bg-transparent flex flex-col gap-2'>
+                            {isSentToEmail &&
+                                <div className='upload-input text-stone-800 text-lg font-normal flex gap-1 flex-wrap outline-none p-3  w-full rounded-xl'>
+                                    {senderEmails.map((mail, i) => (
+                                        <span key={i} className='hover:bg-white hover:border-zinc-300 cursor-pointer border shadow-sm rounded-xl w-max px-2 text-sm text-zinc-500 flex justify-center items-center gap-1'>
+                                            {mail} <IoClose onClick={() => removeSenderMails(i)} className=' size-4 rounded-full' />
+                                        </span>
+                                    ))}
+                                    <input type='email'
+                                        value={emailTo}
+                                        onChange={(e) => setEmailTo(e.target.value)}
+                                        onKeyDown={addEmailsToSenderList}
+                                        placeholder='Email to'
+                                        className=' placeholder:text-zinc-500 bg-transparent text-stone-800 text-lg font-normal outline-none  w-full ' />
+
+                                </div>
+                            }
                             <input type='email' placeholder='Your Email' value={email} onChange={(e) => setEmail(e.target.value)} className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
-                            {isSentToEmail && <input type='email' value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder='Email to' className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />}
                             <input type='text' placeholder='Subject' value={subject} onChange={(e) => setSubject(e.target.value)} className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
                             <textarea placeholder='Message' value={message} onChange={(e) => setMessage(e.target.value)} className='resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl'>
 
