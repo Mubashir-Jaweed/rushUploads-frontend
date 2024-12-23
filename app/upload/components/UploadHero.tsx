@@ -127,9 +127,7 @@ const UploadHero = () => {
         if(isSentToEmail) {
             
             if(senderEmails.length > 0){
-                senderEmails.map((mail,i)=>{
-                    sendTo = sendTo+mail + ','
-                })
+                sendTo = senderEmails.join(',')
                 formData.append('to', sendTo);
             }else{
                 formData.append('to', emailTo);

@@ -1,18 +1,66 @@
 'use client'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdEmail } from "react-icons/md";
 import { IoLockClosed } from "react-icons/io5";
 import { IoLockOpen } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
 import { GoEye } from "react-icons/go";
 import { RiUser3Fill } from "react-icons/ri";
-
+import { useRouter } from 'next/navigation';
 import PulsatingButton from '@/components/ui/pulsating-button';
+import axios from 'axios';
 
 const page = () => {
 
+    const router = useRouter();
+    const token = localStorage.getItem('token');
+    const API_URL = 'https://rushuploads-backend.onrender.com/'
     const [isHidden, setIsHidden] = useState(true);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+
+
+useEffect(()=>{
+    
+    if(token){
+        router.push('/dashboard/workspace');
+    } 
+},[])
+
+    const handleSignup = async () => {
+        if(token) return
+        const data = {
+            fullName:fullName,
+            email: email,
+            password: password,
+          };
+        try {
+            setIsProcessing(true)
+            const response = await axios.post(`${API_URL}auth/sign-up`,data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                
+            });
+
+            if (response) {
+                setIsProcessing(false)
+                router.push('/dashboard/workspace');
+                localStorage.setItem('token',response.data.data.token)
+            }
+
+
+        } catch (error) {
+            console.error('Error SignUp:', error.response.data.info.message);
+            setMessage(error.response.data.info.message);
+            setIsProcessing(false)
+            // throw error;
+        }
+    }
     return (
         <div className='auth-bg w-full h-screen flex  justify-center items-center'>
             <div className='flex flex-col justify-center items-center gap-5'>
@@ -22,22 +70,25 @@ const page = () => {
                 </span>
                 <div className='rounded-xl glass-bg flex justify-between items-center w-80'>
                     <RiUser3Fill className='text-2xl ml-3 text-stone-600' />
-                    <input type='text' placeholder='Full Name' className='bg-transparent  text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
+                    <input type='text' placeholder='Full Name'  value={fullName} onChange={(e)=>setFullName(e.target.value)}  className='bg-transparent  text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
                 </div>
                 <div className='rounded-xl glass-bg flex justify-between items-center w-80'>
                     <MdEmail className='text-2xl ml-3 text-stone-600' />
-                    <input type='email' placeholder='Email' className='bg-transparent  text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
+                    <input type='email' placeholder='Email' value={email} onChange={(e)=>setEmail(e.target.value)} className='bg-transparent  text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
                 </div>
                 <div className='rounded-xl glass-bg flex justify-between items-center w-80'>
                     {isHidden ? <IoLockClosed className='text-2xl ml-3 text-stone-600' />
                         : <IoLockOpen className='text-2xl ml-3 text-stone-600' />}
 
-                    <input type={isHidden ? 'password' : 'text'} placeholder='Password' className='bg-transparent text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
+                    <input type={isHidden ? 'password' : 'text'} value={password} onChange={(e)=>setPassword(e.target.value)}  placeholder='Password' className='bg-transparent text-stone-800 text-xl font-normal p-4 outline-none h-full w-[88%]' />
                     {isHidden ? <LuEyeClosed onClick={()=>setIsHidden(!isHidden)} className='cursor-pointer text-2xl mr-3 text-stone-600' />
                         : <GoEye onClick={()=>setIsHidden(!isHidden)} className='cursor-pointer text-2xl mr-3 text-stone-600' />}
 
                 </div>
-                <PulsatingButton className="text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center">Continue with Email
+                <span className='text-lg text-red-500 text-center'>
+                    {message}
+                </span>
+                <PulsatingButton onClick={handleSignup} className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? 'cursor-wait' : 'cursor-pointer'}`}>Continue with Email
                 </PulsatingButton>
 
                 <span className='h-line'>

@@ -16,7 +16,6 @@ type CardData = {
 const Workspace = () => {
 
     const tabs = ['Sent', 'Recieved'];
-
     const [files, setFiles] = useState<CardData[]>(demoData)
     const [selectedTab, setSelectedTab] = useState(0)
     const [gridView, setGridView] = useState(false)
