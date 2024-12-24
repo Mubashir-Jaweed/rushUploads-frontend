@@ -15,13 +15,13 @@ const page = () => {
 
     const router = useRouter();
     const token = localStorage.getItem('token');
-    const API_URL = 'https://rushuploads-backend.onrender.com/'
     const [isHidden, setIsHidden] = useState(true);
+    const API_URL = 'https://rushuploads-backend.onrender.com/'
     const [isProcessing, setIsProcessing] = useState(false);
+    const [message, setMessage] = useState('');
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
 
 
 useEffect(()=>{
@@ -48,17 +48,17 @@ useEffect(()=>{
             });
 
             if (response) {
+                localStorage.setItem('ru_anonymous_id',response.data.data.token)
                 setIsProcessing(false)
-                router.push('/dashboard/workspace');
-                localStorage.setItem('token',response.data.data.token)
+                router.push('/verify');
             }
 
 
         } catch (error) {
-            console.error('Error SignUp:', error.response.data.info.message);
+            console.error('Error SignUp:', error.response.data.info.message, error.response.status);
             setMessage(error.response.data.info.message);
             setIsProcessing(false)
-            // throw error;
+            throw error;
         }
     }
     return (
@@ -85,9 +85,9 @@ useEffect(()=>{
                         : <GoEye onClick={()=>setIsHidden(!isHidden)} className='cursor-pointer text-2xl mr-3 text-stone-600' />}
 
                 </div>
-                <span className='text-lg text-red-500 text-center'>
-                    {message}
-                </span>
+                {message && <span className='text-lg text-red-500 text-center'>
+					{message}
+				</span>}
                 <PulsatingButton onClick={handleSignup} className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? 'cursor-wait' : 'cursor-pointer'}`}>Continue with Email
                 </PulsatingButton>
 

@@ -5,14 +5,16 @@ import { SlCloudUpload } from "react-icons/sl";
 
 import PulsatingButton from '@/components/ui/pulsating-button'
 import { cn } from '@/lib/utils'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import AnimatedCircularProgressBar from '@/components/ui/animated-circular-progress-bar';
 import { IoClose } from 'react-icons/io5';
 import { IoMdAdd } from "react-icons/io";
 import WordRotate from '@/components/ui/word-rotate';
 import { IoCloudDoneOutline } from "react-icons/io5";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -25,13 +27,25 @@ const UploadHero = () => {
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [isSentToEmail, setIsSentToEmail] = useState(true)
+    const [isToken, setIsToken] = useState(true)
     const [isFileUploaded, setIsFileUploaded] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [responseId, setResponseId] = useState('')
     const [progress, setProgress] = useState(0)
     const API_URL = 'https://rushuploads-backend.onrender.com/'
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NWZhNDg2NzMzMjRkZGFjYzRmNWQ4MiIsImVtYWlsIjoiYUB5b3BtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwidGllciI6IkZSRUUiLCJyZW1haW5pbmdTdG9yYWdlIjoyNjg0MzU0NTYwMCwiaXNWZXJpZmllZCI6dHJ1ZSwidXBkYXRlZEF0IjoiMjAyNC0xMi0xNlQwMzo1NDo0Ni40ODdaIiwiaWF0IjoxNzM0MzIxMzAzLCJleHAiOjE3MzQ5MjYxMDN9.SkIlwKrjtK9nyuyeOnYK8QVrevk4-bf2Jo-iemhLc_k'
+    const router = useRouter();
+    let token = localStorage.getItem('token')
 
+
+    
+    
+    useEffect(()=>{
+         if(token){
+            setIsToken(false)
+         }
+        
+    },[])
+    
 
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -74,11 +88,20 @@ const UploadHero = () => {
 
         } catch (error) {
             console.error('Error uploading files:', error);
+            setIsFileUploaded(false)
+            setIsUploading(false)
+                setProgress(0)
+                setFiles([])
+                setEmail('')
+                setEmailTo('')
+                setSubject('')
+                setMessage('')
             throw error;
         }
     }
 
     const sendToMail = async (data: FormData) => {
+        console.log(token)
         setIsUploading(true)
         try {
             setIsUploading(true)
@@ -93,6 +116,7 @@ const UploadHero = () => {
                     )
                 },
             });
+
             console.log(response)
 
             if (response) {
@@ -108,15 +132,37 @@ const UploadHero = () => {
 
 
         } catch (error) {
-            console.error('Error uploading files:', error);
-            throw error;
+            let msg: string
+            
+            if(error instanceof AxiosError) {
+                msg = error.response?.data.info.message
+
+                console.log({err: error})
+            } else if (error instanceof Error) {
+                msg = error.message
+             } else {
+                msg = JSON.stringify(error)
+            }
+             
+            console.error('Error uploading files:', msg);
+
+            setIsFileUploaded(false)
+            setIsUploading(false)
+            setProgress(0)
+            setFiles([])
+            setEmail('')
+            setEmailTo('')
+            setSubject('')
+            setMessage('')
         }
     }
     const handleUpload = async () => {
         if (files.length < 1) {
             console.log('no file selected')
+
             return
         };
+        
         var sendTo = ''
         const formData = new FormData();
 
@@ -191,6 +237,10 @@ const UploadHero = () => {
         setIsFileUploaded(false)
     }
 
+    const navigateTo = (route :string) =>{
+        router.push(route)
+    }
+
 
     return (
         <div className="bg-white h-screen w-full p-3" >
@@ -215,7 +265,7 @@ const UploadHero = () => {
                                 That’s a wrap!
                             </span>
                             {isSentToEmail ? <span>
-                                The email has been delivered. <span className='underline text-zinc-700'>Explore its contents</span>.
+                                The email has been delivered. <Link href={'/dashboard/workspace'} className='underline text-zinc-700'>Explore its contents</Link>.
                             </span>
                                 :
                                 <span className='text-zinc-600 text-lg font-normal'>
@@ -224,8 +274,8 @@ const UploadHero = () => {
                             {!isSentToEmail && <span className='text-zinc-700 text-base font-normal border border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]'>
                                 https://we.tl/t-ZMUM8B85BEhttps://we.tl/t-ZMUM8B85BE
                             </span>}
-                            {isSentToEmail ? <PulsatingButton onClick={handleUpload} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Go to dashboard
-                            </PulsatingButton> :
+                            {isSentToEmail ? <PulsatingButton onClick={()=>navigateTo('dashboard/workspace')} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Go to dashboard
+                            </PulsatingButton>:
                                 <PulsatingButton onClick={handleUpload} className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center">Copy link
                                 </PulsatingButton>}
                             <span onClick={() => sendMore()} className='text-zinc-700 text-lg font-normal cursor-pointer underline'>
@@ -341,10 +391,11 @@ const UploadHero = () => {
                                         onKeyDown={addEmailsToSenderList}
                                         placeholder='Email to'
                                         className=' placeholder:text-zinc-500 bg-transparent text-stone-800 text-lg font-normal outline-none  w-full ' />
-
                                 </div>
                             }
+                            {isToken && 
                             <input type='email' placeholder='Your Email' value={email} onChange={(e) => setEmail(e.target.value)} className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
+                         }
                             <input type='text' placeholder='Subject' value={subject} onChange={(e) => setSubject(e.target.value)} className=' placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl' />
                             <textarea placeholder='Message' value={message} onChange={(e) => setMessage(e.target.value)} className='resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl'>
 

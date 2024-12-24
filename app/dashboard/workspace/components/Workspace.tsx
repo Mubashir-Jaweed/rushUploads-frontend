@@ -6,6 +6,9 @@ import { HiViewGrid } from "react-icons/hi";
 import { IoIosSearch } from "react-icons/io";
 import GridCard from './GridCard';
 import ListCard from './ListCard';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { IoReload } from "react-icons/io5";
 
 type CardData = {
     name: string,
@@ -14,13 +17,15 @@ type CardData = {
     link: string
 }
 const Workspace = () => {
-
-    const tabs = ['Sent', 'Recieved'];
-    const [files, setFiles] = useState<CardData[]>(demoData)
+    const API_URL = 'https://rushuploads-backend.onrender.com/'
+    const token = localStorage.getItem('token')
+    const tabs = ['shared', 'received'];
+    const [files, setFiles] = useState<CardData[]>([])
     const [selectedTab, setSelectedTab] = useState(0)
     const [gridView, setGridView] = useState(false)
     const [underlineStyle, setUnderlineStyle] = useState({});
     const tabRefs = useRef([]);
+    const router = useRouter();
 
     useEffect(() => {
         const currentTab = tabRefs.current[selectedTab];
@@ -30,7 +35,58 @@ const Workspace = () => {
                 width: currentTab.clientWidth,
             });
         }
+        getFiles()
     }, [selectedTab]);
+
+    useEffect(()=>{
+        if(!token){
+            router.push('/upload')
+        }
+    },[])
+
+
+    const getFiles = async () =>{
+        console.log('object')
+        try{
+            const response = await axios.get(`${API_URL}files/${tabs[selectedTab]}`,{
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            }) 
+
+            if(response){
+                setFiles(response.data.data.files)
+            }
+        }
+        catch (error) {
+            console.error('Error getting files:', error);
+            throw error;
+        }
+    }
+
+     const deleteFile = async (id: string) =>{
+        try {
+          const response = await axios.delete(`${API_URL}files/${id}`, {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+              },
+          });
+          
+          if (response) {
+            setFiles(files.filter(file => file.id !== id))
+            
+          }
+    
+    
+      } catch (error) {
+          console.error('Error deleting file:', error);
+          throw error;
+      }
+      }
+
+
     return (
 
         <div className='  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5'>
@@ -39,7 +95,7 @@ const Workspace = () => {
             <div className='relative w-full border-b my-5 pb-1 border-zinc-400 flex justify-between items-end'>
                 <div className='flex gap-5'>
                     {tabs.map((val, i) => (
-                        <span key={i} ref={(el) => (tabRefs.current[i] = el)} onClick={() => setSelectedTab(i)} className={`cursor-pointer text-lg ${selectedTab == i ? 'font-medium text-zinc-800' : 'font-normal text-zinc-700'}`}>{val}</span>
+                        <span key={i} ref={(el) => (tabRefs.current[i] = el)} onClick={() => setSelectedTab(i)} className={`cursor-pointer capitalize text-lg ${selectedTab == i ? 'font-medium text-zinc-800' : 'font-normal text-zinc-700'}`}>{val}</span>
 
                     ))}
                 </div>
@@ -69,10 +125,10 @@ const Workspace = () => {
                 <input type='email' placeholder='Search by file name' className='bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800' />
             </div>
             <div className=' p-2 w-full flex flex-wrap justify-start items-start gap-2'>
-                {files.length !== 0 ?  files.map((val, i) => gridView ? <GridCard status={tabs[selectedTab]} key={i} data={val} /> : <ListCard status={tabs[selectedTab]} key={i} data={val} />) : 
-                (<span className='text-stone-800 text-2xl font-semibold border w-full h-28 flex justify-center items-center'>
-                    All the files you send will appear here
-                </span>)}
+                {files.length !== 0 ?  files.map((val, i) => gridView ? <GridCard status={tabs[selectedTab]} key={i} data={val} /> : <ListCard status={tabs[selectedTab]} deleteFile={()=>deleteFile(val.id)} key={i} data={val} />) : 
+                (<div className='text-stone-800 text-xl font-normal  w-full h-28 flex flex-col gap-3 justify-center items-center'>
+                    <span className='text-center'>All the files you send & recieved will appear here</span>
+                </div>)}
             </div>
 
         </div>
@@ -81,63 +137,3 @@ const Workspace = () => {
 
 export default Workspace
 
-
-const demoData = [
-    {
-        name: "world.doc",
-        size: "32.1 KB",
-        date: '2 dec 2024',
-        link: ''
-    },
-    {
-        name: "hello.png",
-        size: "64 MB",
-        date: '7 dec 2024',
-        link: ''
-    }
-    ,
-    {
-        name: "New.pdf",
-        size: "128 KB",
-        date: '1 nov 2024',
-        link: ''
-    },
-    {
-        name: "world.doc",
-        size: "32.1 KB",
-        date: '2 dec 2024',
-        link: ''
-    },
-    {
-        name: "hello.png",
-        size: "64 MB",
-        date: '7 dec 2024',
-        link: ''
-    }
-    ,
-    {
-        name: "New.pdf",
-        size: "128 KB",
-        date: '1 nov 2024',
-        link: ''
-    },
-    {
-        name: "world.doc",
-        size: "32.1 KB",
-        date: '2 dec 2024',
-        link: ''
-    },
-    {
-        name: "hello.png",
-        size: "64 MB",
-        date: '7 dec 2024',
-        link: ''
-    }
-    ,
-    {
-        name: "New.pdf",
-        size: "128 KB",
-        date: '1 nov 2024',
-        link: ''
-    },
-]
