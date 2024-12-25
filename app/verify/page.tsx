@@ -12,8 +12,8 @@ import axios from 'axios';
 
 const page = () => {
   const [isHidden, setIsHidden] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [otp, setOtp] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const token = localStorage.getItem('token')
   const verifyToken = localStorage.getItem('ru_anonymous_id')
   const router = useRouter();

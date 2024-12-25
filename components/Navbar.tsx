@@ -1,8 +1,18 @@
+'use client'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PulsatingButton from './ui/pulsating-button'
 
 const Navbar = () => {
+    const [isToken, setIsToken] = useState(false)
+  const token = localStorage.getItem('token')
+
+  useEffect(()=>{
+    if(token){
+      setIsToken(true)
+    }
+  },[])
+
   return (
     <div className='absolute  w-full h-[13vh] flex justify-center items-center'>
       <div className='w-full  m-5 flex justify-center items-center'>
@@ -17,13 +27,19 @@ const Navbar = () => {
 
           </div>
 
+          {
+          !isToken ? 
           <div className='flex justify-end items-center gap-4 text-stone-800 w-72 '>
-            <Link href={'/login'} className='text-[20px] font-medium'>Login</Link>
-            <Link href={'/signup'} target='_blank'>
+            <Link href={'/signup'}>
               <PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">Get started for free</PulsatingButton>
             </Link>
+          </div>:
+          <div className='flex justify-end items-center gap-4 text-stone-800 w-72 '>
+             <Link href={'/dashboard/workspace'}>
+              <PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">Dashboard</PulsatingButton>
+            </Link>
           </div>
-
+          }
 
         </div>
 

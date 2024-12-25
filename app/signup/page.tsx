@@ -50,7 +50,8 @@ useEffect(()=>{
             if (response) {
                 localStorage.setItem('ru_anonymous_id',response.data.data.token)
                 setIsProcessing(false)
-                router.push('/verify');
+                router.push(`/verify?e=${email}`);
+
             }
 
 

@@ -22,6 +22,7 @@ const Workspace = () => {
     const tabs = ['shared', 'received'];
     const [files, setFiles] = useState<CardData[]>([])
     const [selectedTab, setSelectedTab] = useState(0)
+    const [searchQuerry, setSearchQuerry] = useState('')
     const [gridView, setGridView] = useState(false)
     const [underlineStyle, setUnderlineStyle] = useState({});
     const tabRefs = useRef([]);
@@ -44,9 +45,12 @@ const Workspace = () => {
         }
     },[])
 
+    const filteredFiles = files.filter((file) =>
+        file.originalName.toLowerCase().includes(searchQuerry.toLowerCase())
+      );
+
 
     const getFiles = async () =>{
-        console.log('object')
         try{
             const response = await axios.get(`${API_URL}files/${tabs[selectedTab]}`,{
                 headers: {
@@ -57,6 +61,7 @@ const Workspace = () => {
 
             if(response){
                 setFiles(response.data.data.files)
+                console.log(response.data.data.files)
             }
         }
         catch (error) {
@@ -105,9 +110,9 @@ const Workspace = () => {
                     style={{ ...underlineStyle }}
                 ></div>
                 <div className='flex gap-1 items-center justify-center text-stone-800'>
-                    <div className='rounded-[8px] bg-[#32323218] py-2 px-3 h-10 cursor-pointer'>
+                    {/* <div className='rounded-[8px] bg-[#32323218] py-2 px-3 h-10 cursor-pointer'>
                         <span className='flex gap-1 justify-center items-center'>Sort by <MdKeyboardArrowDown className='size-6' /></span>
-                    </div>
+                    </div> */}
                     <div className='relative rounded-[8px] h-10 flex justify-center gap-2 items-center bg-[#32323218] px-2'>
                         <span onClick={() => setGridView(false)} className={` cursor-pointer`}>
                             <LuMenu className='size-6' />
@@ -122,10 +127,10 @@ const Workspace = () => {
             </div>
             <div className='rounded-[8px] upload-input flex justify-between items-center w-full mb-4'>
                 <IoIosSearch className='text-2xl ml-3 text-stone-600' />
-                <input type='email' placeholder='Search by file name' className='bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800' />
+                <input type='email' value={searchQuerry} onChange={(e)=>setSearchQuerry(e.target.value)} placeholder='Search by file name' className='bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800' />
             </div>
             <div className=' p-2 w-full flex flex-wrap justify-start items-start gap-2'>
-                {files.length !== 0 ?  files.map((val, i) => gridView ? <GridCard status={tabs[selectedTab]} key={i} data={val} /> : <ListCard status={tabs[selectedTab]} deleteFile={()=>deleteFile(val.id)} key={i} data={val} />) : 
+                {files.length !== 0 ?  filteredFiles.map((val, i) => gridView ? <GridCard status={tabs[selectedTab]} deleteFile={()=>deleteFile(val.id)} key={i} data={val} /> : <ListCard status={tabs[selectedTab]} deleteFile={()=>deleteFile(val.id)} key={i} data={val} />) : 
                 (<div className='text-stone-800 text-xl font-normal  w-full h-28 flex flex-col gap-3 justify-center items-center'>
                     <span className='text-center'>All the files you send & recieved will appear here</span>
                 </div>)}

@@ -37,7 +37,7 @@ const ListCard = ({ data, status,deleteFile }: CardDataProps) => {
     anchor.download = name;  // Set the filename for the download
     document.body.appendChild(anchor); // Append the anchor to the body
     anchor.click(); // Trigger a click event to start download
-    document.body.removeChild(anchor); // Remove the anchor after use
+    // document.body.removeChild(anchor); // Remove the anchor after use
   };
   
 
@@ -48,8 +48,8 @@ const ListCard = ({ data, status,deleteFile }: CardDataProps) => {
  
   return (
     <div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
-      <span className='text-lg font-medium capitalize w-full text-stone-800'>
-        {data.name}
+      <span className='text-lg font-medium  w-full text-stone-800'>
+        {data.originalName}
       </span>
       <div className='flex w-full justify-between items-end'>
         <div className='flex justify-start items-center gap-3'>
@@ -59,10 +59,10 @@ const ListCard = ({ data, status,deleteFile }: CardDataProps) => {
             <span className=' text-sm font-normal text-zinc-700'>Expired</span></>)}
         </div>
         <div className='flex justify-center items-center '>
-          <span onClick={()=>handleDownload(data.url,data.name)} className='list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center'>
+          <a download={true} href={data.url} className='list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center'>
             <LuDownload className='size-5' />
             <span className='list-btn-title'>Download</span>
-          </span>
+          </a>
           <span onClick={()=>copyUrl(data.url)} className='list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center'>
             <IoIosLink className='size-5' />
             <span className='list-btn-title'>Copy_Link</span>
