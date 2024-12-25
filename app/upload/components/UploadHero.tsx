@@ -44,7 +44,7 @@ const UploadHero = () => {
     const API_URL = 'https://rushuploads-backend.onrender.com/'
     const router = useRouter();
     let token = localStorage.getItem('token')
-    let verifyToken = localStorage.getItem('ru_anonymous_idk')
+    let verifyToken = localStorage.getItem('ru_anonymous_id')
 
 
 
@@ -182,7 +182,7 @@ const UploadHero = () => {
 
             if (response) {
                 localStorage.setItem('token', response.data.data.token)
-                localStorage.removeItem('ru_anonymous_idk')
+                localStorage.removeItem('ru_anonymous_id')
                 token = localStorage.getItem('token')
 
                 setIsProcessing(false)
@@ -212,7 +212,7 @@ const UploadHero = () => {
 
             if (response) {
 
-                localStorage.setItem('ru_anonymous_idk', response.data.data.token)
+                localStorage.setItem('ru_anonymous_id', response.data.data.token)
                 setVerificationInProgress(true)
 
 

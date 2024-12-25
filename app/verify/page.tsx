@@ -12,6 +12,8 @@ import axios from 'axios';
 
 const page = () => {
   const [isHidden, setIsHidden] = useState(true);
+    const [message, setMessage] = useState('');
+  
   const [otp, setOtp] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const token = localStorage.getItem('token')
@@ -27,6 +29,44 @@ const page = () => {
     }
   }, [])
 
+  
+  const resendOtp = async () => {
+    setIsProcessing(true)
+
+    try {
+     
+
+
+
+      const response = await axios.post(`${API_URL}auth/resend-otp`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${verifyToken}`,
+        },
+
+
+      });
+
+      if (response) {
+        console.log(response)
+        localStorage.setItem('ru_anonymous_id', response.data.data.token)
+        if(searchParams.get('t') === 'RESET_PASSWORD'){
+          router.push('/dashboard/profile-security')
+        }else{
+          router.push('/dashboard/workspace')
+        }
+        setIsProcessing(false)
+
+      }
+    } catch (error) {
+      setMessage(error.response.data.info.message)
+      console.error('Error SignUp:', error.response);
+      setIsProcessing(false)
+
+      throw error;
+    }
+
+  }
 
   const handleOtp = async () => {
     setIsProcessing(true)
@@ -36,6 +76,10 @@ const page = () => {
         otp: otp,
         type:'VERIFY_EMAIL'
       };
+      if(searchParams.get('t') === 'RESET_PASSWORD'){
+        data.type = 'RESET_PASSWORD'
+      }
+
       const response = await axios.post(`${API_URL}auth/verify-otp`, data, {
         headers: {
           'Content-Type': 'application/json',
@@ -49,11 +93,16 @@ const page = () => {
         console.log(response)
         localStorage.setItem('token', response.data.data.token)
         localStorage.removeItem('ru_anonymous_id')
-        router.push('/dashboard/workspace')
+        if(searchParams.get('t') === 'RESET_PASSWORD'){
+          router.push('/dashboard/profile-security')
+        }else{
+          router.push('/dashboard/workspace')
+        }
         setIsProcessing(false)
 
       }
     } catch (error) {
+      setMessage(error.response.data.info.message)
       console.error('Error SignUp:', error.response.data.info.message);
       setIsProcessing(false)
 
@@ -79,8 +128,11 @@ const page = () => {
             : <GoEye onClick={() => setIsHidden(!isHidden)} className='cursor-pointer text-2xl mr-3 text-stone-600' />}
 
         </div>
+        {message && <span className='text-lg text-red-500 text-center'>
+					{message}
+				</span>}
         <div className='mb-2 w-80 flex justify-center'>
-          <Link href={'/'} className='text-md text-zinc-400 underline'>Did not get the code?</Link>
+          <span onClick={resendOtp} className='text-md text-zinc-400 hover:text-zinc-500 underline cursor-pointer'>Resend code</span>
         </div>
         <PulsatingButton onClick={handleOtp} className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? 'cursor-wait' : 'cursor-pointer'}`}>Submit
         </PulsatingButton>

@@ -61,7 +61,6 @@ const Workspace = () => {
 
             if(response){
                 setFiles(response.data.data.files)
-                console.log(response.data.data.files)
             }
         }
         catch (error) {

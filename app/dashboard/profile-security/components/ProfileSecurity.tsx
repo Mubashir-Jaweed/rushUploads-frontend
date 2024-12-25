@@ -18,7 +18,7 @@ const ProfileSecurity = () => {
         </PulsatingButton>
       </div>
       <div className=' w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 '>
-        <span className='text-stone-800 text-xl font-semibold mb-2' >Delete your account</span>
+        <span className='text-stone-800 text-xl font-semibold mb-2' >Change password</span>
         <span className='text-base font-medium text-zinc-600'>No worries — we've got you covered! Click the button below, and we'll send a reset link straight to mubashirmjjawed@gmail.com so you can update your password in no time.
 
         </span>
@@ -26,7 +26,7 @@ const ProfileSecurity = () => {
         </PulsatingButton>
       </div>
       <div className=' w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 '>
-        <span className='text-stone-800 text-xl font-semibold mb-2' >Change password</span>
+        <span className='text-stone-800 text-xl font-semibold mb-2' >Delete your account</span>
         <span className='text-base font-medium text-zinc-600'>This action cannot be undone. All your data, settings, and content will be permanently lost.</span>
         <PulsatingButton className="text-lg font-medium py-3 px-5 my-1 rounded-full flex justify-center items-center" deleteBtn={true} >Delete account
         </PulsatingButton>
