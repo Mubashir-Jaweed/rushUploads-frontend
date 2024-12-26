@@ -70,7 +70,6 @@ const Workspace = () => {
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
-			throw error;
 		}
 	};
 
@@ -91,7 +90,6 @@ const Workspace = () => {
 			}
 		} catch (error) {
 			console.error("Error deleting file:", error);
-			throw error;
 		}
 	};
 

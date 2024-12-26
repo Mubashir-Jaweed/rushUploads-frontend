@@ -1,25 +1,25 @@
 "use client";
 
-import GridPattern from "@/components/ui/grid-pattern";
-import { SlCloudUpload } from "react-icons/sl";
-
-import AnimatedCircularProgressBar from "@/components/ui/animated-circular-progress-bar";
-import PulsatingButton from "@/components/ui/pulsating-button";
-import WordRotate from "@/components/ui/word-rotate";
-import { cn } from "@/lib/utils";
-import axios, { AxiosError } from "axios";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { GoEye } from "react-icons/go";
-import { IoMdAdd } from "react-icons/io";
 import { IoClose, IoLockClosed, IoLockOpen } from "react-icons/io5";
 import { IoCloudDoneOutline } from "react-icons/io5";
+import { IoMdAdd } from "react-icons/io";
 import { LuEyeClosed } from "react-icons/lu";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
+import { SlCloudUpload } from "react-icons/sl";
 import { toast } from "react-toastify";
+
+import AnimatedCircularProgressBar from "@/components/ui/animated-circular-progress-bar";
+import GridPattern from "@/components/ui/grid-pattern";
+import PulsatingButton from "@/components/ui/pulsating-button";
+import WordRotate from "@/components/ui/word-rotate";
+import { cn, formatFileSize } from "@/lib/utils";
+import { useUserContext } from "@/contexts/user";
 
 const UploadHero = () => {
 	const [files, setFiles] = useState<File[]>([]);
@@ -29,7 +29,6 @@ const UploadHero = () => {
 	const [subject, setSubject] = useState("");
 	const [message, setMessage] = useState("");
 	const [isSentToEmail, setIsSentToEmail] = useState(true);
-	const [isToken, setIsToken] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
 	const [verificationInProgress, setVerificationInProgress] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
@@ -39,40 +38,45 @@ const UploadHero = () => {
 	const [otp, setOtp] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
 
-	const API_URL = "https://rushuploads-backend.onrender.com/";
 	const router = useRouter();
-	let token = localStorage.getItem("token");
-	const verifyToken = localStorage.getItem("ru_anonymous_id");
+
+	const { token, setToken, setUser } = useUserContext();
+
+	let verifyToken: string | null = null;
 
 	useEffect(() => {
-		if (token) {
-			setIsToken(true);
-		}
-	}, []);
+		verifyToken = localStorage.getItem("ru_anonymous_id");
+	});
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
 			setFiles(acceptedFiles);
-			console.log(acceptedFiles);
 		},
 		maxSize: 10 * 1024 * 1024,
 	});
 
 	const createFileLink = async (data: FormData) => {
-		setIsUploading(true);
 		try {
 			setIsUploading(true);
-			const response = await axios.post(`${API_URL}files/link`, data, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-					Authorization: `Bearer ${token}`,
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link`,
+				data,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+						Authorization: `Bearer ${token}`,
+					},
+					onUploadProgress: (ProgressEvent) => {
+						setProgress(
+							Math.round(
+								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1),
+							),
+						);
+					},
 				},
-				onUploadProgress: (ProgressEvent) => {
-					setProgress(
-						Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total),
-					);
-				},
-			});
+			);
+
 			if (response) {
 				console.log(response);
 				setResponseId(response.data.data.link.id);
@@ -86,15 +90,16 @@ const UploadHero = () => {
 			}
 		} catch (error) {
 			console.error("Error uploading files:", error);
+
 			setIsFileUploaded(false);
-			setIsUploading(false);
 			setProgress(0);
 			setFiles([]);
 			setEmail("");
 			setEmailTo("");
 			setSubject("");
 			setMessage("");
-			throw error;
+		} finally {
+			setIsUploading(false);
 		}
 	};
 
@@ -102,17 +107,23 @@ const UploadHero = () => {
 		setIsUploading(true);
 		try {
 			setIsUploading(true);
-			const response = await axios.post(`${API_URL}files/mail`, data, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-					Authorization: `Bearer ${token}`,
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/mail`,
+				data,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+						Authorization: `Bearer ${token}`,
+					},
+					onUploadProgress: (ProgressEvent) => {
+						setProgress(
+							Math.round(
+								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1),
+							),
+						);
+					},
 				},
-				onUploadProgress: (ProgressEvent) => {
-					setProgress(
-						Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total),
-					);
-				},
-			});
+			);
 
 			if (response) {
 				// setResponseId(response.data.data.mail.id)
@@ -125,19 +136,7 @@ const UploadHero = () => {
 				setMessage("");
 			}
 		} catch (error) {
-			let msg: string;
-
-			if (error instanceof AxiosError) {
-				msg = error.response?.data.info.message;
-
-				console.log({ err: error });
-			} else if (error instanceof Error) {
-				msg = error.message;
-			} else {
-				msg = JSON.stringify(error);
-			}
-
-			console.error("Error uploading files:", msg);
+			console.error("Error sendToMail:", error);
 
 			setIsFileUploaded(false);
 			setIsUploading(false);
@@ -158,27 +157,32 @@ const UploadHero = () => {
 				otp: otp,
 				type: "VERIFY_EMAIL",
 			};
-			const response = await axios.post(`${API_URL}auth/verify-otp`, data, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${verifyToken}`,
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-otp`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${verifyToken}`,
+					},
 				},
-			});
+			);
 
 			if (response) {
-				localStorage.setItem("token", response.data.data.token);
 				localStorage.removeItem("ru_anonymous_id");
-				token = localStorage.getItem("token");
 
-				setIsProcessing(false);
+				setToken?.(response.data.data.token);
+				setUser?.(response.data.data.user);
+
 				setVerificationInProgress(false);
+
 				handleUpload();
 			}
 		} catch (error) {
-			console.error("Error SignUp:", error.response.data.info.message);
+			console.error("Error SignUp:", error);
+		} finally {
 			setIsProcessing(false);
-
-			throw error;
 		}
 	};
 	const quickSignUp = async () => {
@@ -186,20 +190,22 @@ const UploadHero = () => {
 			email: email,
 		};
 		try {
-			const response = await axios.post(`${API_URL}auth/sign-up`, data, {
-				headers: {
-					"Content-Type": "application/json",
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/sign-up`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
-			});
+			);
 
 			if (response) {
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
 				setVerificationInProgress(true);
 			}
 		} catch (error) {
-			console.error("Error Quick SignUp:", error.response.data.info.message);
-
-			// throw error;
+			console.error("Error Quick SignUp:", error);
 		}
 	};
 
@@ -222,16 +228,22 @@ const UploadHero = () => {
 			return;
 		}
 
-		var sendTo = "";
+		let sendTo = "";
+
 		const formData = new FormData();
 
-		files.forEach((file) => formData.append("files", file));
+		for (const file of files) {
+			formData.append("files", file);
+		}
+
 		formData.append("title", subject);
 		formData.append("message", message);
 		formData.append("expiresInDays", "7");
+
 		if (isSentToEmail) {
 			if (senderEmails.length > 0) {
 				sendTo = senderEmails.join(",");
+
 				formData.append("to", sendTo);
 			} else {
 				formData.append("to", emailTo);
@@ -246,18 +258,6 @@ const UploadHero = () => {
 			}
 		} catch (error) {
 			console.error("Error:", error);
-		}
-	};
-
-	const formatFileSize = (sizeInBytes: number) => {
-		if (sizeInBytes < 1024) {
-			return `${sizeInBytes} Bytes`;
-		} else if (sizeInBytes < 1024 * 1024) {
-			return `${(sizeInBytes / 1024).toFixed(2)} KB`;
-		} else if (sizeInBytes < 1024 * 1024 * 1024) {
-			return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
-		} else {
-			return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 		}
 	};
 
@@ -360,6 +360,7 @@ const UploadHero = () => {
 									Copy link
 								</PulsatingButton>
 							)}
+							{/* biome-ignore lint/a11y/useKeyWithClickEvents: <> */}
 							<span
 								onClick={() => sendMore()}
 								className="text-zinc-700 text-lg font-normal cursor-pointer underline"
@@ -456,9 +457,10 @@ const UploadHero = () => {
 							<>
 								{" "}
 								<div className="w-full max-h-[200px] rounded-[8px] overflow-auto overflow-x-hidden flex flex-col justify-start items-center bg-transparent gap-1">
-									{files.map((file, i) => (
+									{files.map((file, index) => (
 										<div
-											key={i}
+											// biome-ignore lint/suspicious/noArrayIndexKey: <>
+											key={index}
 											className="hover:bg-[#f5f5f57e]  bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] px-2 py-1"
 										>
 											<span className=" text-lg font-medium capitalize w-full text-stone-800">
@@ -477,8 +479,9 @@ const UploadHero = () => {
 													</span>
 												</div>
 												<div className="flex justify-center items-center ">
+													{/* biome-ignore lint/a11y/useKeyWithClickEvents: <> */}
 													<span
-														onClick={() => removeSelectedFile(i)}
+														onClick={() => removeSelectedFile(index)}
 														className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-1 rounded-full flex justify-center items-center"
 													>
 														<IoClose className="size-5" />
@@ -542,7 +545,7 @@ const UploadHero = () => {
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
 									type="radio"
-									checked={isSentToEmail ? true : false}
+									defaultChecked={!!isSentToEmail}
 									onClick={() => setIsSentToEmail(true)}
 									className="size-4"
 								/>
@@ -551,7 +554,7 @@ const UploadHero = () => {
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
 									type="radio"
-									checked={!isSentToEmail ? true : false}
+									defaultChecked={!isSentToEmail}
 									onClick={() => setIsSentToEmail(false)}
 									className="size-4"
 								/>
@@ -561,14 +564,15 @@ const UploadHero = () => {
 						<div className="w-full bg-transparent flex flex-col gap-2">
 							{isSentToEmail && (
 								<div className="upload-input text-stone-800 text-lg font-normal flex gap-1 flex-wrap outline-none p-3  w-full rounded-xl">
-									{senderEmails.map((mail, i) => (
+									{senderEmails.map((mail, index) => (
 										<span
-											key={i}
+											// biome-ignore lint/suspicious/noArrayIndexKey: <>
+											key={index}
 											className="hover:bg-white hover:border-zinc-300 cursor-pointer border shadow-sm rounded-xl w-max px-2 text-sm text-zinc-500 flex justify-center items-center gap-1"
 										>
 											{mail}{" "}
 											<IoClose
-												onClick={() => removeSenderMails(i)}
+												onClick={() => removeSenderMails(index)}
 												className=" size-4 rounded-full"
 											/>
 										</span>
@@ -583,7 +587,7 @@ const UploadHero = () => {
 									/>
 								</div>
 							)}
-							{!isToken && (
+							{!token && (
 								<input
 									type="email"
 									placeholder="Your Email"
@@ -604,7 +608,7 @@ const UploadHero = () => {
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
 								className="resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
-							></textarea>
+							/>
 							<PulsatingButton
 								onClick={handleUpload}
 								className="text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center"
