@@ -1,56 +1,58 @@
 "use client";
 
-import PulsatingButton from "@/components/ui/pulsating-button";
-import axios from "axios";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { GoEye } from "react-icons/go";
-import { IoLockClosed } from "react-icons/io5";
-import { IoLockOpen } from "react-icons/io5";
-import { LuEyeClosed } from "react-icons/lu";
+import Link from "next/link";
+import axios from "axios";
 import { MdEmail } from "react-icons/md";
+
+import PulsatingButton from "@/components/ui/pulsating-button";
+import { useUserContext } from "@/contexts/user";
 
 const page = () => {
 	const router = useRouter();
-	const token = localStorage.getItem("token");
-	const API_URL = "https://rushuploads-backend.onrender.com/";
 	const [email, setEmail] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [message, setMessage] = useState("");
+
+	const { token } = useUserContext();
 
 	useEffect(() => {
 		if (token) {
 			router.push("/dashboard/workspace");
 		}
-	}, []);
+	}, [router.push, token]);
 
 	const resetPassword = async () => {
 		if (token) return;
-		const data = {
-			email: email,
-		};
+
+		const data = { email };
 
 		try {
 			setIsProcessing(true);
-			const response = await axios.post(`${API_URL}auth/reset-password`, data, {
-				headers: {
-					"Content-Type": "application/json",
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/reset-password`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
-			});
+			);
 			console.log(response);
 			if (response) {
-				setIsProcessing(false);
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
+
 				router.push(`/verify?e=${email}&t=RESET_PASSWORD`);
 			}
 		} catch (error) {
-			console.error("Error SignUp:", error.response);
+			console.error("Error SignUp:", error);
 
-			setIsProcessing(false);
+			// @ts-ignore
 			setMessage(error.response.data.info.message);
-			// throw error;
+		} finally {
+			setIsProcessing(false);
 		}
 	};
 	return (

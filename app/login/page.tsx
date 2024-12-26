@@ -1,33 +1,35 @@
 "use client";
 
-import PulsatingButton from "@/components/ui/pulsating-button";
-import axios from "axios";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import axios from "axios";
 import { GoEye } from "react-icons/go";
 import { IoLockClosed } from "react-icons/io5";
 import { IoLockOpen } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
 import { MdEmail } from "react-icons/md";
 
+import PulsatingButton from "@/components/ui/pulsating-button";
+import { useUserContext } from "@/contexts/user";
+
 const page = () => {
 	const router = useRouter();
-	const token = localStorage.getItem("token");
-	const API_URL = "https://rushuploads-backend.onrender.com/";
+
 	const [isHidden, setIsHidden] = useState(true);
-	const [isPasswordRequired, setIsPasswordRequired] = useState(false);
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [message, setMessage] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [isPasswordRequired, setIsPasswordRequired] = useState(false);
+
+	const { token, setToken, setUser } = useUserContext();
 
 	useEffect(() => {
 		if (token) {
 			router.push("/dashboard/workspace");
 		}
-	}, []);
+	}, [router.push, token]);
 
 	const handleSignin = async () => {
 		if (token) return;
@@ -39,34 +41,40 @@ const page = () => {
 		}
 		try {
 			setIsProcessing(true);
-			const response = await axios.post(`${API_URL}auth/sign-in`, data, {
-				headers: {
-					"Content-Type": "application/json",
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/sign-in`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
-			});
-			console.log(response);
-			if (response) {
-				if (isPasswordRequired) {
-					router.push("/dashboard/workspace");
-					localStorage.setItem("token", response.data.data.token);
-					localStorage.removeItem("ru_anonymous_id");
-					setIsProcessing(false);
-				} else {
-					setIsProcessing(false);
-					localStorage.setItem("ru_anonymous_id", response.data.data.token);
-					router.push(`/verify?e=${email}`);
-				}
+			);
+
+			if (isPasswordRequired) {
+				localStorage.removeItem("ru_anonymous_id");
+
+				setToken?.(response.data.data.token);
+				setUser?.(response.data.data.user);
+
+				router.push("/dashboard/workspace");
+			} else {
+				localStorage.setItem("ru_anonymous_id", response.data.data.token);
+
+				router.push(`/verify?e=${email}`);
 			}
 		} catch (error) {
-			console.error("Error SignUp:", error.response);
-			if (error.response.data.info.message == "Password Required!") {
+			console.error("Error SignUp:", error);
+			// @ts-ignore
+			if (error.response.data.info.message === "Password Required!") {
 				setIsPasswordRequired(true);
-				setIsProcessing(false);
 			} else {
-				setIsProcessing(false);
+				// @ts-ignore
 				setMessage(error.response.data.info.message);
 			}
-			// throw error;
+		} finally {
+			setIsProcessing(false);
 		}
 	};
 	return (
@@ -135,9 +143,11 @@ const page = () => {
 				>
 					Continue with Email
 				</PulsatingButton>
-
-				<span className="h-line"></span>
-				<button className="w-72 rounded-full p-3 bg-white text-lg font-medium">
+				<span className="h-line" />
+				<button
+					type="button"
+					className="w-72 rounded-full p-3 bg-white text-lg font-medium"
+				>
 					Continue with Google
 				</button>
 				<span className="text-center  text-zinc-700 text-lg">

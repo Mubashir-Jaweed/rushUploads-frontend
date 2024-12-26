@@ -1,61 +1,71 @@
 "use client";
 
-import PulsatingButton from "@/components/ui/pulsating-button";
-import axios from "axios";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import axios from "axios";
 import { GoEye } from "react-icons/go";
 import { IoLockClosed } from "react-icons/io5";
 import { IoLockOpen } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
-import { MdEmail } from "react-icons/md";
+
+import PulsatingButton from "@/components/ui/pulsating-button";
+import { useUserContext } from "@/contexts/user";
 
 const page = () => {
+	const [isProcessing, setIsProcessing] = useState(false);
 	const [isHidden, setIsHidden] = useState(true);
 	const [message, setMessage] = useState("");
-
 	const [otp, setOtp] = useState("");
-	const [isProcessing, setIsProcessing] = useState(false);
-	const token = localStorage.getItem("token");
-	const verifyToken = localStorage.getItem("ru_anonymous_id");
+
+	const { token, setToken, setUser } = useUserContext();
+
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const API_URL = "https://rushuploads-backend.onrender.com/";
+
+	let verifyToken: string | null = null;
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
+	useEffect(() => {
+		verifyToken = localStorage.getItem("ru_anonymous_id");
+	}, []);
 
 	useEffect(() => {
 		if (token) {
 			router.push("/dashboard/workspace");
 		}
-	}, []);
+	}, [router.push, token]);
 
 	const resendOtp = async () => {
 		setIsProcessing(true);
 
 		try {
-			const response = await axios.post(`${API_URL}auth/resend-otp`, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${verifyToken}`,
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${verifyToken}`,
+					},
 				},
-			});
+			);
 
 			if (response) {
-				console.log(response);
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
+
 				if (searchParams.get("t") === "RESET_PASSWORD") {
 					router.push("/dashboard/profile-security");
 				} else {
 					router.push("/dashboard/workspace");
 				}
-				setIsProcessing(false);
 			}
 		} catch (error) {
-			setMessage(error.response.data.info.message);
-			console.error("Error SignUp:", error.response);
-			setIsProcessing(false);
+			console.error("Error SignUp:", error);
 
-			throw error;
+			// @ts-ignore
+			setMessage(error.response.data.info.message);
+		} finally {
+			setIsProcessing(false);
 		}
 	};
 
@@ -71,30 +81,34 @@ const page = () => {
 				data.type = "RESET_PASSWORD";
 			}
 
-			const response = await axios.post(`${API_URL}auth/verify-otp`, data, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${verifyToken}`,
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-otp`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${verifyToken}`,
+					},
 				},
-			});
+			);
 
-			if (response) {
-				console.log(response);
-				localStorage.setItem("token", response.data.data.token);
-				localStorage.removeItem("ru_anonymous_id");
-				if (searchParams.get("t") === "RESET_PASSWORD") {
-					router.push("/dashboard/profile-security");
-				} else {
-					router.push("/dashboard/workspace");
-				}
-				setIsProcessing(false);
+			localStorage.removeItem("ru_anonymous_id");
+
+			setToken?.(response.data.data.token);
+			setUser?.(response.data.data.user);
+
+			if (searchParams.get("t") === "RESET_PASSWORD") {
+				router.push("/dashboard/profile-security");
+			} else {
+				router.push("/dashboard/workspace");
 			}
 		} catch (error) {
-			setMessage(error.response.data.info.message);
-			console.error("Error SignUp:", error.response.data.info.message);
-			setIsProcessing(false);
+			console.error("Error SignUp:", error);
 
-			throw error;
+			// @ts-ignore
+			setMessage(error.response.data.info.message);
+		} finally {
+			setIsProcessing(false);
 		}
 	};
 
@@ -138,6 +152,7 @@ const page = () => {
 					<span className="text-lg text-red-500 text-center">{message}</span>
 				)}
 				<div className="mb-2 w-80 flex justify-center">
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents: <> */}
 					<span
 						onClick={resendOtp}
 						className="text-md text-zinc-400 hover:text-zinc-500 underline cursor-pointer"

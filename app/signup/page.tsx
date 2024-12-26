@@ -15,7 +15,6 @@ const page = () => {
 	const router = useRouter();
 	const token = localStorage.getItem("token");
 	const [isHidden, setIsHidden] = useState(true);
-	const API_URL = "https://rushuploads-backend.onrender.com/";
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [message, setMessage] = useState("");
 	const [fullName, setFullName] = useState("");
@@ -26,7 +25,7 @@ const page = () => {
 		if (token) {
 			router.push("/dashboard/workspace");
 		}
-	}, []);
+	}, [router.push, token]);
 
 	const handleSignup = async () => {
 		if (token) return;
@@ -37,26 +36,28 @@ const page = () => {
 		};
 		try {
 			setIsProcessing(true);
-			const response = await axios.post(`${API_URL}auth/sign-up`, data, {
-				headers: {
-					"Content-Type": "application/json",
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/sign-up`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
 				},
-			});
+			);
 
 			if (response) {
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
-				setIsProcessing(false);
+
 				router.push(`/verify?e=${email}`);
 			}
 		} catch (error) {
-			console.error(
-				"Error SignUp:",
-				error.response.data.info.message,
-				error.response.status,
-			);
+			console.error("Error SignUp:", error);
+
+			// @ts-ignore
 			setMessage(error.response.data.info.message);
+		} finally {
 			setIsProcessing(false);
-			throw error;
 		}
 	};
 	return (
@@ -124,8 +125,11 @@ const page = () => {
 					Continue with Email
 				</PulsatingButton>
 
-				<span className="h-line"></span>
-				<button className="w-72 rounded-full p-3 bg-white text-lg font-medium">
+				<span className="h-line" />
+				<button
+					type="button"
+					className="w-72 rounded-full p-3 bg-white text-lg font-medium"
+				>
 					Continue with Google
 				</button>
 				<span className="text-center  text-zinc-700 text-lg">

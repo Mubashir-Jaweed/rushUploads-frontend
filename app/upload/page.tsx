@@ -1,7 +1,5 @@
+import UploadHero from "@/app/upload/components/UploadHero";
 import Navbar from "@/components/Navbar";
-
-import React from "react";
-import UploadHero from "./components/UploadHero";
 
 const page = () => {
 	return (
