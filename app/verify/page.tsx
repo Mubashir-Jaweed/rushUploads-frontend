@@ -10,7 +10,7 @@ import { IoLockOpen } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
-import { useUserContext } from "@/contexts/user";
+import { formatUser, useUserContext } from "@/contexts/user";
 
 const page = () => {
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -23,13 +23,6 @@ const page = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	let verifyToken: string | null = null;
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
-	useEffect(() => {
-		verifyToken = localStorage.getItem("ru_anonymous_id");
-	}, []);
-
 	useEffect(() => {
 		if (token) {
 			router.push("/dashboard/workspace");
@@ -37,6 +30,8 @@ const page = () => {
 	}, [router.push, token]);
 
 	const resendOtp = async () => {
+		const verifyToken = localStorage.getItem("ru_anonymous_id");
+
 		setIsProcessing(true);
 
 		try {
@@ -70,6 +65,8 @@ const page = () => {
 	};
 
 	const handleOtp = async () => {
+		const verifyToken = localStorage.getItem("ru_anonymous_id");
+
 		setIsProcessing(true);
 
 		try {
@@ -80,6 +77,8 @@ const page = () => {
 			if (searchParams.get("t") === "RESET_PASSWORD") {
 				data.type = "RESET_PASSWORD";
 			}
+
+			console.log({ verifyToken });
 
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-otp`,
@@ -95,7 +94,7 @@ const page = () => {
 			localStorage.removeItem("ru_anonymous_id");
 
 			setToken?.(response.data.data.token);
-			setUser?.(response.data.data.user);
+			setUser?.(formatUser(response.data.data.user));
 
 			if (searchParams.get("t") === "RESET_PASSWORD") {
 				router.push("/dashboard/profile-security");

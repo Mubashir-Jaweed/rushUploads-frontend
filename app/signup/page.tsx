@@ -1,5 +1,4 @@
 "use client";
-import PulsatingButton from "@/components/ui/pulsating-button";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,15 +10,23 @@ import { LuEyeClosed } from "react-icons/lu";
 import { MdEmail } from "react-icons/md";
 import { RiUser3Fill } from "react-icons/ri";
 
+import { auth } from "@/auth";
+import PulsatingButton from "@/components/ui/pulsating-button";
+import { formatUser, useUserContext } from "@/contexts/user";
+import { googleSignIn } from "@/lib/server";
+import { signIn } from "next-auth/react";
+
 const page = () => {
 	const router = useRouter();
-	const token = localStorage.getItem("token");
 	const [isHidden, setIsHidden] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [message, setMessage] = useState("");
 	const [fullName, setFullName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [isSocial, setIsSocial] = useState(false);
+
+	const { token, setToken, setUser } = useUserContext();
 
 	useEffect(() => {
 		if (token) {
@@ -33,6 +40,7 @@ const page = () => {
 			fullName: fullName,
 			email: email,
 			password: password,
+			isSocial: isSocial,
 		};
 		try {
 			setIsProcessing(true);
@@ -46,11 +54,16 @@ const page = () => {
 				},
 			);
 
-			if (response) {
-				localStorage.setItem("ru_anonymous_id", response.data.data.token);
+			if (isSocial) {
+				setToken?.(response.data.data.token);
+				setUser?.(formatUser(response.data.data.user));
 
-				router.push(`/verify?e=${email}`);
+				return router.push("/dashboard/workspace");
 			}
+
+			localStorage.setItem("ru_anonymous_id", response.data.data.token);
+
+			return router.push(`/verify?e=${email}`);
 		} catch (error) {
 			console.error("Error SignUp:", error);
 
@@ -129,6 +142,21 @@ const page = () => {
 				<button
 					type="button"
 					className="w-72 rounded-full p-3 bg-white text-lg font-medium"
+					onClick={async () => {
+						await signIn();
+
+						const { user } = (await auth()) ?? {};
+
+						if (user) {
+							// @ts-ignore
+							setFullName(user.name);
+							// @ts-ignore
+							setEmail(user.email);
+							setIsSocial(true);
+
+							handleSignup();
+						}
+					}}
 				>
 					Continue with Google
 				</button>

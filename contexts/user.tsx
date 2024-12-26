@@ -44,6 +44,30 @@ export const useUserContext = () => {
 	return useContext(UserContext);
 };
 
+export function formatUser(user: {
+	id: string;
+	email: string;
+	role: Role;
+	tier: Tier;
+	totalStorage: number;
+	usedStorage: number;
+	transferLimit: number;
+	isVerified: boolean;
+	updatedAt: number | string;
+}) {
+	return {
+		id: user.id,
+		email: user.email,
+		role: user.role,
+		tier: user.tier,
+		totalStorage: formatFileSize(user.totalStorage),
+		usedStorage: formatFileSize(user.usedStorage),
+		transferLimit: formatFileSize(user.transferLimit),
+		isVerified: user.isVerified,
+		updatedAt: new Date(user.updatedAt),
+	};
+}
+
 export function UserProvider({ children }: Readonly<PropsWithChildren>) {
 	const router = useRouter();
 
@@ -76,19 +100,7 @@ export function UserProvider({ children }: Readonly<PropsWithChildren>) {
 					);
 
 					setToken(response.data.data.token);
-					setUser({
-						id: response.data.data.user.id,
-						email: response.data.data.user.email,
-						role: response.data.data.user.role,
-						tier: response.data.data.user.tier,
-						totalStorage: formatFileSize(response.data.data.user.totalStorage),
-						usedStorage: formatFileSize(response.data.data.user.usedStorage),
-						transferLimit: formatFileSize(
-							response.data.data.user.transferLimit || 0,
-						),
-						isVerified: response.data.data.user.isVerified,
-						updatedAt: new Date(response.data.data.user.updatedAt),
-					});
+					setUser(formatUser(response.data.data.user));
 				} catch (error) {
 					setToken(null);
 					setUser(null);

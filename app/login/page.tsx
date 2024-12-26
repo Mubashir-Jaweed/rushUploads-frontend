@@ -11,7 +11,7 @@ import { LuEyeClosed } from "react-icons/lu";
 import { MdEmail } from "react-icons/md";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
-import { useUserContext } from "@/contexts/user";
+import { formatUser, useUserContext } from "@/contexts/user";
 
 const page = () => {
 	const router = useRouter();
@@ -56,7 +56,7 @@ const page = () => {
 				localStorage.removeItem("ru_anonymous_id");
 
 				setToken?.(response.data.data.token);
-				setUser?.(response.data.data.user);
+				setUser?.(formatUser(response.data.data.user));
 
 				router.push("/dashboard/workspace");
 			} else {

@@ -19,7 +19,7 @@ import GridPattern from "@/components/ui/grid-pattern";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import WordRotate from "@/components/ui/word-rotate";
 import { cn, formatFileSize } from "@/lib/utils";
-import { useUserContext } from "@/contexts/user";
+import { formatUser, useUserContext } from "@/contexts/user";
 
 const UploadHero = () => {
 	const [files, setFiles] = useState<File[]>([]);
@@ -40,7 +40,7 @@ const UploadHero = () => {
 
 	const router = useRouter();
 
-	const { token, setToken, setUser } = useUserContext();
+	const { token, user, setToken, setUser } = useUserContext();
 
 	let verifyToken: string | null = null;
 
@@ -173,7 +173,7 @@ const UploadHero = () => {
 				localStorage.removeItem("ru_anonymous_id");
 
 				setToken?.(response.data.data.token);
-				setUser?.(response.data.data.user);
+				setUser?.(formatUser(response.data.data.user));
 
 				setVerificationInProgress(false);
 
@@ -539,7 +539,7 @@ const UploadHero = () => {
 						)}
 						<div className="flex justify-between items-center w-full text-[12px] text-zinc-600 ">
 							<span>Supported formts: JPEG, XLS, PDF, PNG</span>
-							<span>Max size: 250GB</span>
+							<span>Max size: {user?.transferLimit || "2 GB"}</span>
 						</div>
 						<div className="w-full flex justify-start items-center gap-3 my-3">
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
