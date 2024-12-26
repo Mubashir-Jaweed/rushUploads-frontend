@@ -13,12 +13,13 @@ export default function ProtectedLayout({
 
 	const { isLoading, token } = useUserContext();
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
 	useEffect(() => {
-		if (!isLoading && !token) {
+		const localToken = localStorage.getItem("token");
+
+		if (!isLoading && !token && !localToken) {
 			return router.push("/login");
 		}
-	}, [isLoading]);
+	}, [router.push, isLoading, token]);
 
 	if (isLoading || !token) {
 		return null;
