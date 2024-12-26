@@ -1,15 +1,13 @@
-import Navbar from '@/components/Navbar'
-
-import React from 'react'
-import UploadHero from './components/UploadHero'
+import UploadHero from "@/app/upload/components/UploadHero";
+import Navbar from "@/components/Navbar";
 
 const page = () => {
-  return (
-   <div>
-    <Navbar/>
-    <UploadHero/>
-   </div>
-  )
-}
+	return (
+		<div>
+			<Navbar />
+			<UploadHero />
+		</div>
+	);
+};
 
-export default page
+export default page;
