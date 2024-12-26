@@ -1,8 +1,6 @@
+import Sidebar from "@/app/dashboard/components/Sidebar";
+import PaymentPlans from "@/app/dashboard/payment-plans/components/PaymentPlans";
 import Navbar from "@/components/Navbar";
-import { div } from "framer-motion/client";
-import React from "react";
-import Sidebar from "../components/Sidebar";
-import PaymentPlans from "./components/PaymentPlans";
 
 const page = () => {
 	return (

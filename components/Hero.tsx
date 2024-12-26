@@ -1,11 +1,11 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+
 import AnimatedGradientText from "@/components/ui/animated-gradient-text";
 import BlurIn from "@/components/ui/blur-in";
 import GridPattern from "@/components/ui/grid-pattern";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import React from "react";
 
 const Hero = () => {
 	return (
@@ -23,7 +23,7 @@ const Hero = () => {
 				<AnimatedGradientText>
 					<span
 						className={cn(
-							`inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+							"inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
 						)}
 					>
 						Introducing Rush-Uploads

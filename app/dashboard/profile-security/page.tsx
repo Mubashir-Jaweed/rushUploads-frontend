@@ -1,8 +1,6 @@
+import Sidebar from "@/app/dashboard/components/Sidebar";
+import ProfileSecurity from "@/app/dashboard/profile-security/components/ProfileSecurity";
 import Navbar from "@/components/Navbar";
-import { div } from "framer-motion/client";
-import React from "react";
-import Sidebar from "../components/Sidebar";
-import ProfileSecurity from "./components/ProfileSecurity";
 
 const page = () => {
 	return (

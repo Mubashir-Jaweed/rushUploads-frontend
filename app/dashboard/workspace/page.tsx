@@ -1,20 +1,8 @@
-import { auth } from "@/auth";
+import Sidebar from "@/app/dashboard/components/Sidebar";
+import Workspace from "@/app/dashboard/workspace/components/Workspace";
 import Navbar from "@/components/Navbar";
-import { div } from "framer-motion/client";
-import { redirect } from "next/navigation";
-import React from "react";
-import Sidebar from "../components/Sidebar";
-import Workspace from "./components/Workspace";
 
 const page = async () => {
-	const session = await auth();
-
-	if (!session) {
-		return redirect("/login");
-	}
-
-	console.log({ session: session.user });
-
 	return (
 		<div>
 			<Navbar />

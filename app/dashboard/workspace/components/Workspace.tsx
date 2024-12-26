@@ -1,14 +1,14 @@
 "use client";
-import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { HiViewGrid } from "react-icons/hi";
 import { IoIosSearch } from "react-icons/io";
-import { IoReload } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import GridCard from "./GridCard";
-import ListCard from "./ListCard";
+
+import GridCard from "@/app/dashboard/workspace/components/GridCard";
+import ListCard from "@/app/dashboard/workspace/components/ListCard";
+import { useUserContext } from "@/contexts/user";
 
 type CardData = {
 	name: string;
@@ -16,17 +16,21 @@ type CardData = {
 	date: string;
 	link: string;
 };
+
 const Workspace = () => {
-	const API_URL = "https://rushuploads-backend.onrender.com/";
-	const token = localStorage.getItem("token");
 	const tabs = ["shared", "received"];
+
 	const [files, setFiles] = useState<CardData[]>([]);
-	const [selectedTab, setSelectedTab] = useState(0);
 	const [searchQuerry, setSearchQuerry] = useState("");
-	const [gridView, setGridView] = useState(false);
 	const [underlineStyle, setUnderlineStyle] = useState({});
+	const [selectedTab, setSelectedTab] = useState(0);
+	const [gridView, setGridView] = useState(false);
+
 	const tabRefs = useRef([]);
+
 	const router = useRouter();
+
+	const { token, user } = useUserContext();
 
 	useEffect(() => {
 		const currentTab = tabRefs.current[selectedTab];
@@ -51,12 +55,15 @@ const Workspace = () => {
 
 	const getFiles = async () => {
 		try {
-			const response = await axios.get(`${API_URL}files/${tabs[selectedTab]}`, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
+			const response = await axios.get(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/${tabs[selectedTab]}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
 				},
-			});
+			);
 
 			if (response) {
 				setFiles(response.data.data.files);
@@ -69,12 +76,15 @@ const Workspace = () => {
 
 	const deleteFile = async (id: string) => {
 		try {
-			const response = await axios.delete(`${API_URL}files/${id}`, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
+			const response = await axios.delete(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/${id}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
 				},
-			});
+			);
 
 			if (response) {
 				setFiles(files.filter((file) => file.id !== id));
@@ -87,9 +97,7 @@ const Workspace = () => {
 
 	return (
 		<div className="  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
-			<span className="text-base font-medium text-zinc-600">
-				helloworld@rushuploads.com
-			</span>
+			<span className="text-base font-medium text-zinc-600">{user?.email}</span>
 			<span className="text-stone-800 text-3xl font-semibold">
 				My Workspace
 			</span>

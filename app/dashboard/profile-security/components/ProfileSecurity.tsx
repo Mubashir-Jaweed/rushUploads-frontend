@@ -1,12 +1,14 @@
+"use client";
+
 import PulsatingButton from "@/components/ui/pulsating-button";
-import React from "react";
+import { useUserContext } from "@/contexts/user";
 
 const ProfileSecurity = () => {
+	const { user } = useUserContext();
+
 	return (
 		<div className=" w-[60%] flex flex-col gap-2 justify-start items-start p-5">
-			<span className="text-base font-medium text-zinc-600">
-				helloworld@rushuploads.com
-			</span>
+			<span className="text-base font-medium text-zinc-600">{user?.email}</span>
 			<span className="text-stone-800 text-3xl font-semibold">
 				Profile & Security
 			</span>
@@ -40,9 +42,8 @@ const ProfileSecurity = () => {
 					Change password
 				</span>
 				<span className="text-base font-medium text-zinc-600">
-					No worries — we've got you covered! Click the button below, and we'll
-					send a reset link straight to mubashirmjjawed@gmail.com so you can
-					update your password in no time.
+					No worries — we've got you covered! Click the button below to update
+					your password in no time.
 				</span>
 				<PulsatingButton className="text-lg font-medium py-3 px-5 my-1 rounded-full flex justify-center items-center">
 					Send Email

@@ -1,17 +1,12 @@
 "use client";
+
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import PulsatingButton from "./ui/pulsating-button";
+
+import PulsatingButton from "@/components/ui/pulsating-button";
+import { useUserContext } from "@/contexts/user";
 
 const Navbar = () => {
-	const [isToken, setIsToken] = useState(false);
-	const token = localStorage.getItem("token");
-
-	useEffect(() => {
-		if (token) {
-			setIsToken(true);
-		}
-	}, []);
+	const { token } = useUserContext();
 
 	return (
 		<div className="absolute  w-full h-[13vh] flex justify-center items-center">
@@ -50,7 +45,7 @@ const Navbar = () => {
 						</Link>
 					</div>
 
-					{!isToken ? (
+					{!token ? (
 						<div className="flex justify-end items-center gap-4 text-stone-800 w-72 ">
 							<Link href={"/signup"}>
 								<PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">
