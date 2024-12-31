@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
+import { toast } from "react-toastify";
 
 interface CardDataProps {
 	data: {
@@ -31,6 +32,13 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, []);
+
+	const copyUrl = (url: string) => {
+			navigator.clipboard.writeText(url);
+			toast('Url Copied')
+			console.log(url);
+		};
+	
 	return (
 		<div className="relative w-[300px]  list-card cursor-pointer hover:bg-[#f5f5f57e] bg-[#f5f5f52d] flex flex-col gap-1 justify-between items-start rounded-[8px]">
 			<span className="text-lg font-medium capitalize  text-stone-800 pt-3 pl-3">

@@ -47,6 +47,11 @@ const UploadHero = () => {
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
+	// useEffect(() => {
+	// 	if (token) {
+	// 		handleUpload();
+	// 	}
+	// }, [token]);
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -56,6 +61,7 @@ const UploadHero = () => {
 	});
 
 	const createFileLink = async (data: FormData) => {
+		setIsUploading(true);
 		try {
 			setIsUploading(true);
 
@@ -78,7 +84,6 @@ const UploadHero = () => {
 			);
 
 			if (response) {
-				console.log(response);
 				setResponseId(response.data.data.link.id);
 				setIsFileUploaded(true);
 				setProgress(0);
@@ -90,7 +95,7 @@ const UploadHero = () => {
 			}
 		} catch (error) {
 			console.error("Error uploading files:", error);
-
+			toast.error(error.response.data.info.message)
 			setIsFileUploaded(false);
 			setProgress(0);
 			setFiles([]);
@@ -98,9 +103,7 @@ const UploadHero = () => {
 			setEmailTo("");
 			setSubject("");
 			setMessage("");
-		} finally {
-			setIsUploading(false);
-		}
+		} 
 	};
 
 	const sendToMail = async (data: FormData) => {
@@ -151,7 +154,7 @@ const UploadHero = () => {
 
 	const handleOtp = async () => {
 		setIsProcessing(true);
-
+		console.log('handle otp')
 		try {
 			const data = {
 				otp: otp,
@@ -171,21 +174,22 @@ const UploadHero = () => {
 
 			if (response) {
 				localStorage.removeItem("ru_anonymous_id");
-
 				setToken?.(response.data.data.token);
-				setUser?.(formatUser(response.data.data.user));
-
 				setVerificationInProgress(false);
-
-				handleUpload();
+				setUser?.(formatUser(response.data.data.user));
 			}
 		} catch (error) {
+			toast.error(error.response.data.info.message)
 			console.error("Error SignUp:", error);
 		} finally {
 			setIsProcessing(false);
 		}
 	};
 	const quickSignUp = async () => {
+		if (token) {
+			return
+		}
+		console.log('quick sign up _______________________________________________')
 		const data = {
 			email: email,
 		};
@@ -199,17 +203,19 @@ const UploadHero = () => {
 					},
 				},
 			);
-
 			if (response) {
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
 				setVerificationInProgress(true);
+
 			}
 		} catch (error) {
+			toast.error('Network problem!')
 			console.error("Error Quick SignUp:", error);
 		}
 	};
 
 	const handleUpload = async () => {
+		const localToken = localStorage.getItem('token')
 		if (files.length < 1) {
 			toast.error("No file selected!");
 			return;
@@ -222,34 +228,29 @@ const UploadHero = () => {
 			toast.error("Sender email required!");
 			return;
 		}
-
-		if (!token && email.length > 0) {
-			quickSignUp();
-			return;
-		}
-
 		let sendTo = "";
-
 		const formData = new FormData();
-
-		for (const file of files) {
-			formData.append("files", file);
-		}
-
-		formData.append("title", subject);
-		formData.append("message", message);
-		formData.append("expiresInDays", "7");
-
-		if (isSentToEmail) {
-			if (senderEmails.length > 0) {
-				sendTo = senderEmails.join(",");
-
-				formData.append("to", sendTo);
-			} else {
-				formData.append("to", emailTo);
+		if ((!token && !localToken) && email.length > 0) {
+			quickSignUp();
+			return
+		}  
+			for (const file of files) {
+				formData.append("files", file);
 			}
-		}
+			formData.append("title", subject);
+			formData.append("message", message);
+			formData.append("expiresInDays", "7");
 
+			if (isSentToEmail) {
+				if (senderEmails.length > 0) {
+					sendTo = senderEmails.join(",");
+
+					formData.append("to", sendTo);
+				} else {
+					formData.append("to", emailTo);
+				}
+			}
+		
 		try {
 			if (isSentToEmail) {
 				await sendToMail(formData);
@@ -335,14 +336,14 @@ const UploadHero = () => {
 							) : (
 								<span className="text-zinc-600 text-lg font-normal">
 									Grab your download link or{" "}
-									<span className="underline text-zinc-700">
+									<Link href={`/preview/${responseId}`} className="underline text-zinc-700">
 										explore your files!
-									</span>
+									</Link>
 								</span>
 							)}
 							{!isSentToEmail && (
 								<span className="text-zinc-700 text-base font-normal border border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]">
-									https://we.tl/t-ZMUM8B85BEhttps://we.tl/t-ZMUM8B85BE
+									http://localhost:3000/preview/${responseId}
 								</span>
 							)}
 							{isSentToEmail ? (
@@ -354,7 +355,7 @@ const UploadHero = () => {
 								</PulsatingButton>
 							) : (
 								<PulsatingButton
-									onClick={() => copyUrl("dsd")}
+									onClick={() => copyUrl(`http://localhost:3000/preview/${responseId}`)}
 									className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Copy link
@@ -545,7 +546,7 @@ const UploadHero = () => {
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
 									type="radio"
-									defaultChecked={!!isSentToEmail}
+									checked={isSentToEmail}
 									onClick={() => setIsSentToEmail(true)}
 									className="size-4"
 								/>
@@ -554,7 +555,7 @@ const UploadHero = () => {
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
 									type="radio"
-									defaultChecked={!isSentToEmail}
+									checked={!isSentToEmail}
 									onClick={() => setIsSentToEmail(false)}
 									className="size-4"
 								/>

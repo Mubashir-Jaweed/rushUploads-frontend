@@ -9,8 +9,8 @@ const Navbar = () => {
 	const { token } = useUserContext();
 
 	return (
-		<div className="absolute  w-full h-[13vh] flex justify-center items-center">
-			<div className="w-full  m-5 flex justify-center items-center">
+		<div className="fixed  w-full h-[13vh] flex justify-center items-center">
+			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
 						href={"/"}
@@ -32,23 +32,24 @@ const Navbar = () => {
 							Upload
 						</Link>
 						<Link
-							href={"/"}
+							href={"/pricing"}
 							className="text-[20px] font-medium px-4 py-2 rounded-2xl delay-5ms hover:bg-[#2d27251a]"
 						>
 							Pricing
 						</Link>
 						<Link
-							href={"/"}
+							href={"/support"}
 							className="text-[20px] font-medium px-4 py-2 rounded-2xl delay-5ms hover:bg-[#2d27251a]"
 						>
 							Support
 						</Link>
+					
 					</div>
 
 					{!token ? (
 						<div className="flex justify-end items-center gap-4 text-stone-800 w-72 ">
 							<Link href={"/signup"}>
-								<PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">
+								<PulsatingButton className="text-lg font-medium px-8 py-3 rounded-full">
 									Get started for free
 								</PulsatingButton>
 							</Link>
@@ -56,7 +57,7 @@ const Navbar = () => {
 					) : (
 						<div className="flex justify-end items-center gap-4 text-stone-800 w-72 ">
 							<Link href={"/dashboard/workspace"}>
-								<PulsatingButton className="text-lg font-medium px-5 py-3 rounded-full">
+								<PulsatingButton className="text-lg font-medium px-8 py-3 rounded-full">
 									Dashboard
 								</PulsatingButton>
 							</Link>

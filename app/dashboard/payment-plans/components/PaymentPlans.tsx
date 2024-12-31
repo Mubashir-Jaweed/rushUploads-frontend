@@ -66,7 +66,7 @@ const PaymentPlans = () => {
 					</span>
 				</div>
 			</div>
-			<div className=" w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 ">
+			{/* <div className=" w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 ">
 				<span className="text-stone-800 text-xl font-semibold mb-2">
 					Need More Capacity?
 				</span>
@@ -81,7 +81,7 @@ const PaymentPlans = () => {
 				>
 					Change Plan
 				</PulsatingButton>
-			</div>
+			</div> */}
 		</div>
 	);
 };

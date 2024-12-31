@@ -3,6 +3,7 @@ import React from "react";
 import { IoIosLink } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { LuDownload } from "react-icons/lu";
+import { toast } from "react-toastify";
 
 interface CardDataProps {
 	data: {
@@ -40,6 +41,7 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
+		toast('Url Copied')
 		console.log(url);
 	};
 

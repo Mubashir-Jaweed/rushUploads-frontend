@@ -9,6 +9,7 @@ import { LuMenu } from "react-icons/lu";
 import GridCard from "@/app/dashboard/workspace/components/GridCard";
 import ListCard from "@/app/dashboard/workspace/components/ListCard";
 import { useUserContext } from "@/contexts/user";
+import { toast } from "react-toastify";
 
 type CardData = {
 	name: string;
@@ -86,6 +87,7 @@ const Workspace = () => {
 			);
 
 			if (response) {
+				toast('File deleted ')
 				setFiles(files.filter((file) => file.id !== id));
 			}
 		} catch (error) {
