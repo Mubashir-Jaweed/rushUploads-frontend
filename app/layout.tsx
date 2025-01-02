@@ -35,7 +35,7 @@ export default function RootLayout({
 			>
 				<UserProvider>{children}</UserProvider>
 				<ToastContainer />
-				<div className="bg-pink-400 h-10 w-full">
+				<div className="bg-pink-50 h-10 w-full">
 footer
 				</div>
 			</body>

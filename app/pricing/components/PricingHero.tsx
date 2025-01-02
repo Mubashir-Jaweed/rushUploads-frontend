@@ -21,10 +21,10 @@ const PricingHero = () => {
 					From sharing large files with friends to delivering professional client work, RushUpload ensures your creative projects move forward effortlessly.
 				</BlurIn>
 
-                <div className='w-[90%] pt-16 flex justify-center gap-[60px] items-center '>
+                <div className='w-[90%] pt-16 flex justify-center gap-[50px] items-center '>
                     {subscriptions.map((sub,i)=>(
-                        <div key={i} className={` glass-bg p-5 rounded-2xl w-[350px] flex flex-col gap-2 ${sub.recomend ? 'scale-105 border-2 border-[#ffa77b]' :"scale-100"}`}>
-                            <span className='text-2xl font-semibold text-stone-800 '>{sub.type}</span>
+                        <div key={i} className={` glass-bg p-5 rounded-2xl w-[360px] flex flex-col gap-2 ${sub.recomend ? 'py-14 border-2 border-stone-700 shadow-2xl' :"scale-100"}`}>
+                            <span className='text-3xl py-2 font-semibold text-stone-800 '>{sub.type}</span>
                             <span className='text-zinc-600'>{sub.text}</span> 
                             <span className='text-5xl text-stone-800 font-semibold my-2'>${sub.price}</span>   
                            
