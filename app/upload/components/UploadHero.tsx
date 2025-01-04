@@ -103,7 +103,7 @@ const UploadHero = () => {
 			setEmailTo("");
 			setSubject("");
 			setMessage("");
-		} 
+		}
 	};
 
 	const sendToMail = async (data: FormData) => {
@@ -189,6 +189,7 @@ const UploadHero = () => {
 		if (token) {
 			return
 		}
+		setIsProcessing(true);
 		console.log('quick sign up _______________________________________________')
 		const data = {
 			email: email,
@@ -204,13 +205,17 @@ const UploadHero = () => {
 				},
 			);
 			if (response) {
+
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
 				setVerificationInProgress(true);
+				setIsProcessing(false);
 
 			}
 		} catch (error) {
 			toast.error('Network problem!')
 			console.error("Error Quick SignUp:", error);
+			setIsProcessing(true);
+
 		}
 	};
 
@@ -233,24 +238,24 @@ const UploadHero = () => {
 		if ((!token && !localToken) && email.length > 0) {
 			quickSignUp();
 			return
-		}  
-			for (const file of files) {
-				formData.append("files", file);
-			}
-			formData.append("title", subject);
-			formData.append("message", message);
-			formData.append("expiresInDays", "7");
+		}
+		for (const file of files) {
+			formData.append("files", file);
+		}
+		formData.append("title", subject);
+		formData.append("message", message);
+		formData.append("expiresInDays", "7");
 
-			if (isSentToEmail) {
-				if (senderEmails.length > 0) {
-					sendTo = senderEmails.join(",");
+		if (isSentToEmail) {
+			if (senderEmails.length > 0) {
+				sendTo = senderEmails.join(",");
 
-					formData.append("to", sendTo);
-				} else {
-					formData.append("to", emailTo);
-				}
+				formData.append("to", sendTo);
+			} else {
+				formData.append("to", emailTo);
 			}
-		
+		}
+
 		try {
 			if (isSentToEmail) {
 				await sendToMail(formData);

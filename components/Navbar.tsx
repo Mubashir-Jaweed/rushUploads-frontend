@@ -9,7 +9,7 @@ const Navbar = () => {
 	const { token } = useUserContext();
 
 	return (
-		<div className="fixed  w-full h-[13vh] flex justify-center items-center">
+		<div className="fixed z-10 w-full h-[13vh] flex justify-center items-center">
 			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
