@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const Hero = () => {
 	return (
-		<div className="bg-zinc-100 h-screen w-full p-3">
+		<div className=" h-screen w-full p-3">
 			<GridPattern
 				width={40}
 				height={40}

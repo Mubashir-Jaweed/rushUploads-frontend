@@ -25,7 +25,7 @@ export default function PulsatingButton({
 	return (
 		<button
 			className={cn(
-				`relative text-center cursor-pointer flex justify-center items-center rounded-lg text-zinc-50 ${deleteBtn ? "bg-red-500" : "bg-zinc-800"} ${disable && "bg-[#6d6c6c8b] cursor-not-allowed"} px-4 py-2`,
+				`delay-5ms hover:scale-[1.04] relative text-center cursor-pointer flex justify-center items-center rounded-lg text-zinc-50 ${deleteBtn ? "bg-red-500" : "bg-zinc-800"} ${disable && "bg-[#6d6c6c8b] cursor-not-allowed"} px-4 py-2`,
 				className,
 			)}
 			style={
@@ -39,7 +39,7 @@ export default function PulsatingButton({
 			<div className="relative z-10 ">{children} </div>
 			{!disable && (
 				<div
-					className={`absolute top-1/2 left-1/2 size-full rounded-full ${deleteBtn ? "bg-red-500" : "bg-zinc-800"} animate-pulse -translate-x-1/2 -translate-y-1/2`}
+					className={`absolute top-1/2 left-1/2 size-full rounded-full  ${deleteBtn ? "bg-[#ff4262cc]" : "bg-zinc-800"} animate-pulse -translate-x-1/2 -translate-y-1/2`}
 				/>
 			)}{" "}
 		</button>

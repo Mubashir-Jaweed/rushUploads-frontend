@@ -39,6 +39,51 @@ body {
 	);
 }
 
+
+.try-it{
+	position: relative;
+}
+.try-it::after{
+	content: '';
+	position: absolute;
+	height: 90%;
+	width: 72%;
+	background: linear-gradient(to left, #ffffff15,transparent,transparent, #ffffff15);
+	border-radius: 30px;
+
+}
+.try-it::before{
+	content: '';
+	position: absolute;
+	height: 80%;
+	width: 63%;
+	background: linear-gradient(to right, #ffffff0a,transparent,transparent, #ffffff0a);
+	border-radius: 30px;
+
+}
+
+.testimonial{
+	position: relative;
+}
+.testimonial::after{
+	content: '';
+	position: absolute;
+	height: 100%;
+	width: 72%;
+	background: linear-gradient(to right, #0b08080a,transparent,transparent, #0b08080a);
+	border-radius: 30px;
+
+}
+.testimonial::before{
+	content: '';
+	position: absolute;
+	height: 90%;
+	width: 63%;
+	background: linear-gradient(to right, #0b08080a,transparent,transparent, #0b08080a);
+	border-radius: 30px;
+
+}
+
 .glass-bg {
 	background: rgba(255, 255, 255, 0.468);
 	backdrop-filter: blur(10px);

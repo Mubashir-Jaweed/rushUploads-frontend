@@ -23,7 +23,7 @@ const Faq = () => {
                     Frequently asked questions</FadeText>
                     <div className='mt-10 w-[60%] flex flex-col justify-center items-center gap-3'>
                         {data.map((val,i)=>(
-                            <div onClick={()=>setTab(i)} className={`${tab == i ? 'h-[120px]' : 'h-[60px]'} delay-5ms cursor-pointer acc-cont border border-zinc-300 rounded-[5px] flex flex-col justify-center items-start  w-full p-4`}>
+                            <div key={i} onClick={()=>setTab(i)} className={`${tab == i ? 'h-[120px]' : 'h-[60px]'} delay-5ms cursor-pointer acc-cont border border-zinc-300 rounded-[5px] flex flex-col justify-center items-start  w-full p-4`}>
                                <div className='flex justify-between items-center w-full'>
                                <span className='acc-head text-xl font-normal text-stone-800 '>
                                 {val.q}

@@ -6,6 +6,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import React, { useState } from 'react'
 import { FadeText } from './ui/fade-text'
 import BlurIn from './ui/blur-in'
+import Particles from "./ui/particles";
 
 const Testimonials = () => {
 
@@ -29,8 +30,9 @@ const Testimonials = () => {
         }
     }
     return (
-        <div className='border-2 border-zinc-300 py-24 flex justify-center items-center '>
+        <div className='testimonial  py-24 my-14 flex justify-center items-center '>
             <div className="w-[80%]  flex flex-col justify-center items-center  gap-3" >
+           
                 <FadeText
                     direction="up"
                     framerProps={{
@@ -51,7 +53,7 @@ const Testimonials = () => {
                  </div>
              </BlurIn>
               ))}
-                <div className="flex justify-center items-center gap-5">
+                <div className="z-10 flex justify-center items-center gap-5">
                     <span onClick={()=>prev()} className="p-2 rounded-full bg-zinc-200 hover:bg-[#ff90a337]">
                         <IoIosArrowBack className="size-6 hover:text-[#ff4262]" />
                     </span>
