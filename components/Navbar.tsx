@@ -4,19 +4,41 @@ import Link from "next/link";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
-
+import Image from "next/image";
+import logo from '../assets/logo3.png'
+import { useEffect, useState } from "react";
 const Navbar = () => {
+
+	const [navState, setNavState] = useState(false);
+
+
+
+	const onNavScroll = () => {
+		if (window.scrollY > 100) {
+		  setNavState(true);
+		} else {
+		 
+			setNavState(false);
+		
+		}
+	  };
+	
+	  useEffect(() => {
+		window.addEventListener("scroll", onNavScroll);
+	  }, []);
+
+
 	const { token } = useUserContext();
 
 	return (
-		<div className=" fixed z-10 w-full h-[13vh] flex justify-center items-cente">
+		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'} delay-5ms fixed z-10 w-full  flex justify-center items-cente`}>
 			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
 						href={"/"}
-						className="font-bold text-2xl w-72 flex justify-start items-center"
+						className="font-bold  text-2xl w-72 flex justify-start items-center"
 					>
-						Rush Uploads
+						<Image alt="logo" src={logo} className="h-[50px] w-[150px]"/>
 					</Link>
 					<div className="max-lg:hidden flex justify-center items-center gap-2 text-stone-800">
 						<Link

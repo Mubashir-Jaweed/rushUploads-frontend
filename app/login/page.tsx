@@ -9,6 +9,8 @@ import { IoLockClosed } from "react-icons/io5";
 import { IoLockOpen } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
 import { MdEmail } from "react-icons/md";
+import logo from '../../assets/logo2.png'
+import Image from 'next/image';
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { formatUser, useUserContext } from "@/contexts/user";
@@ -81,7 +83,7 @@ const page = () => {
 		<div className="auth-bg w-full h-screen flex  justify-center items-center">
 			<div className="flex flex-col justify-center items-center gap-5">
 				<Link href={"/"} className="font-bold text-2xl ">
-					Rush Uploads
+				<Image alt="logo" src={logo} className="h-[50px] w-[150px]"/>
 				</Link>
 				<span className="text-center  text-zinc-700 text-lg">
 					Your are only a few minutes away
