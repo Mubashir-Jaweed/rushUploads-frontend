@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Sidebar = () => {
 	return (
-		<div className=" w-[15%]  pl-10 p-5">
+		<div className="max-lg:hidden w-[15%]  pl-10 p-5">
 			<span className="text-xl font-semibold text-stone-800">Dashboard</span>
 			<div className="flex justify-center items-start flex-col py-8 gap-1 text-stone-800">
 				<Link

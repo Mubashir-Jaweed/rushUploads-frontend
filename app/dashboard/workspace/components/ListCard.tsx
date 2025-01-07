@@ -47,12 +47,12 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
-			<span className="text-lg font-medium  w-full text-stone-800">
+			<span className="text-lg max-sm:text-base font-medium  w-full text-stone-800">
 				{data.originalName}
 			</span>
 			<div className="flex w-full justify-between items-end">
 				<div className="flex justify-start items-center gap-3">
-					<span className=" text-sm font-normal text-zinc-700">
+					<span className=" max-sm:text-sm text-sm font-normal text-zinc-700">
 						{status} {data.updatedAt.split("T")[0]}
 					</span>
 					{data.isExpired && (
@@ -71,21 +71,21 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 						href={data.url}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<LuDownload className="size-5" />
+						<LuDownload className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Download</span>
 					</a>
 					<span
 						onClick={() => copyUrl(data.url)}
 						className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<IoIosLink className="size-5" />
+						<IoIosLink className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Copy_Link</span>
 					</span>
 					<span
 						onClick={deleteFile}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<IoClose className="size-5" />
+						<IoClose className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Delete</span>
 					</span>
 				</div>

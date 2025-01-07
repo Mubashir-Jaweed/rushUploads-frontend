@@ -43,9 +43,9 @@ const PaymentPlans = () => {
 	};
 
 	return (
-		<div className=" w-[60%] flex flex-col gap-2 justify-start items-start p-5">
-			<span className="text-base font-medium text-zinc-600">{user?.email}</span>
-			<span className="text-stone-800 text-3xl font-semibold">
+		<div className="max-lg:w-[80%] max-sm:w-[90%]  w-[60%] flex flex-col gap-2 justify-start items-start p-5">
+			<span className="text-base max-sm:text-sm font-medium text-zinc-600">{user?.email}</span>
+			<span className="text-stone-800 text-3xl max-sm:text-2xl font-semibold">
 				Payment & Plans
 			</span>
 			<div className=" w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 ">

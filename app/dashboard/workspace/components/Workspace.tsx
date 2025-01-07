@@ -96,9 +96,9 @@ const Workspace = () => {
 	};
 
 	return (
-		<div className="  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
-			<span className="text-base font-medium text-zinc-600">{user?.email}</span>
-			<span className="text-stone-800 text-3xl font-semibold">
+		<div className="max-lg:w-[80%] max-sm:w-[90%]  w-[60%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
+			<span className="max-sm:text-sm text-base font-medium text-zinc-600">{user?.email}</span>
+			<span className="text-stone-800 max-sm:text-2xl text-3xl font-semibold">
 				My Workspace
 			</span>
 			<div className="relative w-full border-b my-5 pb-1 border-zinc-400 flex justify-between items-end">
@@ -108,7 +108,7 @@ const Workspace = () => {
 							key={i}
 							ref={(el) => (tabRefs.current[i] = el)}
 							onClick={() => setSelectedTab(i)}
-							className={`cursor-pointer capitalize text-lg ${selectedTab == i ? "font-medium text-zinc-800" : "font-normal text-zinc-700"}`}
+							className={`cursor-pointer capitalize max-sm:text-base text-lg ${selectedTab == i ? "font-medium text-zinc-800" : "font-normal text-zinc-700"}`}
 						>
 							{val}
 						</span>
@@ -123,21 +123,21 @@ const Workspace = () => {
 					{/* <div className='rounded-[8px] bg-[#32323218] py-2 px-3 h-10 cursor-pointer'>
                         <span className='flex gap-1 justify-center items-center'>Sort by <MdKeyboardArrowDown className='size-6' /></span>
                     </div> */}
-					<div className="relative rounded-[8px] h-10 flex justify-center gap-2 items-center bg-[#32323218] px-2">
+					<div className=" max-sm:hidden relative rounded-[8px] max-sm:h-8 h-10 flex justify-center gap-2 items-center bg-[#32323218] px-2">
 						<span
 							onClick={() => setGridView(false)}
 							className={` cursor-pointer`}
 						>
-							<LuMenu className="size-6" />
+							<LuMenu className="size-6 max-sm:size-5" />
 						</span>
 						<span
 							onClick={() => setGridView(true)}
 							className={` cursor-pointer`}
 						>
-							<HiViewGrid className="size-6" />
+							<HiViewGrid className="size-6 max-sm:size-5" />
 						</span>
 						<span
-							className={`absolute rounded border border-zinc-600 h-7 w-7 delay-3ms transition-all duration-300 ease-in-out ${!gridView ? "left-[6px]" : "left-[38px]"}`}
+							className={`absolute rounded border border-zinc-600 max-sm:h-[22px] max-sm:w-[22px] h-7 w-7 delay-3ms transition-all duration-300 ease-in-out ${!gridView ? "left-[6px] max-sm:left-[7px]" : "left-[38px] max-sm:left-[35px]"}`}
 						></span>
 					</div>
 				</div>
@@ -149,7 +149,7 @@ const Workspace = () => {
 					value={searchQuerry}
 					onChange={(e) => setSearchQuerry(e.target.value)}
 					placeholder="Search by file name"
-					className="bg-transparent   text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800"
+					className="bg-transparent max-sm:text-base text-lg font-normal p-3 outline-none h-full w-[96%]  placeholder:text-zinc-500  text-stone-800"
 				/>
 			</div>
 			<div className=" p-2 w-full flex flex-wrap justify-start items-start gap-2">
@@ -172,7 +172,7 @@ const Workspace = () => {
 						),
 					)
 				) : (
-					<div className="text-stone-800 text-xl font-normal  w-full h-28 flex flex-col gap-3 justify-center items-center">
+					<div className="text-stone-800 max-sm:text-lg text-xl font-normal  w-full h-28 flex flex-col gap-3 justify-center items-center">
 						<span className="text-center">
 							All the files you send & recieved will appear here
 						</span>
