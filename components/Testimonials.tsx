@@ -38,18 +38,18 @@ const Testimonials = () => {
                     framerProps={{
                         show: { transition: { delay: 0.5 } },
                     }}
-                    className="text-6xl font-semibold text-center text-stone-800 leading-[65px]"
+                    className="max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold text-6xl font-semibold text-center text-stone-800 leading-[65px]"
                 >
                   What our client says
                 </FadeText>
 
                <div className="flex justify-center items-center flex-col gap-3">
               {data.map((val,i)=> i == tab &&(
-                 <BlurIn className='mt-10' key={i} duration={1}>
-                 <div className='w-[500px]  flex justify-center items-center flex-col gap-3'>
-                     <MdOutlineFormatQuote className="size-10 text-[#ff4262]"/>
-                     <span className="text-lg font-medium text-zinc-700">{val.text}</span>
-                     <span className="text-base text-zinc-400 font-semibold">"{val.user}"</span>
+                 <BlurIn className='max-md:mt-2 mt-10' key={i} duration={1}>
+                 <div className='max-md:w-[100%] max-md:px-9 w-[500px]  flex justify-center items-center flex-col gap-3'>
+                     <MdOutlineFormatQuote className="max-md:size-7 size-10 text-[#ff4262]"/>
+                     <span className="text-lg font-medium text-zinc-700 max-md:text-base max-sm:text-sm">{val.text}</span>
+                     <span className="text-base text-zinc-400 font-semibold max-md:text-sm">"{val.user}"</span>
                  </div>
              </BlurIn>
               ))}

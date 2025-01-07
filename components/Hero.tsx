@@ -19,11 +19,11 @@ const Hero = () => {
 					"[mask-image:linear-gradient(to_bottom_top,white,transparent,transparent)] ",
 				)}
 			/>
-			<div className="h-[100%] w-[100%] hero-bg rounded-xl flex flex-col justify-center items-center gap-7">
+			<div className="max-md:gap-3  h-[100%] w-[100%] hero-bg rounded-xl flex flex-col justify-center items-center gap-7">
 				<AnimatedGradientText>
 					<span
 						className={cn(
-							"inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
+							"max-md:text-base max-sm:text-sm inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
 						)}
 					>
 						Introducing Rush-Uploads
@@ -33,15 +33,15 @@ const Hero = () => {
 
 				<BlurIn
 					duration={0.9}
-					className="text-6xl font-semibold text-center text-stone-800 leading-[65px]"
+					className="max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%] text-6xl font-semibold text-center text-stone-800 leading-[65px] w-[50%]"
 				>
-					Empower Seamless <br /> Uploads and Effortless Organization <br />
+					Empower Seamless Uploads and Effortless Organization
 					with Ease Dashboard
 				</BlurIn>
 
 				<BlurIn
 					duration={1}
-					className="text-center w-[60%] text-zinc-700 text-lg"
+					className="text-center w-[60%] text-zinc-800 text-lg max-sm:w-[90%] max-md:text-base max-sm:text-sm"
 				>
 					Streamline your file-sharing experience with our secure platform.
 					Upload, organize, and access files effortlessly, while enjoying
@@ -52,7 +52,7 @@ const Hero = () => {
 				{/* <button className="bg-white rounded-full px-7 py-3 text-lg font-medium">Get Started</button> */}
 				<BlurIn duration={1.2}>
 					<Link href={"/upload"}>
-						<PulsatingButton className="text-lg font-medium px-10 py-3 rounded-full flex justify-center items-center">
+						<PulsatingButton className="max-md:text-base max-sm:text-sm text-lg font-medium px-10 py-3 rounded-full flex justify-center items-center">
 							Upload Files
 						</PulsatingButton>
 					</Link>

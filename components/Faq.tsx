@@ -13,31 +13,33 @@ const Faq = () => {
         <div className='w-full flex  justify-center items-center py-24'>
             <div className="w-[80%]  flex flex-col justify-center items-center gap-3" >
 
-                <FadeText
+               <span className='text-center'>
+               <FadeText
                     direction="up"
                     framerProps={{
                         show: { transition: { delay: 0.5 } },
                     }}
-                    className="text-6xl font-semibold text-center text-stone-800 leading-[65px]"
+                    className="max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%] text-6xl font-semibold text-center text-stone-800 leading-[65px]"
                 >
                     Frequently asked questions</FadeText>
-                    <div className='mt-10 w-[60%] flex flex-col justify-center items-center gap-3'>
+               </span>
+                    <div className='max-sm:w-[90%] max-md:w-[75%] max-sm:mt-4 mt-10 w-[60%] flex flex-col justify-center items-center gap-3'>
                         {data.map((val,i)=>(
-                            <div key={i} onClick={()=>setTab(i)} className={`${tab == i ? 'h-[120px]' : 'h-[60px]'} delay-5ms cursor-pointer acc-cont border border-zinc-300 rounded-[5px] flex flex-col justify-center items-start  w-full p-4`}>
+                            <div key={i} onClick={()=>setTab(i)} className={`${tab == i ? 'h-[120px] max-sm:h-[140px]' : 'h-[60px]'} delay-5ms cursor-pointer acc-cont border border-zinc-300 rounded-[5px] flex flex-col justify-center items-start  w-full p-4`}>
                                <div className='flex justify-between items-center w-full'>
-                               <span className='acc-head text-xl font-normal text-stone-800 '>
+                               <span className='max-md:text-lg max-sm:text-base acc-head text-xl font-normal text-stone-800 '>
                                 {val.q}
                                 </span>
                                 {tab == i ? <IoIosArrowUp className='size-5'/>:
                                 <IoIosArrowDown className='size-5'/>}
                                </div>
-                                {tab ==i && <span className={`delay-5ms text-[15px] text-zinc-500 ${tab == i ?' mt-3': ' opacity-0'}`}>
+                                {tab ==i && <span className={`delay-5ms text-[15px] max-md:text-[13px] max-sm:text-[10px] text-zinc-500 ${tab == i ?' mt-3': ' opacity-0'}`}>
                                 {val.a}
                                 </span>}
                             </div>
                         ))}
 
-                        <div className='text-sm text-zinc-500'>Still have questions? Email us at <Link href={'mailto:[emailhere]'} className='underline text-[#ff4262]'>support@rushuploads.ai</Link></div>
+                        <div className='text-sm text-center text-zinc-500'>Still have questions? Email us at <Link href={'mailto:[emailhere]'} className='underline text-[#ff4262]'>support@rushuploads.ai</Link></div>
                     </div>
             </div>
 

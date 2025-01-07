@@ -9,7 +9,7 @@ const Navbar = () => {
 	const { token } = useUserContext();
 
 	return (
-		<div className="fixed z-10 w-full h-[13vh] flex justify-center items-center">
+		<div className=" fixed z-10 w-full h-[13vh] flex justify-center items-cente">
 			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
@@ -18,7 +18,7 @@ const Navbar = () => {
 					>
 						Rush Uploads
 					</Link>
-					<div className="flex justify-center items-center gap-2 text-stone-800">
+					<div className="max-lg:hidden flex justify-center items-center gap-2 text-stone-800">
 						<Link
 							href={"/"}
 							className="text-[20px] font-medium px-4 py-2 rounded-2xl delay-5ms hover:bg-[#2d27251a] "
@@ -47,7 +47,7 @@ const Navbar = () => {
 					</div>
 
 					{!token ? (
-						<div className="flex justify-end items-center gap-4 text-stone-800 w-72 ">
+						<div className="max-lg:hidden flex justify-end items-center gap-4 text-stone-800 w-72 ">
 							<Link href={"/signup"}>
 								<PulsatingButton className="text-lg font-medium px-8 py-3 rounded-full">
 									Get started for free
@@ -55,7 +55,7 @@ const Navbar = () => {
 							</Link>
 						</div>
 					) : (
-						<div className="flex justify-end items-center gap-4 text-stone-800 w-72 ">
+						<div className="max-lg:hidden flex justify-end items-center gap-4 text-stone-800 w-72 ">
 							<Link href={"/dashboard/workspace"}>
 								<PulsatingButton className="text-lg font-medium px-8 py-3 rounded-full">
 									Dashboard
