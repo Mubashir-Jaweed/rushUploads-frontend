@@ -6,41 +6,68 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
+import { useEffect, useState } from "react";
 
 const PaymentPlans = () => {
 	const { token, user } = useUserContext();
+	const [data, setData] = useState([]);
 
-	const router = useRouter();
 
-	const subscribeClickHandler = async () => {
+	// const subscribeClickHandler = async () => {
+	// 	try {
+	// 		return router.push("/pricing");
+	// 	} catch (error) {
+	// 		console.error("Failed to navigate to pricing page:", error);
+	// 	}
+	// };
+
+	// const portalClickHandler = async () => {
+	// 	try {
+	// 		const response = await axios.post(
+	// 			`${process.env.NEXT_PUBLIC_BACKEND_URL}/subscriptions/portal`,
+	// 			{},
+	// 			{
+	// 				headers: {
+	// 					authorization: `Bearer ${token}`,
+	// 				},
+	// 			},
+	// 		);
+
+	// 		const portalUrl = response.data.data.url;
+
+	// 		console.log("Redirecting to portal:", portalUrl);
+
+	// 		window.location.href = portalUrl;
+	// 	} catch (error) {
+	// 		console.error("Failed to create portal session:", error);
+	// 	}
+	// };
+
+	const getData = async () => {
+
+		console.log('hello')
 		try {
-			return router.push("/pricing");
-		} catch (error) {
-			console.error("Failed to navigate to pricing page:", error);
-		}
-	};
-
-	const portalClickHandler = async () => {
-		try {
-			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/subscriptions/portal`,
-				{},
+			const response = await axios.get(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/rewards`,
 				{
 					headers: {
-						authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
 					},
 				},
 			);
 
-			const portalUrl = response.data.data.url;
-
-			console.log("Redirecting to portal:", portalUrl);
-
-			window.location.href = portalUrl;
+			if (response) {
+				setData(response.data.data.files);
+			}
 		} catch (error) {
-			console.error("Failed to create portal session:", error);
+			console.error("Error getting files:", error);
 		}
 	};
+
+	useEffect(() => {
+			getData()
+		}, []);
 
 	return (
 		<div className="max-lg:w-[80%] max-sm:w-[90%]  w-[60%] flex flex-col gap-2 justify-start items-start p-5">
@@ -52,7 +79,7 @@ const PaymentPlans = () => {
 				<span className="text-stone-800 text-xl font-semibold mb-2">
 					Current Plan
 				</span>
-				<div className="border border-zinc-400 w-full rounded-2xl flex flex-col justify-center p-5 items-start">
+				<div className="border border-zinc-600 w-full rounded-2xl flex flex-col justify-center p-5 items-start">
 					<span className="text-stone-800 text-xl font-semibold mb-2 capitalize">
 						{user?.tier?.toLocaleLowerCase()}
 					</span>
@@ -65,23 +92,15 @@ const PaymentPlans = () => {
 						Get {user?.totalStorage} Max Storage
 					</span>
 				</div>
+				<span className="text-stone-800 text-xl font-semibold my-2">
+					Files Rewards
+				</span>
+
+				<div className="border border-zinc-600 w-full rounded-xl flex flex-col justify-center p-5 items-start">
+
+				</div>
 			</div>
-			{/* <div className=" w-full border-t my-5 py-5 border-zinc-400 flex flex-col justify-start items-start gap-2 ">
-				<span className="text-stone-800 text-xl font-semibold mb-2">
-					Need More Capacity?
-				</span>
-				<span className="flex gap-2 mb-3 justify-center items-center text-zinc-700 text-lg">
-					Level up your plan and unlock bigger transfers for smoother teamwork.
-				</span>
-				<PulsatingButton
-					className="text-lg font-medium px-5 py-3 rounded-full"
-					onClick={
-						user?.tier === "FREE" ? subscribeClickHandler : portalClickHandler
-					}
-				>
-					Change Plan
-				</PulsatingButton>
-			</div> */}
+			
 		</div>
 	);
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { MdOutlineMenu } from "react-icons/md";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
 const Navbar = () => {
 
 	const [navState, setNavState] = useState(false);
+	const [sideBarOpen, setSideBarOpen] = useState(false);
 
 
 
@@ -31,7 +33,7 @@ const Navbar = () => {
 	const { token } = useUserContext();
 
 	return (
-		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'} delay-5ms fixed z-10 w-full  flex justify-center items-cente`}>
+		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'}  delay-5ms fixed z-10 w-full  flex justify-center items-cente`}>
 			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
@@ -91,7 +93,32 @@ const Navbar = () => {
 							</Link>
 						</div>
 					)}
+
+					<div onClick={()=>setSideBarOpen(!sideBarOpen)} className="lg:hidden border border-stone-800 p-1 rounded-[10px] ">
+						<MdOutlineMenu className="size-7"/>
+					</div>
 				</div>
+			</div>
+			<div className={`${sideBarOpen ? 'right-0' :"-right-96"} z-30 absolute w-[350px] delay-5ms  p-5 pt-10 border h-screen bg-zinc-100 flex flex-col justify-start items-start`}>
+			<div onClick={()=>setSideBarOpen(!sideBarOpen)} className="lg:hidden border border-stone-800 p-1 rounded-[10px] mb-16 ">
+						<MdOutlineMenu className="size-7"/>
+					</div>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Home</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Upload</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Pricing</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Affiliate</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Support</Link>
+
+				{
+					token && (<>
+					<span className="py-3 pt-8 text-2xl font-medium text-stone-800">
+					Dashboard
+				</span>
+
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Workspace</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Payment & Plans</Link>
+				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Profile & Security</Link></>)
+				}
 			</div>
 		</div>
 	);

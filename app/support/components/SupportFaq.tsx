@@ -39,7 +39,7 @@ const SupportFaq = () => {
                             </div>
                         ))}
 
-                        <div className='text-sm text-center text-zinc-500'>Still have questions? Email us at <Link href={'mailto:[emailhere]'} className='underline text-[#ff4262]'>support@rushuploads.ai</Link></div>
+                        <div className='text-sm text-center text-zinc-500'>Still have questions? Email us at <Link href={'mailto:[support@rushuploads.com]'} className='underline text-[#ff4262]'>support@rushuploads.com</Link></div>
                     </div>
             </div>
 
