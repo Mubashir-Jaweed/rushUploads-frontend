@@ -1,41 +1,41 @@
 import BlurIn from '@/components/ui/blur-in'
 import PulsatingButton from '@/components/ui/pulsating-button'
-import { IoCheckmarkCircle } from "react-icons/io5";
+import { IoCheckmark } from "react-icons/io5";
 
 import React from 'react'
 
 const PricingHero = () => {
     return (
         <div className='auth-bg py-20 flex justify-center items-center '>
-            <div className='w-[90%] pt-32 flex justify-center items-center flex-col gap-5'>
+            <div className='w-[90%] pt-20 flex justify-center items-center flex-col gap-5'>
             <BlurIn
 					duration={0.9}
-					className="text-5xl font-semibold text-center text-stone-800 leading-[53px]"
+					className="max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%] text-5xl font-semibold text-center text-stone-800 leading-[53px]"
 				>
 					Your ideas, our tools—choose the<br/> plan that brings them to life!
 				</BlurIn>
                 <BlurIn
 					duration={1}
-					className="text-center w-[60%] text-zinc-700 text-lg"
+					className="text-center w-[60%] text-zinc-700 text-lg max-sm:w-[90%] max-md:text-base max-sm:text-sm"
 				>
 					From sharing large files with friends to delivering professional client work, RushUpload ensures your creative projects move forward effortlessly.
 				</BlurIn>
 
-                <div className='w-[90%] pt-16 flex justify-center gap-[50px] items-center '>
+                <div className='w-[90%] pt-16 flex justify-center gap-[20px] items-center flex-wrap'>
                     {subscriptions.map((sub,i)=>(
-                        <div key={i} className={` glass-bg p-5 rounded-2xl w-[360px] flex flex-col gap-2 ${sub.recomend ? 'py-14 border-2 border-stone-700 shadow-2xl' :"scale-100"}`}>
-                            <span className='text-3xl py-2 font-semibold text-stone-800 '>{sub.type}</span>
-                            <span className='text-zinc-600'>{sub.text}</span> 
-                            <span className='text-5xl text-stone-800 font-semibold my-2'>${sub.price}</span>   
+                        <div key={i} className={` glass-bg p-5 rounded-2xl w-[360px] flex flex-col gap-2 ${sub.recomend ? 'py-10 border-2 border-[#ff4262] shadow-2xl' :"scale-100"}`}>
+                            <span className='text-3xl py-2 font-semibold text-stone-800 max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%]'>{sub.type}</span>
+                            <span className='text-zinc-600 max-sm:w-[90%] max-md:text-base max-sm:text-sm'>{sub.text}</span> 
+                            <span className='text-5xl text-stone-800 font-semibold my-2 max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%]'>${sub.price}</span>   
                            
                             <div className='border-t border-stone-500 flex flex-col justify-center items-start gap-2 mb-4 pt-3 '>
                                 {sub.features.map((feature,i)=>(
-                                    <span key={i} className='text-lg text-zinc-700 font-medium flex gap-2 justify-center items-center'>
-                                        <IoCheckmarkCircle className='size-6 text-green-700'/>{feature}
+                                    <span key={i} className='text-lg text-zinc-700 font-medium flex gap-2 justify-center items-center max-md:text-base max-sm:text-sm'>
+                                        <IoCheckmark className='size-6 text-[#ff4262]'/>{feature}
                                     </span>
                                 ))}
                             </div>
-                            <PulsatingButton className="text-xl py-4 my-1 font-medium rounded-full">
+                            <PulsatingButton className="text-xl py-4 my-1 font-medium rounded-full max-md:text-base max-sm:text-sm">
                               Subscribe
                             </PulsatingButton>
                         </div>

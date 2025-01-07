@@ -308,7 +308,7 @@ const UploadHero = () => {
 		navigator.clipboard.writeText(url);
 	};
 	return (
-		<div className="bg-white h-screen w-full p-3">
+		<div className="bg-white w-full p-3">
 			<GridPattern
 				width={40}
 				height={40}
@@ -318,11 +318,11 @@ const UploadHero = () => {
 					"[mask-image:linear-gradient(to_bottom_top,white,transparent,transparent)] ",
 				)}
 			/>
-			<div className="h-[100%] w-[100%]  hero-bg rounded-xl flex  justify-center items-center">
+			<div className="h-[100%] w-[100%] py-32  hero-bg rounded-xl flex  justify-center items-center">
 				{/*if btn press shoew progress else show form */}
 				{isUploading ? (
 					isFileUploaded ? (
-						<div className="mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[600px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl">
+						<div className="max-md:mx-1   mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[600px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl">
 							<IoCloudDoneOutline className="size-32 m-2" />
 							<span className="text-2xl font-semibold text-stone-800">
 								That’s a wrap!
@@ -354,14 +354,14 @@ const UploadHero = () => {
 							{isSentToEmail ? (
 								<PulsatingButton
 									onClick={() => navigateTo("dashboard/workspace")}
-									className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
+									className="max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Go to dashboard
 								</PulsatingButton>
 							) : (
 								<PulsatingButton
 									onClick={() => copyUrl(`http://localhost:3000/preview/${responseId}`)}
-									className="text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
+									className=" max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Copy link
 								</PulsatingButton>
@@ -375,7 +375,7 @@ const UploadHero = () => {
 							</span>
 						</div>
 					) : (
-						<div className="mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[600px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
+						<div className="max-md:mx-1  mt-10 glass-bg p-5 delay-5ms flex gap-2  w-[600px] h-[700px] flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
 							<AnimatedCircularProgressBar
 								max={100}
 								min={0}
@@ -404,7 +404,7 @@ const UploadHero = () => {
 						</div>
 					)
 				) : verificationInProgress ? (
-					<div className="mt-10 glass-bg p-5 delay-5ms flex gap-1  w-[600px] h-[700px]  flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
+					<div className="max-md:mx-1  mt-10 glass-bg p-5 delay-5ms flex gap-1  w-[600px] h-[700px]  flex-col items-center justify-center overflow-hidden rounded-2xl shadow-2xl ">
 						<MdOutlineMarkEmailUnread className="size-32 m-2" />
 						<span className="text-2xl font-semibold text-stone-800">
 							Verify Email!
@@ -446,13 +446,13 @@ const UploadHero = () => {
 						</div>
 						<PulsatingButton
 							onClick={handleOtp}
-							className={`text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
+							className={`max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 						>
 							Submit
 						</PulsatingButton>
 					</div>
 				) : (
-					<div className="mt-10 glass-bg p-5 delay-5ms flex gap-1  w-[600px]  flex-col items-center justify-between overflow-hidden rounded-2xl shadow-2xl ">
+					<div className="max-md:mx-1  mt-10 glass-bg p-5 delay-5ms flex gap-1  w-[600px]  flex-col items-center justify-between overflow-hidden rounded-2xl shadow-2xl ">
 						<div className="w-full">
 							<span className="text-2xl font-semibold text-stone-800">
 								Upload Files
@@ -529,11 +529,11 @@ const UploadHero = () => {
 							>
 								<SlCloudUpload className="size-20 text-stone-800" />
 								{isDragActive ? (
-									<span className="text-xl font-medium cursor-default">
+									<span className="text-xl text-center font-medium cursor-default">
 										Drop files here
 									</span>
 								) : (
-									<span className="text-xl font-medium cursor-default">
+									<span className="text-center text-xl font-medium cursor-default">
 										Drag & drop files or{" "}
 										<span className="cursor-pointer underline hover:no-underline">
 											{" "}
@@ -544,7 +544,7 @@ const UploadHero = () => {
 							</div>
 						)}
 						<div className="flex justify-between items-center w-full text-[12px] text-zinc-600 ">
-							<span>Supported formts: JPEG, XLS, PDF, PNG</span>
+							<span>Supported formts: All formats</span>
 							<span>Max size: {user?.transferLimit || "2 GB"}</span>
 						</div>
 						<div className="w-full flex justify-start items-center gap-3 my-3">
@@ -617,7 +617,7 @@ const UploadHero = () => {
 							/>
 							<PulsatingButton
 								onClick={handleUpload}
-								className="text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center"
+								className="max-md:text-base max-sm:text-sm text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center"
 							>
 								Transfer File
 							</PulsatingButton>
