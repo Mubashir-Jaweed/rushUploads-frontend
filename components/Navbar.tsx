@@ -38,6 +38,12 @@ const Navbar = () => {
 							Pricing
 						</Link>
 						<Link
+							href={"/affiliate"}
+							className="text-[20px] font-medium px-4 py-2 rounded-2xl delay-5ms hover:bg-[#2d27251a]"
+						>
+							Affiliate
+						</Link>
+						<Link
 							href={"/support"}
 							className="text-[20px] font-medium px-4 py-2 rounded-2xl delay-5ms hover:bg-[#2d27251a]"
 						>

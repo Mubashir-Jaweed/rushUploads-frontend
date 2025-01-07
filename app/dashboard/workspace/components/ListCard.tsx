@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 interface CardDataProps {
 	data: {
 		id: string;
-		name: string;
+		originalName: string;
 		updatedAt: string;
-		link: string;
+		url: string;
 		date: string;
 		isExpired: boolean;
 	};
@@ -20,30 +20,48 @@ interface CardDataProps {
 	[key: string]: unknown;
 }
 const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
-	const handleDownload = (url, name) => {
-		// Split the URL into parts
-		const splitUrl = url.split("/");
 
-		// Insert the custom part into the URL
-		splitUrl.splice(6, 0, `fl_attachment:${name}_rush_upload`);
 
-		// Recombine the parts into a new URL
-		const updatedUrl = splitUrl.join("/");
-
-		// Create an anchor element
-		const anchor = document.createElement("a");
-		anchor.href = updatedUrl; // Set the updated URL as the href
-		anchor.download = name; // Set the filename for the download
-		document.body.appendChild(anchor); // Append the anchor to the body
-		anchor.click(); // Trigger a click event to start download
-		// document.body.removeChild(anchor); // Remove the anchor after use
-	};
 
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 		toast('Url Copied')
 		console.log(url);
 	};
+
+
+	async function downloadFile(url: string, filename: string) {
+		const splitName = filename.split('.')
+		
+		try {
+			// Fetch the file from the S3 URL
+			const response = await fetch(url);
+
+			// Check if the fetch was successful
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			// Convert the response to a blob
+			const blob = await response.blob();
+
+			// Create a URL for the blob
+			const blobUrl = URL.createObjectURL(blob);
+
+			// Create an anchor element and trigger a download
+			const a = document.createElement('a');
+			a.href = blobUrl;
+			a.download = splitName[0]+'-rush-upload'  || 'downloaded-file';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+
+			// Revoke the blob URL after the download
+			URL.revokeObjectURL(blobUrl);
+		} catch (error) {
+			toast.error('Error in downloading file')
+		}
+	}
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
@@ -66,14 +84,13 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 					)}
 				</div>
 				<div className="flex justify-center items-center ">
-					<a
-						download={true}
-						href={data.url}
+					<span
+						onClick={() => downloadFile(data.url, data.originalName)}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
 						<LuDownload className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Download</span>
-					</a>
+					</span>
 					<span
 						onClick={() => copyUrl(data.url)}
 						className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
@@ -81,13 +98,13 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 						<IoIosLink className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Copy_Link</span>
 					</span>
-					<span
+					{status !== 'received' && <span
 						onClick={deleteFile}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
 						<IoClose className="size-5 max-sm:size-4" />
 						<span className="list-btn-title">Delete</span>
-					</span>
+					</span>}
 				</div>
 			</div>
 		</div>

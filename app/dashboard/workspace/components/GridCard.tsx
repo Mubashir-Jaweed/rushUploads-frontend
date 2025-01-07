@@ -75,12 +75,12 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 					<span className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center">
 						Download
 					</span>
-					<span
+					{status !== 'received' &&<span
 						onClick={deleteFile}
 						className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center"
 					>
 						Delete
-					</span>
+					</span>}
 					<span
 						onClick={() => copyUrl(data.url)}
 						className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center"

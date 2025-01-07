@@ -64,6 +64,18 @@ const data = [
         q: 'Can I share large files with Rush uploads?',
         a: 'Absolutely! Rush uploads supports large file sharing, enabling users to transfer files of significant sizes without any hassle.'
     },
+    {
+        q: 'Is there a limit to how much I can earn?',
+        a: 'Absolutely not! There’s no cap on your earnings. The more files you share and the more downloads they get, the more you can earn.'
+    },
+    {
+        q: 'How will I receive my rewards?',
+        a: 'Your earnings will be transferred to your account as soon as you qualify.'
+    },
+    {
+        q: 'Are there any additional charges or hidden fees?',
+        a: 'None at all! The affiliate program is completely transparent and free to join.'
+    },
 ];
 
 export default SupportFaq

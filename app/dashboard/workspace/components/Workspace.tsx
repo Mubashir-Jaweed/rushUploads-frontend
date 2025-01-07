@@ -157,7 +157,7 @@ const Workspace = () => {
 					filteredFiles.map((val, i) =>
 						gridView ? (
 							<GridCard
-								status={tabs[selectedTab]}
+								status={ tabs[selectedTab]}
 								deleteFile={() => deleteFile(val.id)}
 								key={i}
 								data={val}
@@ -165,6 +165,7 @@ const Workspace = () => {
 						) : (
 							<ListCard
 								status={tabs[selectedTab]}
+								tab
 								deleteFile={() => deleteFile(val.id)}
 								key={i}
 								data={val}

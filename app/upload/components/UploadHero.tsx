@@ -57,7 +57,6 @@ const UploadHero = () => {
 		onDrop: (acceptedFiles) => {
 			setFiles(acceptedFiles);
 		},
-		maxSize: 10 * 1024 * 1024,
 	});
 
 	const createFileLink = async (data: FormData) => {
@@ -462,7 +461,7 @@ const UploadHero = () => {
 						{files.length > 0 ? (
 							<>
 								{" "}
-								<div className="w-full max-h-[200px] rounded-[8px] overflow-auto overflow-x-hidden flex flex-col justify-start items-center bg-transparent gap-1">
+								<div className="w-full max-h-[200px] rounded-[8px] overflow-auto overflow-x-hidden flex flex-col justify-start items-center bg-transparent mt-2 gap-1">
 									{files.map((file, index) => (
 										<div
 											// biome-ignore lint/suspicious/noArrayIndexKey: <>

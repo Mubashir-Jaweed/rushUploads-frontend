@@ -83,38 +83,36 @@ export function UserProvider({ children }: Readonly<PropsWithChildren>) {
 		setIsLoading(false);
 	}, [token]);
 
-	// useEffect(() => {
-	// 	const localToken = localStorage.getItem("token");
+	useEffect(() => {
+		const localToken = localStorage.getItem("token");
 
-	// 	console.log(localToken)
-	// 	if (localToken) {
-	// 		(async () => {
-	// 			try {
-	// 				const response = await axios.post(
-	// 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
-	// 					{},
-	// 					{
-	// 						headers: {
-	// 							authorization: `Bearer ${localToken}`,
-	// 						},
-	// 					},
-	// 				);
-	// 				console.log(response)
-	// 				setToken(response.data.data.token);
-	// 				setUser(formatUser(response.data.data.user));
-	// 			} catch (error) {
-	// 				// setToken(null);
-	// 				// setUser(null);
+		if (localToken) {
+			(async () => {
+				try {
+					const response = await axios.post(
+						`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+						{},
+						{
+							headers: {
+								authorization: `Bearer ${localToken}`,
+							},
+						},
+					);
+					setToken(response.data.data.token);
+					setUser(formatUser(response.data.data.user));
+				} catch (error) {
+					setToken(null);
+					setUser(null);
 
-	// 				// localStorage.removeItem("token");
+					localStorage.removeItem("token");
 
-	// 				return router.push("/login");
-	// 			}
-	// 		})();
-	// 	}
+					return router.push("/login");
+				}
+			})();
+		}
 
-	// 	setIsLoading(false);
-	// }, [router.push]);
+		setIsLoading(false);
+	}, [router.push]);
 
 	return (
 		<UserContext.Provider
