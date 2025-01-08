@@ -9,7 +9,6 @@ import { MdEmail } from "react-icons/md";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
 import logo from '../../assets/logo2.png'
-import logo from "../../assets/logo2.png";
 import Image from "next/image";
 
 const page = () => {
