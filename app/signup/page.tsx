@@ -139,7 +139,7 @@ const page = () => {
 					Continue with Email
 				</PulsatingButton>
 
-				<span className="h-line" />
+				{/* <span className="h-line" />
 				<button
 					type="button"
 					className="w-72 rounded-full p-3 bg-white text-lg font-medium"
@@ -160,7 +160,7 @@ const page = () => {
 					}}
 				>
 					Continue with Google
-				</button>
+				</button> */}
 				<span className="text-center  text-zinc-700 text-lg">
 					Already have an account?{" "}
 					<Link href={"/login"} className="text-[#1d7fff] underline">

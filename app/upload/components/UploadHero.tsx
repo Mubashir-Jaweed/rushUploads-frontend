@@ -301,7 +301,7 @@ const UploadHero = () => {
 		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
-				{
+				{},{
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${verifyToken}`,
@@ -310,16 +310,19 @@ const UploadHero = () => {
 			);
 
 			if (response) {
-				localStorage.setItem("ru_anonymous_id", response.data.data.token);
-				toast('Resend OTP sent successfully')
+				toast.success('OTP Send Successfull')
+				
 			}
 		} catch (error) {
-			console.error("Error resend otp:", error);
-			toast.error('Error resend OTP')
+			console.error("Error SignUp:", error);
+
+			// @ts-ignore
+			setMessage(error.response?.data.info.message);
 		} finally {
 			setIsProcessing(false);
 		}
 	};
+
 
 	const sendMore = () => {
 		setIsUploading(false);

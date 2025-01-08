@@ -11,6 +11,7 @@ import { LuEyeClosed } from "react-icons/lu";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { formatUser, useUserContext } from "@/contexts/user";
+import { toast } from "react-toastify";
 
 const page = () => {
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -37,7 +38,7 @@ const page = () => {
 		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
-				{
+				{},{
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${verifyToken}`,
@@ -46,25 +47,21 @@ const page = () => {
 			);
 
 			if (response) {
-				localStorage.setItem("ru_anonymous_id", response.data.data.token);
-
-				if (searchParams.get("t") === "RESET_PASSWORD") {
-					router.push("/dashboard/profile-security");
-				} else {
-					router.push("/dashboard/workspace");
-				}
+				toast.success('OTP Send Successfull')
+				
 			}
 		} catch (error) {
 			console.error("Error SignUp:", error);
 
 			// @ts-ignore
-			setMessage(error.response.data.info.message);
+			setMessage(error.response?.data.info.message);
 		} finally {
 			setIsProcessing(false);
 		}
 	};
 
 	const handleOtp = async () => {
+		setMessage('');
 		const verifyToken = localStorage.getItem("ru_anonymous_id");
 
 		setIsProcessing(true);

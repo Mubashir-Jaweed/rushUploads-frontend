@@ -109,6 +109,8 @@ const Navbar = () => {
 				<Link href={'/affiliate'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Affiliate</Link>
 				<Link href={'/support'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Support</Link>
 
+				{!token && 				<Link href={'/login'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Login</Link>
+			}
 				{
 					token && (<>
 					<span className="py-3 pt-8 text-2xl font-medium text-stone-800">
