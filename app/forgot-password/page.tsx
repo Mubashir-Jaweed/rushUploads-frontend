@@ -8,7 +8,7 @@ import { MdEmail } from "react-icons/md";
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
-import logo from '../assets/logo2.png'
+import logo from "../../assets/logo2.png";
 import Image from "next/image";
 
 const page = () => {
@@ -61,7 +61,7 @@ const page = () => {
 		<div className="auth-bg w-full h-screen flex  justify-center items-center">
 			<div className="flex flex-col justify-center items-center gap-5">
 				<Link href={"/"} className="font-bold text-2xl ">
-				<Image alt="logo" src={logo} className="h-[50px] w-[150px]"/>
+					<Image alt="logo" src={logo} className="h-[50px] w-[150px]" />
 				</Link>
 				<span className="text-center  text-zinc-700 text-lg">
 					Enter your email, and we’ll send you a<br /> verification code to
