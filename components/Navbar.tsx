@@ -99,15 +99,15 @@ const Navbar = () => {
 					</div>
 				</div>
 			</div>
-			<div className={`${sideBarOpen ? 'right-0' :"-right-96"} z-30 absolute w-[350px] delay-5ms  p-5 pt-10 border h-screen bg-zinc-100 flex flex-col justify-start items-start`}>
+			<div className={`${sideBarOpen ? 'right-0' :"-right-96"} lg:hidden z-30 absolute w-[350px] delay-5ms  p-5 pt-10 border h-screen bg-zinc-100 flex flex-col justify-start items-start`}>
 			<div onClick={()=>setSideBarOpen(!sideBarOpen)} className="lg:hidden border border-stone-800 p-1 rounded-[10px] mb-16 ">
 						<MdOutlineMenu className="size-7"/>
 					</div>
 				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Home</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Upload</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Pricing</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Affiliate</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Support</Link>
+				<Link href={'/upload'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Upload</Link>
+				<Link href={'/pricing'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Pricing</Link>
+				<Link href={'/affiliate'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Affiliate</Link>
+				<Link href={'/support'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Support</Link>
 
 				{
 					token && (<>
@@ -115,9 +115,9 @@ const Navbar = () => {
 					Dashboard
 				</span>
 
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Workspace</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Payment & Plans</Link>
-				<Link href={'/'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Profile & Security</Link></>)
+				<Link href={'/dashboard/workspace'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Workspace</Link>
+				<Link href={'/dashboard/payment-plans'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Payment & Plans</Link>
+				<Link href={'/dashboard/profile-security'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Profile & Security</Link></>)
 				}
 			</div>
 		</div>

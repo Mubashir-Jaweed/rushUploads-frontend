@@ -293,6 +293,33 @@ const UploadHero = () => {
 			return;
 		}
 	};
+	const resendOtp = async () => {
+		const verifyToken = localStorage.getItem("ru_anonymous_id");
+
+		setIsProcessing(true);
+
+		try {
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${verifyToken}`,
+					},
+				},
+			);
+
+			if (response) {
+				localStorage.setItem("ru_anonymous_id", response.data.data.token);
+				toast('Resend OTP sent successfully')
+			}
+		} catch (error) {
+			console.error("Error resend otp:", error);
+			toast.error('Error resend OTP')
+		} finally {
+			setIsProcessing(false);
+		}
+	};
 
 	const sendMore = () => {
 		setIsUploading(false);
@@ -439,9 +466,9 @@ const UploadHero = () => {
 							)}
 						</div>
 						<div className="mb-2 w-80 flex justify-center">
-							<Link href={"/"} className="text-md text-zinc-400 underline">
-								Did not get the code?
-							</Link>
+							<span  className="text-md text-zinc-400 ">
+								Did not get the code? <span className="underline cursor-pointer" onClick={()=>resendOtp()}>resendCode</span>
+							</span>
 						</div>
 						<PulsatingButton
 							onClick={handleOtp}
