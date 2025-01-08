@@ -94,6 +94,7 @@ const UploadHero = () => {
 			}
 		} catch (error) {
 			console.error("Error uploading files:", error);
+			// @ts-ignore
 			toast.error(error.response.data.info.message)
 			setIsFileUploaded(false);
 			setProgress(0);
@@ -178,6 +179,7 @@ const UploadHero = () => {
 				setUser?.(formatUser(response.data.data.user));
 			}
 		} catch (error) {
+			// @ts-ignore
 			toast.error(error.response.data.info.message)
 			console.error("Error SignUp:", error);
 		} finally {
