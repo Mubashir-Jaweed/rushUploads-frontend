@@ -1,10 +1,15 @@
+'use client'
 import BlurIn from '@/components/ui/blur-in'
 import PulsatingButton from '@/components/ui/pulsating-button'
 import { IoCheckmark } from "react-icons/io5";
 
 import React from 'react'
+import { useUserContext } from '@/contexts/user';
 
 const Pricing = () => {
+
+        const { token} = useUserContext();
+    
     return (
         <div className='shadow  bg-zinc-100 rounded-b-3xl py-20 flex justify-center items-center '>
             <div className='w-[90%] pt-20 flex justify-center items-center flex-col gap-5'>
@@ -35,9 +40,9 @@ const Pricing = () => {
                                     </span>
                                 ))}
                             </div>
-                            <PulsatingButton className="text-xl py-4 my-1 font-medium rounded-full max-md:text-base max-sm:text-sm">
-                              Subscribe
-                            </PulsatingButton>
+                             <PulsatingButton disable={sub.disable} className="text-xl py-4 my-1 font-medium rounded-full max-md:text-base max-sm:text-sm">
+                                                          {sub.disable ? 'Coming soon': token ? 'Current plan' : 'Subscribe'}
+                                                        </PulsatingButton>
                         </div>
                     ))}
                 </div>
@@ -60,7 +65,8 @@ const subscriptions = [
             'Attach upto 2GB per file ',
             'Store your files for 3 days'
             
-        ]
+        ],
+        disable:false
 
     },
     {
@@ -73,7 +79,8 @@ const subscriptions = [
             'Get upto 200Gb of total Storage',
             'Attach upto 15GB per file',
             'Store your files for 7 days'
-        ]
+        ],
+        disable:true
 
     },
     {
@@ -85,7 +92,8 @@ const subscriptions = [
             'Get unlimited Storage',
             'Attach unlimited file size ',
             'Store your files for 1 year'
-        ]
+        ],
+        disable:true
 
     },
 ]

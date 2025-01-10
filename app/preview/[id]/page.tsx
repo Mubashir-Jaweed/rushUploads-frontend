@@ -68,11 +68,11 @@ const Workspace = () => {
 				<div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
 					<div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
 						{title ? (
-							<span className="text-stone-800 text-3xl font-semibold">
+							<span className="text-stone-800 text-3xl font-semibold max-sm:text-sm">
 								{title}
 							</span>
 						) : (
-							<span className="text-stone-800 text-3xl font-semibold">
+							<span className="text-stone-800 text-3xl max-sm:text-2xl font-semibold">
 								Preview files
 							</span>
 						)}

@@ -1,10 +1,54 @@
+'use client'
 import BlurIn from '@/components/ui/blur-in'
 import PulsatingButton from '@/components/ui/pulsating-button'
 import { MdAttachFile } from "react-icons/md";
 
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const SupportHero = () => {
+
+
+
+    const [email, setEmail] = useState('')
+    const [subject, setSubject] = useState('')
+    const [message, setMessage] = useState('')
+
+
+    const chnagePassword = async () => {
+		if (email.length <= 0)
+			return toast.error("Email & message required ");
+
+		try {
+			const data = {
+				email,
+                subject,
+                message
+			};
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				},
+			);
+
+			if (response) {
+				console.log(response);
+
+			
+				toast("Message sent successfully");
+			}
+		} catch (error) {
+			console.error("Error chnage pass:", error.response.data.info.message);
+		}
+	};
+
+
     return (
         <div className='py-20 flex justify-center items-center '>
             <div className='w-[90%] pt-32 flex justify-center items-center flex-col max-sm:gap-2 gap-5'>
@@ -24,22 +68,23 @@ const SupportHero = () => {
                 
                     <input
                         type="email"
+                        value={email}
+                        onChange={(e)=>setEmail(e.target.value)}
                         placeholder="Email"
                         className="max-md:text-base max-sm:text-sm  placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
                     />
                     <input
                         type="text"
+                        value={subject}
+                        onChange={(e)=>setSubject(e.target.value)}
                         placeholder="Subject"
                         className="max-md:text-base max-sm:text-sm  placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
                     />
-                    <input
-                        type="text"
-                        placeholder="Short Description"
-                        className="max-md:text-base max-sm:text-sm  placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
-                    />
+                   
                     <textarea
                         placeholder="Detailed Description"
-
+                        value={message}
+                        onChange={(e)=>setMessage(e.target.value)}
                         className="max-md:text-base max-sm:text-sm resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
                     />
                     <input
@@ -60,6 +105,7 @@ const SupportHero = () => {
         </div>
     )
 }
+
 
 export default SupportHero
 
