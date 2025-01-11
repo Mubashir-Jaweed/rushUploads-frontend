@@ -16,7 +16,7 @@ const SupportHero = () => {
     const [message, setMessage] = useState('')
 
 
-    const chnagePassword = async () => {
+    const sendMail = async () => {
 		if (email.length <= 0)
 			return toast.error("Email & message required ");
 
@@ -28,7 +28,7 @@ const SupportHero = () => {
 			};
 
 			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/`,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/support`,
 				data,
 				{
 					headers: {
@@ -95,7 +95,7 @@ const SupportHero = () => {
                     
 
                     <div className='w-full flex justify-center items-center gap-3 mt-3'>
-                    <PulsatingButton className="w-full text-lg font-medium px-8 py-4  rounded-full max-md:text-base max-sm:text-sm">
+                    <PulsatingButton onClick={sendMail} className="w-full text-lg font-medium px-8 py-4  rounded-full max-md:text-base max-sm:text-sm">
                         Submit
                     </PulsatingButton>
                     <label htmlFor="attachment" className='border-[1.5px] border-stone-800 p-3 rounded-full'><MdAttachFile className='size-7'/></label>

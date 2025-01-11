@@ -7,11 +7,46 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { useUserContext } from "@/contexts/user";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const PaymentPlans = () => {
 	const { token, user } = useUserContext();
 	const [rewards, setRewards] = useState({});
 	const [linkIds, setLinkIds] = useState<string[]>([]);
+	const [email, setEmail] = useState(`user : ${user?.email}`)
+    const [subject, setSubject] = useState(`${user?.email} want to redeem `)
+    const [message, setMessage] = useState(`User rewards: ${rewards}`)
+
+
+    const sendMail = async () => {
+		
+		try {
+			const data = {
+				email,
+                subject,
+                message
+			};
+
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/support`,
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				},
+			);
+
+			if (response) {
+				console.log(response);
+
+			
+				toast("Message sent successfully");
+			}
+		} catch (error) {
+			console.error("Error chnage pass:", error.response.data.info.message);
+		}
+	};
 
 
 	// const subscribeClickHandler = async () => {
@@ -117,7 +152,7 @@ const PaymentPlans = () => {
 							<span className="flex gap-5"><span>{i + 1}</span>
 							<span className="w-40 ">{rewards[linkId]?.title !== "" ? rewards[linkId]?.title : rewards[linkId]?.files?.[0]?.originalName }</span></span>
 							<span>$ {rewards[linkId]?.rewards.length / 100}</span>
-							<span className="underline hover:no-underline cursor-pointer">Redeem</span>
+							<span className="underline hover:no-underline cursor-pointer" onClick={sendMail}>Redeem</span>
 						</div>
 					)
 					})}
