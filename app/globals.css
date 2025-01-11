@@ -43,6 +43,8 @@ body {
 .try-it{
 	position: relative;
 }
+
+
 .try-it::after{
 	content: '';
 	position: absolute;
@@ -61,6 +63,17 @@ body {
 	border-radius: 30px;
 
 }
+
+@media (max-width: 500px) {
+	.try-it::after,
+	.try-it::before {
+	  content: none; /* Hides the pseudo-elements */
+	}
+	.testimonial::after,
+	.testimonial::before {
+	  content: none; /* Hides the pseudo-elements */
+	}
+  }
 
 .testimonial{
 	position: relative;
