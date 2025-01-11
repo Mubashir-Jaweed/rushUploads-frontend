@@ -72,19 +72,19 @@ const Testimonials = () => {
 
 const data = [
     {
-        text:'There is a lot of exciting stuff going on in the stars above us that make astronomy so much fun. The truth is the universe is a constantly changing, moving, some would say “living” thing because you just never know what you are going to see on any given night of stargazing.',
+        text:'Rush Uploads has completely transformed how I share files! The upload speed is incredible, and the interface is so easy to use. Highly recommended!',
         user:'John Doe'
     },
     {
-        text:'There is a lot of exciting stuff going on in the stars above us that make astronomy so much fun. The truth is the universe is a constantly changing, moving, some would say “living” thing because you just never know what you are going to see on any given night of stargazing.',
+        text:'Rush Uploads has completely transformed how I share files! The upload speed is incredible, and the interface is so easy to use. Highly recommended!',
         user:'Rose Daniel'
     },
     {
-        text:'There is a lot of exciting stuff going on in the stars above us that make astronomy so much fun. The truth is the universe is a constantly changing, moving, some would say “living” thing because you just never know what you are going to see on any given night of stargazing.',
+        text:'I’ve tried many platforms, but Rush Uploads is hands down the best. I can upload large files without any hiccups. Great work!',
         user:'Joshua Shakeel'
     },
     {
-        text:'There is a lot of exciting stuff going on in the stars above us that make astronomy so much fun. The truth is the universe is a constantly changing, moving, some would say “living” thing because you just never know what you are going to see on any given night of stargazing.',
+        text:'Uploading videos and large datasets has never been this easy. Rush Uploads is now an essential part of my workflow. Keep up the good work!',
         user:'Jack Sparrow'
     },
 ]
