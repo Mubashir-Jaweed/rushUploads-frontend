@@ -73,10 +73,6 @@ const Testimonials = () => {
 const data = [
     {
         text:'Rush Uploads has completely transformed how I share files! The upload speed is incredible, and the interface is so easy to use. Highly recommended!',
-        user:'John Doe'
-    },
-    {
-        text:'Rush Uploads has completely transformed how I share files! The upload speed is incredible, and the interface is so easy to use. Highly recommended!',
         user:'Rose Daniel'
     },
     {

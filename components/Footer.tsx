@@ -35,8 +35,9 @@ const Footer = () => {
             
         </div>
       </div>
-      <div className='w-[90%] flex justify-center items-center'>
+      <div className='w-[90%] flex justify-center items-center flex-col'>
         <div className='pt-[50px] text-zinc-600 text-base'>©2025 Rush-Uploads, easy, free. File sharing storage made simple!. All rights reserved.</div>
+        <div className='pt-[5px] text-zinc-600 text-base'>Developed by <a target="_blank" rel="noopener noreferrer" href="https://www.techami.com" className='underline'>www.techami.com </a>with ❤️</div>
       </div>
     </div>
   )

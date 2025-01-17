@@ -40,7 +40,7 @@ const TryIt = () => {
                             Get started
                         </PulsatingButton>
                     </Link>
-                    <Link href={"/upload"} className='max-md:text-base max-sm:text-sm text-lg font-medium px-8 py-[10px] flex justify-center items-center border-2 border-[#ff4262] rounded-full text-zinc-100 delay-5ms hover:scale-[1.04]'>
+                    <Link href={"/upload"} className='max-sm:hidden max-md:text-base max-sm:text-sm text-lg font-medium px-8 py-[10px] flex justify-center items-center border-2 border-[#ff4262] rounded-full text-zinc-100 delay-5ms hover:scale-[1.04]'>
                         Check demo
                     </Link>
                 </div>
