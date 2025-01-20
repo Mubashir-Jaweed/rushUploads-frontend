@@ -10,7 +10,6 @@ import { IoReload } from "react-icons/io5";
 import Navbar from "@/components/Navbar";
 
 const Workspace = () => {
-	const API_URL = "https://rushuploads-backend.onrender.com/";
 	const [files, setFiles] = useState([]);
 	const [searchQuerry, setSearchQuerry] = useState("");
 	const [title, setTitle] = useState("");
@@ -36,8 +35,9 @@ const Workspace = () => {
 	);
 
 	const getFiles = async () => {
+		console.log(id)
 		try {
-			const response = await axios.get(`${API_URL}files/link/${id}`, {
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link/${id}`,{
 				headers: {
 					"Content-Type": "application/json",
 					// Authorization: `Bearer ${token}`,
