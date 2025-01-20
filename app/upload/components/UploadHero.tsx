@@ -28,10 +28,10 @@ const UploadHero = () => {
 	const [emailTo, setEmailTo] = useState("");
 	const [subject, setSubject] = useState("");
 	const [message, setMessage] = useState("");
-	const [isSentToEmail, setIsSentToEmail] = useState(true);
-	const [isFileUploaded, setIsFileUploaded] = useState(false);
+	const [isSentToEmail, setIsSentToEmail] = useState(true); 
+	const [isFileUploaded, setIsFileUploaded] = useState(false); 
 	const [verificationInProgress, setVerificationInProgress] = useState(false);
-	const [isUploading, setIsUploading] = useState(false);
+	const [isUploading, setIsUploading] = useState(false); 
 	const [responseId, setResponseId] = useState("");
 	const [progress, setProgress] = useState(0);
 	const [isHidden, setIsHidden] = useState(true);
@@ -359,7 +359,7 @@ const UploadHero = () => {
 								That’s a wrap!
 							</span>
 							{isSentToEmail ? (
-								<span>
+								<span className="max-sm:text-sm text-center ">
 									The email has been delivered.{" "}
 									<Link
 										href={"/dashboard/workspace"}
@@ -370,7 +370,7 @@ const UploadHero = () => {
 									.
 								</span>
 							) : (
-								<span className="text-zinc-600 text-lg font-normal">
+								<span className="max-sm:text-sm text-zinc-600 text-lg font-normal text-center">
 									Grab your download link or{" "}
 									<Link href={`/preview/${responseId}`} className="underline text-zinc-700">
 										explore your files!
@@ -378,20 +378,20 @@ const UploadHero = () => {
 								</span>
 							)}
 							{!isSentToEmail && (
-								<span className="text-zinc-700 text-base font-normal border border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]">
-									http://localhost:3000/preview/${responseId}
+								<span className="text-zinc-700 text-base font-normal max-sm:hidden border max-sm:text-xs border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]">
+									https://rushuploads.com/preview/{responseId}
 								</span>
 							)}
 							{isSentToEmail ? (
 								<PulsatingButton
 									onClick={() => navigateTo("dashboard/workspace")}
-									className="max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
+									className=" max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Go to dashboard
 								</PulsatingButton>
 							) : (
 								<PulsatingButton
-									onClick={() => copyUrl(`http://localhost:3000/preview/${responseId}`)}
+									onClick={() => copyUrl(`https://rushuploads.com/preview/${responseId}`)}
 									className=" max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Copy link
@@ -400,7 +400,7 @@ const UploadHero = () => {
 							{/* biome-ignore lint/a11y/useKeyWithClickEvents: <> */}
 							<span
 								onClick={() => sendMore()}
-								className="text-zinc-700 text-lg font-normal cursor-pointer underline"
+								className="max-sm:text-sm text-zinc-700 text-lg font-normal cursor-pointer underline"
 							>
 								Send more files?
 							</span>

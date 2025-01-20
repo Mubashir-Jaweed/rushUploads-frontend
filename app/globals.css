@@ -64,16 +64,7 @@ body {
 
 }
 
-@media (max-width: 500px) {
-	.try-it::after,
-	.try-it::before {
-	  content: none; /* Hides the pseudo-elements */
-	}
-	.testimonial::after,
-	.testimonial::before {
-	  content: none; /* Hides the pseudo-elements */
-	}
-  }
+
 
 .testimonial{
 	position: relative;
@@ -96,6 +87,19 @@ body {
 	border-radius: 30px;
 
 }
+@media (max-width: 500px) {
+	.try-it::after,
+	.try-it::before {
+	  content: none; /* Hides the pseudo-elements */
+	}
+	
+	.testimonial::before {
+	  content: none; /* Hides the pseudo-elements */
+	}
+	.testimonial::after{
+		width: 95%;
+	}
+  }
 
 .glass-bg {
 	background: rgba(255, 255, 255, 0.468);

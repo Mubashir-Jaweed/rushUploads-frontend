@@ -17,7 +17,7 @@ const Pricing = () => {
 					duration={0.9}
 					className="max-md:text-4xl max-sm:text-2xl max-sm:leading-[30px] max-sm:font-bold max-md:w-[70%] md:w-[80%] max-sm:w-[80%] text-5xl font-semibold text-center text-stone-800 leading-[53px]"
 				>
-					Your ideas, our tools—choose the<br/> plan that brings them to life!
+					Your ideas, our tools choose the plan that brings them to life!
 				</BlurIn>
                 <BlurIn
 					duration={1}

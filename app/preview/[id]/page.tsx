@@ -8,7 +8,6 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { IoReload } from "react-icons/io5";
 import Navbar from "@/components/Navbar";
-import ListCard from "@/app/dashboard/workspace/components/ListCard";
 
 const Workspace = () => {
 	const API_URL = "https://rushuploads-backend.onrender.com/";
@@ -25,12 +24,12 @@ const Workspace = () => {
 
 	let token: string | null = null;
 
-	useEffect(() => {
-		token = localStorage.getItem("token");
-		if (!token) {
-			router.push("/upload");
-		}
-	}, []);
+	// useEffect(() => {
+	// 	token = localStorage.getItem("token");
+	// 	if (!token) {
+	// 		router.push("/upload");
+	// 	}
+	// }, []);
 
 	const filteredFiles = files.filter((file) =>
 		file.originalName.toLowerCase().includes(searchQuerry.toLowerCase()),
@@ -41,7 +40,7 @@ const Workspace = () => {
 			const response = await axios.get(`${API_URL}files/link/${id}`, {
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
+					// Authorization: `Bearer ${token}`,
 				},
 			});
 
@@ -49,7 +48,6 @@ const Workspace = () => {
 				setFiles(response.data.data.link.files);
 				setTitle(response.data.data.link.title);
 				setDescription(response.data.data.link.message);
-				console.log(response);
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
@@ -98,7 +96,7 @@ const Workspace = () => {
 							{files.length !== 0 ? (
 								filteredFiles.map((val, i) => (
 									<>
-										<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
+										<div key={i} className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
 											<span className="text-lg font-medium  w-full text-stone-800">
 												{val.originalName}
 											</span>
