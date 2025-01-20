@@ -105,6 +105,7 @@ export function UserProvider({ children }: Readonly<PropsWithChildren>) {
 					setUser(null);
 
 					localStorage.removeItem("token");
+					
 					return router.push("/login");
 				}
 			})();
