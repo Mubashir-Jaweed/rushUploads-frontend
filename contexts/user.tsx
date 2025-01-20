@@ -103,6 +103,9 @@ export function UserProvider({ children }: Readonly<PropsWithChildren>) {
 				} catch (error) {
 					setToken(null);
 					setUser(null);
+
+					localStorage.removeItem("token");
+					return router.push("/login");
 				}
 			})();
 		}
