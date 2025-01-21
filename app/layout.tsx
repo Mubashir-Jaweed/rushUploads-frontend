@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";
-
 import { UserProvider } from "@/contexts/user";
 
 import "./globals.css";
@@ -30,7 +29,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			 <link rel="icon" href="/favicon.png" />
+			<head>
+
+			</head>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>

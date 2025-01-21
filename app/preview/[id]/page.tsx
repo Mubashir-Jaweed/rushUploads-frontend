@@ -66,7 +66,7 @@ const Workspace = () => {
 				<div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
 					<div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
 						{title ? (
-							<span className="text-stone-800 text-3xl font-semibold max-sm:text-sm">
+							<span className="text-stone-800 text-3xl max-sm:text-2xl font-semibold">
 								{title}
 							</span>
 						) : (
@@ -97,7 +97,7 @@ const Workspace = () => {
 								filteredFiles.map((val, i) => (
 									<>
 										<div key={i} className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
-											<span className="text-lg font-medium  w-full text-stone-800">
+											<span className="text-lg font-medium overflow-hidden w-full text-stone-800">
 												{val.originalName}
 											</span>
 											<div className="flex w-full justify-between items-end">

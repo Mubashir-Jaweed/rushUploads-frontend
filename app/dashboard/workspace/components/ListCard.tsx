@@ -65,7 +65,7 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
-			<span className="text-lg max-sm:text-base font-medium  w-full text-stone-800">
+			<span className="text-lg max-sm:text-base font-medium overflow-hidden w-full text-stone-800">
 				{data.originalName}
 			</span>
 			<div className="flex w-full justify-between items-end">
