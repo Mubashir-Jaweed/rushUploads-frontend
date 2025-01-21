@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const ProfileSecurity = () => {
-	const API_URL = "https://rushuploads-backend.onrender.com/";
 	const router = useRouter();
 	const [fName, setFName] = useState("");
 	const [fieldUpdated, setFieldUpdated] = useState(false);
@@ -22,7 +21,7 @@ const ProfileSecurity = () => {
 		}
 		setFieldUpdated(false);
 		try {
-			const response = await axios.get(`${API_URL}profiles`, {
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}profiles`, {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
