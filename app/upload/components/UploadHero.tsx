@@ -103,6 +103,7 @@ const UploadHero = () => {
 			setEmailTo("");
 			setSubject("");
 			setMessage("");
+			setIsUploading(false)
 		}
 	};
 

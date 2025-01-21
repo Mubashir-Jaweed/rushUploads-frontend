@@ -13,7 +13,7 @@ const PaymentPlans = () => {
 	const { token, user } = useUserContext();
 	const [rewards, setRewards] = useState({});
 	const [linkIds, setLinkIds] = useState<string[]>([]);
-	const [email, setEmail] = useState(`user : ${user?.email}`)
+	const [email, setEmail] = useState(`${user?.email}`)
     const [subject, setSubject] = useState(`${user?.email} want to redeem `)
     const [message, setMessage] = useState(`User rewards: ${rewards}`)
 
