@@ -141,7 +141,7 @@ const UploadHero = () => {
 			}
 		} catch (error) {
 			console.error("Error sendToMail:", error);
-
+			toast.error('Network Error')
 			setIsFileUploaded(false);
 			setIsUploading(false);
 			setProgress(0);
@@ -231,9 +231,10 @@ const UploadHero = () => {
 			toast.error("Email is required!");
 			return;
 		}
-		if (isSentToEmail && emailTo.length <= 0) {
+		if (isSentToEmail) {
+			if(emailTo.length <= 0 && senderEmails.length <=0){
 			toast.error("Sender email required!");
-			return;
+			return;}
 		}
 		let sendTo = "";
 		const formData = new FormData();

@@ -33,7 +33,7 @@ const Navbar = () => {
 	const { token } = useUserContext();
 
 	return (
-		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'}  delay-5ms fixed z-10 w-full  flex justify-center items-cente`}>
+		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'}  delay-5ms fixed z-30 w-full  flex justify-center items-cente`}>
 			<div className="w-full   m-5 flex justify-center items-center">
 				<div className="w-[80%] py-3  flex justify-between items-center z-10">
 					<Link
@@ -99,7 +99,7 @@ const Navbar = () => {
 					</div>
 				</div>
 			</div>
-			<div className={`${sideBarOpen ? 'right-0' :"-right-96"} lg:hidden z-30 absolute w-[350px] delay-5ms  p-5 pt-10 border h-screen bg-zinc-100 flex flex-col justify-start items-start`}>
+			<div className={`${sideBarOpen ? 'right-0' :"-right-96"} lg:hidden z-30 absolute w-[350px] delay-5ms overflow-auto p-5 pt-10 border h-screen bg-zinc-100 flex flex-col justify-start items-start`}>
 			<div onClick={()=>setSideBarOpen(!sideBarOpen)} className="lg:hidden border border-stone-800 p-1 rounded-[10px] mb-16 ">
 						<MdOutlineMenu className="size-7"/>
 					</div>
