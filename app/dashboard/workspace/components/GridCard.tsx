@@ -38,6 +38,57 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 			toast('Url Copied')
 			console.log(url);
 		};
+
+
+			async function downloadFile(url: string, filename: string) {
+				try {
+					const splitName = filename.split('.');
+					const extension = splitName[splitName.length - 1]?.toLowerCase();
+		
+					const directDownloadExtensions = [
+						'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
+						'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
+						'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
+						'sqlite', 'db', 'sql', 'mdb', 'accdb',
+						'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
+						'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
+						'ttf', 'otf', 'woff', 'woff2', 'eot',
+						'iso', 'bin', 'img', 'dll', 'sys', 'lib',
+						'js', 'ts', 'py', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
+					];
+		
+					if (directDownloadExtensions.includes(extension)) {
+						const link = document.createElement('a');
+						link.href = url;
+						link.download = filename || 'downloaded-file';
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+					} else {
+						const response = await fetch(url);
+		
+						if (!response.ok) {
+							throw new Error(`HTTP error! Status: ${response.status}`);
+						}
+						const blob = await response.blob();
+		
+						const blobUrl = URL.createObjectURL(blob);
+		
+						const a = document.createElement('a');
+						a.href = blobUrl;
+						a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
+		
+						URL.revokeObjectURL(blobUrl);
+					}
+				} catch (error) {
+					console.error('Error downloading file:', error);
+					toast.error('Error in downloading file');
+				}
+			}
+		
 	
 	return (
 		<div className="relative w-[300px]  list-card cursor-pointer hover:bg-[#f5f5f57e] bg-[#f5f5f52d] flex flex-col gap-1 justify-between items-start rounded-[8px]">
@@ -72,7 +123,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 					ref={menuRef}
 					className="absolute top-14 right-8 z-10  bg-[#ffffff] w-[115px] rounded-[8px] p-1 "
 				>
-					<span className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center">
+					<span onClick={() => downloadFile(data.url, data.originalName)} className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center">
 						Download
 					</span>
 					{status !== 'received' &&<span

@@ -37,7 +37,7 @@ const Workspace = () => {
 	const getFiles = async () => {
 		console.log(id)
 		try {
-			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link/${id}`,{
+			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link/${id}`, {
 				headers: {
 					"Content-Type": "application/json",
 					// Authorization: `Bearer ${token}`,
@@ -55,37 +55,54 @@ const Workspace = () => {
 	};
 
 	async function downloadFile(url: string, filename: string) {
-			const splitName = filename.split('.')
-			
-			try {
-				// Fetch the file from the S3 URL
+		try {
+			const splitName = filename.split('.');
+			const extension = splitName[splitName.length - 1]?.toLowerCase();
+
+			const directDownloadExtensions = [
+				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
+				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
+				, 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
+				'sqlite', 'db', 'sql', 'mdb', 'accdb',
+				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
+				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
+				'ttf', 'otf', 'woff', 'woff2', 'eot',
+				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
+				'js', 'ts', 'py', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
+			];
+
+			if (directDownloadExtensions.includes(extension)) {
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename || 'downloaded-file';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			} else {
 				const response = await fetch(url);
-	
-				// Check if the fetch was successful
+
 				if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
 				}
-	
-				// Convert the response to a blob
 				const blob = await response.blob();
-	
-				// Create a URL for the blob
+
 				const blobUrl = URL.createObjectURL(blob);
-	
-				// Create an anchor element and trigger a download
+
 				const a = document.createElement('a');
 				a.href = blobUrl;
-				a.download = splitName[0]+'-rush-upload'  || 'downloaded-file';
+				a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
 				document.body.appendChild(a);
 				a.click();
 				document.body.removeChild(a);
-	
-				// Revoke the blob URL after the download
+
 				URL.revokeObjectURL(blobUrl);
-			} catch (error) {
-				toast.error('Error in downloading file')
 			}
+		} catch (error) {
+			console.error('Error downloading file:', error);
+			toast.error('Error in downloading file');
 		}
+	}
+
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 		console.log(url);

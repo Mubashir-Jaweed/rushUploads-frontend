@@ -72,7 +72,7 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 			const directDownloadExtensions = [
 				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
 				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
-				'json', 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
+				 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
 				'sqlite', 'db', 'sql', 'mdb', 'accdb',
 				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
 				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
