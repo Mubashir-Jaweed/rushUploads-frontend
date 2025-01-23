@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -9,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const Hero = () => {
 	return (
-		<div className=" h-screen w-full p-3">
+		<div className="scroll-smooth h-screen w-full p-3">
 			<GridPattern
 				width={40}
 				height={40}
@@ -20,16 +21,21 @@ const Hero = () => {
 				)}
 			/>
 			<div className="max-md:gap-3  h-[100%] w-[100%] hero-bg rounded-xl flex flex-col justify-center items-center gap-7">
-				<AnimatedGradientText>
-					<span
-						className={cn(
-							"max-md:text-base max-sm:text-sm inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
-						)}
-					>
-						Introducing Rush-Uploads
-					</span>
-					<ChevronRight className="ml-1 size-5 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-				</AnimatedGradientText>
+				<button onClick={() => {
+					const aboutSection = document.getElementById("feature");
+					aboutSection?.scrollIntoView({ behavior: "smooth" });
+				}}>
+					<AnimatedGradientText >
+						<span
+							className={cn(
+								"max-md:text-base max-sm:text-sm inline text-lg animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent",
+							)}
+						>
+							Introducing Rush-Uploads
+						</span>
+						<ChevronRight className="ml-1 size-5 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+					</AnimatedGradientText>
+				</button>
 
 				<BlurIn
 					duration={0.9}

@@ -7,7 +7,7 @@ import { FadeText } from "./ui/fade-text";
 
 const About = () => {
 	return (
-		<div className="py-36 w-full flex justify-center items-center">
+		<div  className="scroll-smooth py-36 w-full flex justify-center items-center">
 			<div className="w-[80%]  flex flex-col justify-center items-center gap-3" >
 				<span className="text-center">
 
