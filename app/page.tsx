@@ -53,7 +53,7 @@ const [isScroll, setIsScroll] = useState(false);
 				const aboutSection = document.getElementById("top");
 				aboutSection?.scrollIntoView({ behavior: "smooth" });
 			}}  
-			className={`fixed z-10 bottom-10 border-[1.5px] bg-white border-[#ff4262] py-3 rounded-3xl px-[0.5px] left-[95%] delay-5ms ${isScroll ? 'bottom-10' : '-bottom-20'}`}>
+			className={`scroll-btn fixed z-10 bottom-10 border-[1.5px] bg-white border-[#ff4262] py-3 rounded-3xl px-[0.5px] left-[95%] delay-5ms ${isScroll ? 'bottom-10' : 'bottom-[-100px]'}`}>
 				<RxDoubleArrowUp className="size-8 text-[#ff4262]"/>
 			</button>
 

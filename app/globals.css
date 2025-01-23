@@ -88,6 +88,11 @@ body {
 
 }
 @media (max-width: 500px) {
+.scroll-btn{
+	display: none;
+}
+
+
 	.try-it::after,
 	.try-it::before {
 	  content: none; /* Hides the pseudo-elements */
