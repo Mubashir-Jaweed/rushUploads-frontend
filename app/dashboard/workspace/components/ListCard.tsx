@@ -30,38 +30,91 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 	};
 
 
+	// async function downloadFile(url: string, filename: string) {
+	// 	const splitName = filename.split('.')
+
+	// 	try {
+	// 		// Fetch the file from the S3 URL
+	// 		const response = await fetch(url);
+
+	// 		// Check if the fetch was successful
+	// 		if (!response.ok) {
+	// 			throw new Error(`HTTP error! Status: ${response.status}`);
+	// 		}
+
+	// 		// Convert the response to a blob
+	// 		const blob = await response.blob();
+
+	// 		// Create a URL for the blob
+	// 		const blobUrl = URL.createObjectURL(blob);
+
+	// 		// Create an anchor element and trigger a download
+	// 		const a = document.createElement('a');
+	// 		a.href = blobUrl;
+	// 		a.download = splitName[0]+'-rush-upload'  || 'downloaded-file';
+	// 		document.body.appendChild(a);
+	// 		a.click();
+	// 		document.body.removeChild(a);
+
+	// 		// Revoke the blob URL after the download
+	// 		URL.revokeObjectURL(blobUrl);
+	// 	} catch (error) {
+	// 		toast.error('Error in downloading file')
+	// 	}
+	// }
+
+
 	async function downloadFile(url: string, filename: string) {
-		const splitName = filename.split('.')
-		
 		try {
-			// Fetch the file from the S3 URL
-			const response = await fetch(url);
+			const splitName = filename.split('.');
+			const extension = splitName[splitName.length - 1]?.toLowerCase();
 
-			// Check if the fetch was successful
-			if (!response.ok) {
-				throw new Error(`HTTP error! Status: ${response.status}`);
+			const directDownloadExtensions = [
+				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
+				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
+				'json', 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
+				'sqlite', 'db', 'sql', 'mdb', 'accdb',
+				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
+				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
+				'ttf', 'otf', 'woff', 'woff2', 'eot',
+				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
+				'js', 'ts', 'py', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
+			];
+
+			if (directDownloadExtensions.includes(extension)) {
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename || 'downloaded-file';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			} else {
+				const response = await fetch(url);
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				const blob = await response.blob();
+
+				const blobUrl = URL.createObjectURL(blob);
+
+				const a = document.createElement('a');
+				a.href = blobUrl;
+				a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+
+				URL.revokeObjectURL(blobUrl);
 			}
-
-			// Convert the response to a blob
-			const blob = await response.blob();
-
-			// Create a URL for the blob
-			const blobUrl = URL.createObjectURL(blob);
-
-			// Create an anchor element and trigger a download
-			const a = document.createElement('a');
-			a.href = blobUrl;
-			a.download = splitName[0]+'-rush-upload'  || 'downloaded-file';
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-
-			// Revoke the blob URL after the download
-			URL.revokeObjectURL(blobUrl);
 		} catch (error) {
-			toast.error('Error in downloading file')
+			console.error('Error downloading file:', error);
+			toast.error('Error in downloading file');
 		}
 	}
+
+
+
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
