@@ -54,6 +54,38 @@ const Workspace = () => {
 		}
 	};
 
+	async function downloadFile(url: string, filename: string) {
+			const splitName = filename.split('.')
+			
+			try {
+				// Fetch the file from the S3 URL
+				const response = await fetch(url);
+	
+				// Check if the fetch was successful
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+	
+				// Convert the response to a blob
+				const blob = await response.blob();
+	
+				// Create a URL for the blob
+				const blobUrl = URL.createObjectURL(blob);
+	
+				// Create an anchor element and trigger a download
+				const a = document.createElement('a');
+				a.href = blobUrl;
+				a.download = splitName[0]+'-rush-upload'  || 'downloaded-file';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+	
+				// Revoke the blob URL after the download
+				URL.revokeObjectURL(blobUrl);
+			} catch (error) {
+				toast.error('Error in downloading file')
+			}
+		}
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 		console.log(url);
@@ -120,7 +152,7 @@ const Workspace = () => {
 												<div className="flex justify-center items-center ">
 													<a
 														download={true}
-														href={val.url}
+														onClick={() => downloadFile(val.url, val.originalName)}
 														className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
 														<LuDownload className="size-5" />

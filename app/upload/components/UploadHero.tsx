@@ -28,10 +28,10 @@ const UploadHero = () => {
 	const [emailTo, setEmailTo] = useState("");
 	const [subject, setSubject] = useState("");
 	const [message, setMessage] = useState("");
-	const [isSentToEmail, setIsSentToEmail] = useState(true); 
-	const [isFileUploaded, setIsFileUploaded] = useState(false); 
+	const [isSentToEmail, setIsSentToEmail] = useState(true);
+	const [isFileUploaded, setIsFileUploaded] = useState(false);
 	const [verificationInProgress, setVerificationInProgress] = useState(false);
-	const [isUploading, setIsUploading] = useState(false); 
+	const [isUploading, setIsUploading] = useState(false);
 	const [responseId, setResponseId] = useState("");
 	const [progress, setProgress] = useState(0);
 	const [isHidden, setIsHidden] = useState(true);
@@ -232,9 +232,10 @@ const UploadHero = () => {
 			return;
 		}
 		if (isSentToEmail) {
-			if(emailTo.length <= 0 && senderEmails.length <=0){
-			toast.error("Sender email required!");
-			return;}
+			if (emailTo.length <= 0 && senderEmails.length <= 0) {
+				toast.error("Sender email required!");
+				return;
+			}
 		}
 		let sendTo = "";
 		const formData = new FormData();
@@ -305,17 +306,17 @@ const UploadHero = () => {
 		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
-				{},{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${verifyToken}`,
-					},
+				{}, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${verifyToken}`,
 				},
+			},
 			);
 
 			if (response) {
 				toast.success('OTP Send Successfull')
-				
+
 			}
 		} catch (error) {
 			console.error("Error SignUp:", error);
@@ -473,8 +474,8 @@ const UploadHero = () => {
 							)}
 						</div>
 						<div className="mb-2 w-80 flex justify-center">
-							<span  className="text-md text-zinc-400 ">
-								Did not get the code? <span className="underline cursor-pointer" onClick={()=>resendOtp()}>resendCode</span>
+							<span className="text-md text-zinc-400 ">
+								Did not get the code? <span className="underline cursor-pointer" onClick={() => resendOtp()}>resendCode</span>
 							</span>
 						</div>
 						<PulsatingButton
