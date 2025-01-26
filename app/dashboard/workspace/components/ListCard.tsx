@@ -141,21 +141,21 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 						onClick={() => downloadFile(data.url, data.originalName)}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<LuDownload className="size-5 max-sm:size-4" />
+						<LuDownload className="size-6 max-sm:size-4" />
 						<span className="list-btn-title">Download</span>
 					</span>
 					<span
 						onClick={() => copyUrl(data.url)}
 						className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<IoIosLink className="size-5 max-sm:size-4" />
+						<IoIosLink className="size-6 max-sm:size-4" />
 						<span className="list-btn-title">Copy_Link</span>
 					</span>
 					{status !== 'received' && <span
 						onClick={deleteFile}
 						className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
-						<IoClose className="size-5 max-sm:size-4" />
+						<IoClose className="size-6 max-sm:size-4" />
 						<span className="list-btn-title">Delete</span>
 					</span>}
 				</div>

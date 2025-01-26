@@ -172,14 +172,14 @@ const Workspace = () => {
 														onClick={() => downloadFile(val.url, val.originalName)}
 														className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
-														<LuDownload className="size-5" />
+														<LuDownload className="size-6" />
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span
 														onClick={() => copyUrl(val.url)}
 														className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
-														<IoIosLink className="size-5" />
+														<IoIosLink className="size-6" />
 														<span className="list-btn-title">Copy_Link</span>
 													</span>
 												</div>
