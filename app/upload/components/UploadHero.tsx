@@ -55,9 +55,8 @@ const UploadHero = () => {
 		},
 	});
 
-
 	const handleUpload = async () => {
-		filesData = []
+		filesData = [];
 		if (files.length < 1) {
 			toast.error("No file selected!");
 			return;
@@ -72,143 +71,162 @@ const UploadHero = () => {
 				return;
 			}
 		}
-		setIsProcessing(true)
-		files.map((file) => {
-			handleMultiUpload(file)
-		})
-	}
-
-	const handleMultiUpload = async (file: File) => {
-		const fileName = file.name
-		const splitFile = fileName.split('.')
-		const type = splitFile[splitFile.length - 1]
-		let key = '';
-		let uploadId = '';
-
-		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
-			{
-				originalName: fileName,
-				mimeType: type
-			},
-			{
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			},
-		);
-		if (response) {
-			key = response.data.data.key
-			uploadId = response.data.data.uploadId
-			uploadFileChunks(file, key, uploadId)
-		}
-		else {
-			toast.error('Netwok Error')
-			console.log(response)
-		}
-	}
-
-	const uploadFileChunks = async (file: File, key: string, uploadId: string) => {
-		const CHUNK_SIZE = 10 * 1024 * 1024; // 10 mb
-		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-		let uploadedParts = [];
-		setIsUploading(true)
-
-		for (let index = 0; index < totalChunks; index++) {
-			const start = index * CHUNK_SIZE;
-			const end = Math.min(file.size, start + CHUNK_SIZE);
-			const chunk = file.slice(start, end);
-
-			const formData = new FormData();
-			formData.append("key", key);
-			formData.append("uploadId", uploadId);
-			formData.append("chunkNumber", index + 1);
-			formData.append("file", chunk);
-
-
-			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
-				formData,
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-						Authorization: `Bearer ${token}`,
-					},
-				},
-			);
-
-			if(response){
-				const data = {
-					ETag: JSON.parse(response.data.data.eTag),
-					PartNumber:index + 1
-				}
-				uploadedParts.push(data)
-
-				
-			}else{
-				toast.error('Network Error')
+	
+		setIsProcessing(true);
+		setProgress(0);
+		setIsUploading(true);
+	
+		try {
+			for (const file of files) {
+				await handleMultiUpload(file);
 			}
-
-
-		}
-		finalizeMultipartUpload(file, key,uploadId,uploadedParts)
-	}
-
-	const finalizeMultipartUpload = async (file:File, key: string, uploadId: string, uploadedParts) =>{
-		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/finalize`,
-			{
-				key, uploadId, uploadedParts
-			},
-			{
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			},
-		);
-
-		if (response) {
-			const fileName = file.name
-			const splitFile = fileName.split('.')
-			const type = splitFile[splitFile.length - 1]
-
-			const fileData = {
-				originalName: fileName,
-				name: key,
-				type: type,
-			}
-			filesData.push(fileData)
-
+	
+			// Proceed with generating file link or sending email after all uploads are done
 			if (isSentToEmail) {
 				await sendToMail();
 			} else {
 				await createFileLink();
 			}
-		}else{
-			toast.error('Network Error')
-		}
-
-	}
-
-
-	const createFileLink = async () => {
-		setIsUploading(true);
-		try {
-			setIsUploading(true);
 	
+			setProgress(100); // Set progress to 100% on successful completion
+		} catch (error) {
+			console.error("Error in handleUpload:", error);
+			toast.error("Upload failed. Please try again.");
+			setIsUploading(false);
+		} finally {
+			setIsProcessing(false);
+		}
+	};
+	
+	const handleMultiUpload = async (file) => {
+		const fileName = file.name;
+		const splitFile = fileName.split(".");
+		const type = splitFile[splitFile.length - 1];
+		let key = "";
+		let uploadId = "";
+	
+		try {
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
+				{
+					originalName: fileName,
+					mimeType: type,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+	
+			if (response) {
+				key = response.data.data.key;
+				uploadId = response.data.data.uploadId;
+				await uploadFileChunks(file, key, uploadId);
+			}
+		} catch (error) {
+			console.error("Error in handleMultiUpload:", error);
+			toast.error("Failed to initialize file upload. Please try again.");
+			throw error;
+		}
+	};
+	
+	const uploadFileChunks = async (file, key, uploadId) => {
+		const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
+		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+		let uploadedParts = [];
+	
+		try {
+			for (let index = 0; index < totalChunks; index++) {
+				const start = index * CHUNK_SIZE;
+				const end = Math.min(file.size, start + CHUNK_SIZE);
+				const chunk = file.slice(start, end);
+	
+				const formData = new FormData();
+				formData.append("key", key);
+				formData.append("uploadId", uploadId);
+				formData.append("chunkNumber", index + 1);
+				formData.append("file", chunk);
+	
+				const response = await axios.post(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
+					formData,
+					{
+						headers: {
+							"Content-Type": "multipart/form-data",
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+	
+				if (response) {
+					const data = {
+						ETag: JSON.parse(response.data.data.eTag),
+						PartNumber: index + 1,
+					};
+					uploadedParts.push(data);
+	
+					// Update progress as chunks are uploaded
+					setProgress(Math.round(((index + 1) / totalChunks) * 100));
+				}
+			}
+	
+			await finalizeMultipartUpload(file, key, uploadId, uploadedParts);
+		} catch (error) {
+			console.error("Error in uploadFileChunks:", error);
+			toast.error("Error uploading file chunks. Please try again.");
+			throw error;
+		}
+	};
+	
+	const finalizeMultipartUpload = async (file, key, uploadId, uploadedParts) => {
+		try {
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/finalize`,
+				{
+					key,
+					uploadId,
+					uploadedParts,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+	
+			if (response) {
+				const fileName = file.name;
+				const splitFile = fileName.split(".");
+				const type = splitFile[splitFile.length - 1];
+	
+				const fileData = {
+					originalName: fileName,
+					name: key,
+					type: type,
+				};
+				filesData.push(fileData);
+			}
+		} catch (error) {
+			console.error("Error in finalizeMultipartUpload:", error);
+			toast.error("Error finalizing file upload. Please try again.");
+			throw error;
+		}
+	};
+	
+	const createFileLink = async () => {
+		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link`,
 				{
-					title:subject,
-					message:message,
-					expiresInDays:'365',
-					files:filesData
-
+					title: subject,
+					message: message,
+					expiresInDays: "365",
+					files: filesData,
 				},
 				{
-					timeout: 0,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -216,59 +234,45 @@ const UploadHero = () => {
 					onUploadProgress: (ProgressEvent) => {
 						setProgress(
 							Math.round(
-								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1),
-							),
+								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1)
+							)
 						);
 					},
-				},
+				}
 			);
 	
 			if (response) {
 				setResponseId(response.data.data.link.id);
 				setIsFileUploaded(true);
-				setProgress(0);
-				setFiles([]);
-				setEmail("");
-				setEmailTo("");
-				setSubject("");
-				setMessage("");
+				resetForm();
 			}
 		} catch (error) {
-			console.error("Error uploading files:", error);
-			// @ts-ignore
-			toast.error(error.response.data.info.message)
-			setIsFileUploaded(false);
-			setProgress(0);
-			setFiles([]);
-			setEmail("");
-			setEmailTo("");
-			setSubject("");
-			setMessage("");
-			setIsUploading(false)
-		}
+			console.error("Error in createFileLink:", error);
+			toast.error("Error creating file link. Please try again.");
+			throw error;
+		} 
 	};
 	
 	const sendToMail = async () => {
-		setIsUploading(true);
 		let sendTo = "";
-		
+	
 		try {
-			setIsUploading(true);
 			if (senderEmails.length > 0) {
-				sendTo = senderEmails.join(",");			
+				sendTo = senderEmails.join(",");
 			} else {
-				sendTo = emailTo
+				sendTo = emailTo;
 			}
+	
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/mail`,
 				{
-					to:sendTo,
-					title:subject,
-					message:message,
-					expiresInDays:'365',
-					files:filesData
-				},				{
-					timeout: 0,
+					to: sendTo,
+					title: subject,
+					message: message,
+					expiresInDays: "365",
+					files: filesData,
+				},
+				{
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -276,36 +280,33 @@ const UploadHero = () => {
 					onUploadProgress: (ProgressEvent) => {
 						setProgress(
 							Math.round(
-								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1),
-							),
+								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1)
+							)
 						);
 					},
-				},
+				}
 			);
 	
 			if (response) {
-				// setResponseId(response.data.data.mail.id)
 				setIsFileUploaded(true);
-				setProgress(0);
-				setFiles([]);
-				setEmail("");
-				setEmailTo("");
-				setSubject("");
-				setMessage("");
+				resetForm();
 			}
 		} catch (error) {
-			console.error("Error sendToMail:", error);
-			toast.error('Network Error')
-			setIsFileUploaded(false);
-			setIsUploading(false);
-			setProgress(0);
-			setFiles([]);
-			setEmail("");
-			setEmailTo("");
-			setSubject("");
-			setMessage("");
-		}
+			console.error("Error in sendToMail:", error);
+			toast.error("Error sending email. Please try again.");
+			throw error;
+		} 
 	};
+	
+	const resetForm = () => {
+		setFiles([]);
+		setEmail("");
+		setEmailTo("");
+		setSubject("");
+		setMessage("");
+		setProgress(0);
+	};
+	
 
 	const handleOtp = async () => {
 		setIsProcessing(true);
