@@ -20,6 +20,8 @@ import PulsatingButton from "@/components/ui/pulsating-button";
 import WordRotate from "@/components/ui/word-rotate";
 import { cn, formatFileSize } from "@/lib/utils";
 import { formatUser, useUserContext } from "@/contexts/user";
+import { list } from "postcss";
+import { title } from "process";
 
 const UploadHero = () => {
 	const [files, setFiles] = useState<File[]>([]);
@@ -37,21 +39,15 @@ const UploadHero = () => {
 	const [isHidden, setIsHidden] = useState(true);
 	const [otp, setOtp] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
-
 	const router = useRouter();
-
 	const { token, user, setToken, setUser } = useUserContext();
-
 	let verifyToken: string | null = null;
+	let filesData = [];
 
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
-	// useEffect(() => {
-	// 	if (token) {
-	// 		handleUpload();
-	// 	}
-	// }, [token]);
+	
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -59,17 +55,162 @@ const UploadHero = () => {
 		},
 	});
 
-	const createFileLink = async (data: FormData) => {
-		setIsUploading(true);
-		try {
-			setIsUploading(true);
+
+	const handleUpload = async () => {
+		filesData = []
+		if (files.length < 1) {
+			toast.error("No file selected!");
+			return;
+		}
+		if (!token && email.length < 1) {
+			toast.error("Email is required!");
+			return;
+		}
+		if (isSentToEmail) {
+			if (emailTo.length <= 0 && senderEmails.length <= 0) {
+				toast.error("Sender email required!");
+				return;
+			}
+		}
+		setIsProcessing(true)
+		files.map((file) => {
+			handleMultiUpload(file)
+		})
+	}
+
+	const handleMultiUpload = async (file: File) => {
+		const fileName = file.name
+		const splitFile = fileName.split('.')
+		const type = splitFile[splitFile.length - 1]
+		let key = '';
+		let uploadId = '';
+
+		const response = await axios.post(
+			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
+			{
+				originalName: fileName,
+				mimeType: type
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			},
+		);
+		if (response) {
+			key = response.data.data.key
+			uploadId = response.data.data.uploadId
+			uploadFileChunks(file, key, uploadId)
+		}
+		else {
+			toast.error('Netwok Error')
+			console.log(response)
+		}
+	}
+
+	const uploadFileChunks = async (file: File, key: string, uploadId: string) => {
+		const CHUNK_SIZE = 10 * 1024 * 1024; // 10 mb
+		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+		let uploadedParts = [];
+		setIsUploading(true)
+
+		for (let index = 0; index < totalChunks; index++) {
+			const start = index * CHUNK_SIZE;
+			const end = Math.min(file.size, start + CHUNK_SIZE);
+			const chunk = file.slice(start, end);
+
+			const formData = new FormData();
+			formData.append("key", key);
+			formData.append("uploadId", uploadId);
+			formData.append("chunkNumber", index + 1);
+			formData.append("file", chunk);
+
 
 			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link`,
-				data,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
+				formData,
 				{
 					headers: {
 						"Content-Type": "multipart/form-data",
+						Authorization: `Bearer ${token}`,
+					},
+				},
+			);
+
+			if(response){
+				const data = {
+					ETag: JSON.parse(response.data.data.eTag),
+					PartNumber:index + 1
+				}
+				uploadedParts.push(data)
+
+				
+			}else{
+				toast.error('Network Error')
+			}
+
+
+		}
+		finalizeMultipartUpload(file, key,uploadId,uploadedParts)
+	}
+
+	const finalizeMultipartUpload = async (file:File, key: string, uploadId: string, uploadedParts) =>{
+		const response = await axios.post(
+			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/finalize`,
+			{
+				key, uploadId, uploadedParts
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			},
+		);
+
+		if (response) {
+			const fileName = file.name
+			const splitFile = fileName.split('.')
+			const type = splitFile[splitFile.length - 1]
+
+			const fileData = {
+				originalName: fileName,
+				name: key,
+				type: type,
+			}
+			filesData.push(fileData)
+
+			if (isSentToEmail) {
+				await sendToMail();
+			} else {
+				await createFileLink();
+			}
+		}else{
+			toast.error('Network Error')
+		}
+
+	}
+
+
+	const createFileLink = async () => {
+		setIsUploading(true);
+		try {
+			setIsUploading(true);
+	
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link`,
+				{
+					title:subject,
+					message:message,
+					expiresInDays:'365',
+					files:filesData
+
+				},
+				{
+					timeout: 0,
+					headers: {
+						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
 					},
 					onUploadProgress: (ProgressEvent) => {
@@ -81,7 +222,7 @@ const UploadHero = () => {
 					},
 				},
 			);
-
+	
 			if (response) {
 				setResponseId(response.data.data.link.id);
 				setIsFileUploaded(true);
@@ -106,17 +247,30 @@ const UploadHero = () => {
 			setIsUploading(false)
 		}
 	};
-
-	const sendToMail = async (data: FormData) => {
+	
+	const sendToMail = async () => {
 		setIsUploading(true);
+		let sendTo = "";
+		
 		try {
 			setIsUploading(true);
+			if (senderEmails.length > 0) {
+				sendTo = senderEmails.join(",");			
+			} else {
+				sendTo = emailTo
+			}
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/mail`,
-				data,
 				{
+					to:sendTo,
+					title:subject,
+					message:message,
+					expiresInDays:'365',
+					files:filesData
+				},				{
+					timeout: 0,
 					headers: {
-						"Content-Type": "multipart/form-data",
+						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
 					},
 					onUploadProgress: (ProgressEvent) => {
@@ -128,7 +282,7 @@ const UploadHero = () => {
 					},
 				},
 			);
-
+	
 			if (response) {
 				// setResponseId(response.data.data.mail.id)
 				setIsFileUploaded(true);
@@ -187,6 +341,7 @@ const UploadHero = () => {
 			setIsProcessing(false);
 		}
 	};
+
 	const quickSignUp = async () => {
 		if (token) {
 			return
@@ -221,56 +376,6 @@ const UploadHero = () => {
 		}
 	};
 
-	const handleUpload = async () => {
-		const localToken = localStorage.getItem('token')
-		if (files.length < 1) {
-			toast.error("No file selected!");
-			return;
-		}
-		if (!token && email.length < 1) {
-			toast.error("Email is required!");
-			return;
-		}
-		if (isSentToEmail) {
-			if (emailTo.length <= 0 && senderEmails.length <= 0) {
-				toast.error("Sender email required!");
-				return;
-			}
-		}
-		let sendTo = "";
-		const formData = new FormData();
-		if ((!token && !localToken) && email.length > 0) {
-			quickSignUp();
-			return
-		}
-		for (const file of files) {
-			formData.append("files", file);
-		}
-		formData.append("title", subject);
-		formData.append("message", message);
-		formData.append("expiresInDays", "7");
-
-		if (isSentToEmail) {
-			if (senderEmails.length > 0) {
-				sendTo = senderEmails.join(",");
-
-				formData.append("to", sendTo);
-			} else {
-				formData.append("to", emailTo);
-			}
-		}
-
-		try {
-			if (isSentToEmail) {
-				await sendToMail(formData);
-			} else {
-				await createFileLink(formData);
-			}
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
 	const removeSelectedFile = (idx: number) => {
 		setFiles(files.filter((val, i) => i !== idx));
 	};
@@ -298,6 +403,7 @@ const UploadHero = () => {
 			return;
 		}
 	};
+
 	const resendOtp = async () => {
 		const verifyToken = localStorage.getItem("ru_anonymous_id");
 
@@ -328,7 +434,6 @@ const UploadHero = () => {
 		}
 	};
 
-
 	const sendMore = () => {
 		setIsUploading(false);
 		setIsFileUploaded(false);
@@ -341,6 +446,7 @@ const UploadHero = () => {
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 	};
+
 	return (
 		<div className="bg-white w-full p-3">
 			<GridPattern
@@ -375,14 +481,14 @@ const UploadHero = () => {
 							) : (
 								<span className="max-sm:text-sm text-zinc-600 text-lg font-normal text-center">
 									Grab your download link or{" "}
-									<Link href={`/preview/${responseId}`} className="underline text-zinc-700">
+									<Link href={`/${responseId}`} className="underline text-zinc-700">
 										explore your files!
 									</Link>
 								</span>
 							)}
 							{!isSentToEmail && (
 								<span className="text-zinc-700 text-base font-normal max-sm:hidden border max-sm:text-xs border-zinc-500 rounded-[8px] text-center p-3 my-3 min-w-[80%]">
-									https://rushuploads.com/preview/{responseId}
+									https://rushuploads.com/{responseId}
 								</span>
 							)}
 							{isSentToEmail ? (
@@ -394,7 +500,7 @@ const UploadHero = () => {
 								</PulsatingButton>
 							) : (
 								<PulsatingButton
-									onClick={() => copyUrl(`https://rushuploads.com/preview/${responseId}`)}
+									onClick={() => copyUrl(`https://rushuploads.com/${responseId}`)}
 									className=" max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center"
 								>
 									Copy link
@@ -651,7 +757,7 @@ const UploadHero = () => {
 							/>
 							<PulsatingButton
 								onClick={handleUpload}
-								className="max-md:text-base max-sm:text-sm text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center"
+								className={`max-md:text-base max-sm:text-sm text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 							>
 								Transfer File
 							</PulsatingButton>
@@ -663,4 +769,39 @@ const UploadHero = () => {
 	);
 };
 
+
+
+
+// const handleUpload = async () => {
+// 	const localToken = localStorage.getItem('token')
+	
+// 	let sendTo = "";
+// 	const formData = new FormData();
+// 	if ((!token && !localToken) && email.length > 0) {
+// 		quickSignUp();
+// 		return
+// 	}
+// 	for (const file of files) {
+// 		formData.append("files", file);
+// 	}
+// 	formData.append("title", subject);
+// 	formData.append("message", message);
+// 	formData.append("expiresInDays", "7");
+
+// 	if (isSentToEmail) {
+// 		if (senderEmails.length > 0) {
+// 			sendTo = senderEmails.join(",");
+
+// 			formData.append("to", sendTo);
+// 		} else {
+// 			formData.append("to", emailTo);
+// 		}
+// 	}
+
+// 	try {
+		
+// 	} catch (error) {
+// 		console.error("Error:", error);
+// 	}
+// };
 export default UploadHero;

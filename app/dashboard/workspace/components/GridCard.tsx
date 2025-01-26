@@ -54,7 +54,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 						'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
 						'ttf', 'otf', 'woff', 'woff2', 'eot',
 						'iso', 'bin', 'img', 'dll', 'sys', 'lib',
-						'js', 'ts', 'py', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
+						'js', 'ts', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
 					];
 		
 					if (directDownloadExtensions.includes(extension)) {
