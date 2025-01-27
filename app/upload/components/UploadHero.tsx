@@ -61,7 +61,7 @@ const UploadHero = () => {
 			toast.error("No file selected!");
 			return;
 		}
-		if (!token && email.length < 1) {
+		if (token == null && email.length <=0) {
 			toast.error("Email is required!");
 			return;
 		}
@@ -71,7 +71,12 @@ const UploadHero = () => {
 				return;
 			}
 		}
-	
+
+		if (!token && email.length > 0) {
+			quickSignUp();
+			return
+		}
+
 		setIsProcessing(true);
 		setProgress(0);
 		setIsUploading(true);
