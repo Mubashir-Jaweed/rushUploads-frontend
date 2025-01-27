@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { IoReload } from "react-icons/io5";
 import Navbar from "@/components/Navbar";
+import { toast } from "react-toastify";
 
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
@@ -60,68 +61,15 @@ const Workspace = () => {
 			const extension = splitName[splitName.length - 1]?.toLowerCase();
 
 			const directDownloadExtensions = [
-				// Executable files
-				'exe', 'msi', 'bat', 'sh', 'dmg', 'apk', 'deb', 'rpm', 'bin', 'pkg', 'appimage', 'command',
-			
-				// Compressed & Archive files
-				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'tgz', 'z', 'cab', 'arj', 'lzh', 'iso',
-			
-				// Disk image files
-				'iso', 'img', 'vhd', 'vmdk', 'dmg', 'cue', 'bin', 'nrg',
-			
-				// Document files
-				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv', 'txt', 'rtf', 'odt', 'ods', 'odp', 'pages', 'key', 'numbers', 'tex',
-			
-				// Media files (Videos)
-				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'webm', 'mpeg', 'mpg', '3gp', 'm4v', 'ts', 'rm', 'rmvb', 'asf', 'divx', 'f4v', 'vob', 'ogv',
-			
-				// Media files (Audio)
-				'mp3', 'wav', 'ogg', 'aac', 'm4a', 'flac', 'wma', 'alac', 'opus', 'aiff', 'amr', 'mka',
-			
-				// Subtitle files
-				'srt', 'sub', 'vtt', 'ssa', 'ass', 'stl',
-			
-				// Image files
-				'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'svg', 'webp', 'ico', 'heic', 'heif', 'raw', 'psd', 'ai', 'xcf',
-			
-				// Font files
-				'ttf', 'otf', 'woff', 'woff2', 'eot', 'pfa', 'pfb', 'fnt', 'afm',
-			
-				// System and library files
-				'dll', 'sys', 'lib', 'so', 'ko', 'inf', 'ini', 'cfg', 'log', 'properties',
-			
-				// Programming and script files
-				'js', 'ts', 'rb', 'py', 'pl', 'php', 'html', 'css', 'java', 'c', 'cpp', 'cs', 'swift', 'go', 'lua', 'dart', 'sh', 'xml', 'json', 'yml', 'yaml', 'md', 'log', 'sql',
-			
-				// E-books and documents
-				'epub', 'mobi', 'azw', 'azw3', 'fb2', 'lit', 'djvu', 'ibooks', 'oxps',
-			
-				// Vector and CAD files
-				'svg', 'eps', 'dxf', 'dwg', 'ai', 'ps', 'cdr', 'fig',
-			
-				// Video project files
-				'prproj', 'veg', 'proj', 'aep', 'imovieproj', 'fcpxml',
-			
-				// 3D modeling files
-				'blend', '3ds', 'obj', 'fbx', 'stl', 'dae', 'gltf', 'ply', 'amf',
-			
-				// Design and editing files
-				'psd', 'ai', 'sketch', 'fig', 'xcf', 'xd', 'indd', 'qxd',
-			
-				// Backup files
-				'bak', 'tmp', 'old', 'swp', 'bkp', 'sav', 'gho', 'vmdk',
-			
-				// Miscellaneous file formats
-				'crx', 'xpi', 'jar', 'war', 'apk', 'ipa', 'vsix', 'cab', 'ttx', 'idml', 'pub',
-			
-				// Other data files
-				'db', 'sqlite', 'sql', 'accdb', 'mdb', 'nsf', 'log', 'dat', 'cfg', 'tmp', 'dmp', 'dtd',
-			
-				// Other package files
-				'crx', 'tar.gz', 'bz2', 'xz', 'tgz', 'lz', 'appx', 'snap', 'flatpak',
-			
-				// Logs, configs, and misc text
-				'conf', 'log', 'cfg', 'env', 'ini', 'reg', 'lst', 'out', 'properties', 'bat', 'sh'
+				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
+				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
+				 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
+				'sqlite', 'db', 'sql', 'mdb', 'accdb',
+				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
+				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
+				'ttf', 'otf', 'woff', 'woff2', 'eot',
+				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
+				'js', 'ts', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
 			];
 
 			if (directDownloadExtensions.includes(extension)) {
