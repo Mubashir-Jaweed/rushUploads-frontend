@@ -11,7 +11,7 @@ const ProfileSecurity = () => {
 	const [fName, setFName] = useState("");
 	const [fieldUpdated, setFieldUpdated] = useState(false);
 
-	const { user } = useUserContext();
+	const { user, setToken } = useUserContext();
 
 	let profile: string | null = null;
 
@@ -80,9 +80,10 @@ const ProfileSecurity = () => {
 		setFName(n);
 		setFieldUpdated(true);
 	};
-	const signout = () => {
+	const signout = async () => {
 		localStorage.removeItem("token");
-		router.push("/login");
+		await setToken?.(null); 
+		router.push("/");
 	};
 
 	const changePass = () => {
