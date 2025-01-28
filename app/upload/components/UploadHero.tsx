@@ -451,6 +451,7 @@ const UploadHero = () => {
 
 	const copyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
+		toast('Url Copied')
 	};
 
 	return (
