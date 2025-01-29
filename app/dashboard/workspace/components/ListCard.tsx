@@ -22,11 +22,10 @@ interface CardDataProps {
 const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
 
-
+console.log(data)
 	const copyUrl = (url: string) => {
-		navigator.clipboard.writeText(url);
+		navigator.clipboard.writeText(`https://rushuploads.com/${url}`);
 		toast('Url Copied')
-		console.log(url);
 	};
 
 
@@ -145,7 +144,7 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 						<span className="list-btn-title">Download</span>
 					</span>
 					<span
-						onClick={() => copyUrl(data.url)}
+						onClick={() => copyUrl(data.id)}
 						className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
 						<IoIosLink className="size-6 max-sm:size-4" />

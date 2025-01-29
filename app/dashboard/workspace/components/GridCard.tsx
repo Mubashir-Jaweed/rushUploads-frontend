@@ -34,9 +34,8 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 	}, []);
 
 	const copyUrl = (url: string) => {
-			navigator.clipboard.writeText(url);
+			navigator.clipboard.writeText(`https://rushuploads.com/${url}`);
 			toast('Url Copied')
-			console.log(url);
 		};
 
 
@@ -92,7 +91,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 	
 	return (
 		<div className="relative w-[300px]  list-card cursor-pointer hover:bg-[#f5f5f57e] bg-[#f5f5f52d] flex flex-col gap-1 justify-between items-start rounded-[8px]">
-			<span className="text-lg font-medium capitalize  text-stone-800 pt-3 pl-3">
+			<span className="text-lg font-medium capitalize min-h-[100px] max-h-[150px] text-wrap  text-stone-800 pt-3 pl-3">
 				{data.originalName}
 			</span>
 			<div className="flex w-full justify-between items-end p-[3px]">
@@ -133,7 +132,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 						Delete
 					</span>}
 					<span
-						onClick={() => copyUrl(data.url)}
+						onClick={() => copyUrl(data.id)}
 						className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center"
 					>
 						Copy_link

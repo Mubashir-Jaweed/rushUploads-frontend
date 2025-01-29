@@ -75,7 +75,7 @@ const data = [
     },
     {
         head: "Reach Milestones",
-        text: 'When your uploaded file hits 1,000 downloads, you automatically qualify for a $10 reward.',
+        text: 'When your uploaded file hits 1,000 downloads, you automatically qualify for a $7 reward.',
         icon: <LuMilestone className="size-6 text-[#ff4262] " />
 
     },

@@ -138,7 +138,7 @@ const UploadHero = () => {
 	};
 	
 	const uploadFileChunks = async (file, key, uploadId) => {
-		const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
+		const CHUNK_SIZE = 30 * 1024 * 1024; // 30 MB
 		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 		let uploadedParts = [];
 	
