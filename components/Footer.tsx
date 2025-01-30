@@ -30,8 +30,8 @@ const Footer = () => {
        </div>
        <div className='flex flex-col justify-center items-start gap-2'>
             <span className='text-2xl font-semibold text-stone-800 pb-3 max-sm:mt-10'>Contact</span>
-            <Link href={'/affiliate'} className='max-sm:text-base text-xl hover:text-[#ff4262eb] text-stone-700 flex justify-center items-center gap-3'><HiOutlineMail className='size-6 text-[#ff4262eb]'/> support@rushuploads.com</Link>
-            <Link href={'/pricing'} className='max-sm:text-base text-xl hover:text-[#ff4262eb] text-stone-700 flex justify-center items-center gap-3'><HiOutlineMail className='size-6 text-[#ff4262eb]'/> admin@rushuploads.com</Link>
+            <Link href={'mailto:support@rushuploads.com'} className='max-sm:text-base text-xl hover:text-[#ff4262eb] text-stone-700 flex justify-center items-center gap-3'><HiOutlineMail className='size-6 text-[#ff4262eb]'/> support@rushuploads.com</Link>
+            <Link href={'mailto:admin@rushuploads.com'} className='max-sm:text-base text-xl hover:text-[#ff4262eb] text-stone-700 flex justify-center items-center gap-3'><HiOutlineMail className='size-6 text-[#ff4262eb]'/> admin@rushuploads.com</Link>
             
         </div>
       </div>
