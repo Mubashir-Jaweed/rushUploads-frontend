@@ -50,18 +50,17 @@ const UploadHero = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (event) => {
-		  if (event.key === "Enter") {
-			handleUpload();
-		  }
+			if (event.key === "Enter") {
+				
+				handleUpload();
+			}
 		};
-	
+
 		window.addEventListener("keydown", handleKeyDown);
-	
-		return () => {
-		  window.removeEventListener("keydown", handleKeyDown);
-		};
-	  }, []);
-	
+
+
+	}, []);
+
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -70,12 +69,13 @@ const UploadHero = () => {
 	});
 
 	const handleUpload = async () => {
+		console.log(files.length)
 		filesData = [];
 		if (files.length < 1) {
 			toast.error("No file selected!");
 			return;
 		}
-		if (token == null && email.length <=0) {
+		if (token == null && email.length <= 0) {
 			toast.error("Email is required!");
 			return;
 		}
@@ -94,19 +94,19 @@ const UploadHero = () => {
 		setIsProcessing(true);
 		setProgress(0);
 		setIsUploading(true);
-	
+
 		try {
 			for (const file of files) {
 				await handleMultiUpload(file);
 			}
-	
+
 			// Proceed with generating file link or sending email after all uploads are done
 			if (isSentToEmail) {
 				await sendToMail();
 			} else {
 				await createFileLink();
 			}
-	
+
 			setProgress(100); // Set progress to 100% on successful completion
 		} catch (error) {
 			console.error("Error in handleUpload:", error);
@@ -116,14 +116,14 @@ const UploadHero = () => {
 			setIsProcessing(false);
 		}
 	};
-	
+
 	const handleMultiUpload = async (file) => {
 		const fileName = file.name;
 		const splitFile = fileName.split(".");
 		const type = splitFile[splitFile.length - 1];
 		let key = "";
 		let uploadId = "";
-	
+
 		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
@@ -138,7 +138,7 @@ const UploadHero = () => {
 					},
 				}
 			);
-	
+
 			if (response) {
 				key = response.data.data.key;
 				uploadId = response.data.data.uploadId;
@@ -150,24 +150,24 @@ const UploadHero = () => {
 			throw error;
 		}
 	};
-	
+
 	const uploadFileChunks = async (file, key, uploadId) => {
 		const CHUNK_SIZE = 30 * 1024 * 1024; // 30 MB
 		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 		let uploadedParts = [];
-	
+
 		try {
 			for (let index = 0; index < totalChunks; index++) {
 				const start = index * CHUNK_SIZE;
 				const end = Math.min(file.size, start + CHUNK_SIZE);
 				const chunk = file.slice(start, end);
-	
+
 				const formData = new FormData();
 				formData.append("key", key);
 				formData.append("uploadId", uploadId);
 				formData.append("chunkNumber", index + 1);
 				formData.append("file", chunk);
-	
+
 				const response = await axios.post(
 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
 					formData,
@@ -178,19 +178,19 @@ const UploadHero = () => {
 						},
 					}
 				);
-	
+
 				if (response) {
 					const data = {
 						ETag: JSON.parse(response.data.data.eTag),
 						PartNumber: index + 1,
 					};
 					uploadedParts.push(data);
-	
+
 					// Update progress as chunks are uploaded
 					setProgress(Math.round(((index + 1) / totalChunks) * 100));
 				}
 			}
-	
+
 			await finalizeMultipartUpload(file, key, uploadId, uploadedParts);
 		} catch (error) {
 			console.error("Error in uploadFileChunks:", error);
@@ -198,7 +198,7 @@ const UploadHero = () => {
 			throw error;
 		}
 	};
-	
+
 	const finalizeMultipartUpload = async (file, key, uploadId, uploadedParts) => {
 		try {
 			const response = await axios.post(
@@ -215,12 +215,12 @@ const UploadHero = () => {
 					},
 				}
 			);
-	
+
 			if (response) {
 				const fileName = file.name;
 				const splitFile = fileName.split(".");
 				const type = splitFile[splitFile.length - 1];
-	
+
 				const fileData = {
 					originalName: fileName,
 					name: key,
@@ -234,7 +234,7 @@ const UploadHero = () => {
 			throw error;
 		}
 	};
-	
+
 	const createFileLink = async () => {
 		try {
 			const response = await axios.post(
@@ -259,7 +259,7 @@ const UploadHero = () => {
 					},
 				}
 			);
-	
+
 			if (response) {
 				setResponseId(response.data.data.link.id);
 				setIsFileUploaded(true);
@@ -269,19 +269,19 @@ const UploadHero = () => {
 			console.error("Error in createFileLink:", error);
 			toast.error("Error creating file link. Please try again.");
 			throw error;
-		} 
+		}
 	};
-	
+
 	const sendToMail = async () => {
 		let sendTo = "";
-	
+
 		try {
 			if (senderEmails.length > 0) {
 				sendTo = senderEmails.join(",");
 			} else {
 				sendTo = emailTo;
 			}
-	
+
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/mail`,
 				{
@@ -305,7 +305,7 @@ const UploadHero = () => {
 					},
 				}
 			);
-	
+
 			if (response) {
 				setIsFileUploaded(true);
 				resetForm();
@@ -314,9 +314,9 @@ const UploadHero = () => {
 			console.error("Error in sendToMail:", error);
 			toast.error("Error sending email. Please try again.");
 			throw error;
-		} 
+		}
 	};
-	
+
 	const resetForm = () => {
 		setFiles([]);
 		setEmail("");
@@ -325,7 +325,7 @@ const UploadHero = () => {
 		setMessage("");
 		setProgress(0);
 	};
-	
+
 
 	const handleOtp = async () => {
 		setIsProcessing(true);
@@ -793,36 +793,5 @@ const UploadHero = () => {
 
 
 
-// const handleUpload = async () => {
-// 	const localToken = localStorage.getItem('token')
-	
-// 	let sendTo = "";
-// 	const formData = new FormData();
-// 	if ((!token && !localToken) && email.length > 0) {
-// 		quickSignUp();
-// 		return
-// 	}
-// 	for (const file of files) {
-// 		formData.append("files", file);
-// 	}
-// 	formData.append("title", subject);
-// 	formData.append("message", message);
-// 	formData.append("expiresInDays", "7");
 
-// 	if (isSentToEmail) {
-// 		if (senderEmails.length > 0) {
-// 			sendTo = senderEmails.join(",");
-
-// 			formData.append("to", sendTo);
-// 		} else {
-// 			formData.append("to", emailTo);
-// 		}
-// 	}
-
-// 	try {
-		
-// 	} catch (error) {
-// 		console.error("Error:", error);
-// 	}
-// };
 export default UploadHero;

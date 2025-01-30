@@ -37,7 +37,6 @@ const Workspace = () => {
 
 	const getFiles = async () => {
 		setLoading(true)
-		console.log(id)
 		try {
 			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link/${id}`, {
 				headers: {
@@ -59,37 +58,62 @@ const Workspace = () => {
 		}
 	};
 
-	async function downloadFile(url: string, filename: string) {
+
+	async function increaseDownload(fileId : string){
 		try {
-		  const response = await fetch(url);
-	  
-		  if (!response.ok) {
-			throw new Error(`HTTP error! Status: ${response.status}`);
-		  }
-	  
-		  const blob = await response.blob();
-		  const blobUrl = URL.createObjectURL(blob);
-	  
-		  // Create a hidden anchor tag
-		  const a = document.createElement('a');
-		  a.href = blobUrl;
-		  a.download = filename; // Force the browser to use this filename
-		  document.body.appendChild(a);
-		  a.click();
-		  document.body.removeChild(a);
-	  
-		  URL.revokeObjectURL(blobUrl);
+			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,{
+			} ,{
+				headers: {
+					"Content-Type": "application/json",
+					// Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (response) {
+				console.log(response)
+				// setLoading(false)
+				// setFiles(response.data.data.link.files);
+				// setTitle(response.data.data.link.title);
+				// setDescription(response.data.data.link.message);
+			}
 		} catch (error) {
-		  console.error('Error downloading file:', error);
-		  toast.error('Error in downloading file');
+			console.error("Error getting 2 files:", error);
+
 		}
-	  }
+	}
+
+	async function downloadFile(fileId:string, url: string, filename: string) {
+		increaseDownload(fileId)
+		try {
+			const response = await fetch(url);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			const blob = await response.blob();
+			const blobUrl = URL.createObjectURL(blob);
+
+			// Create a hidden anchor tag
+			const a = document.createElement('a');
+			a.href = blobUrl;
+			a.download = filename; // Force the browser to use this filename
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+
+			URL.revokeObjectURL(blobUrl);
+		} catch (error) {
+			console.error('Error downloading file:', error);
+			toast.error('Error in downloading file');
+		}
+	}
 
 
-	const copyUrl = (url: string,file:String) => {
-			navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
-			toast('Url Copied')
-		};
+	const copyUrl = (url: string, file: String) => {
+		navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
+		toast('Url Copied')
+	};
 
 	return (
 		<div>
@@ -152,14 +176,14 @@ const Workspace = () => {
 												<div className="flex justify-center items-center ">
 													<a
 														download={true}
-														onClick={() => downloadFile(val.url, val.originalName)}
+														onClick={() => downloadFile(val.id, val.url, val.originalName)}
 														className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
 														<LuDownload className="size-6" />
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span
-																				onClick={() => copyUrl(id,val.id)}
+														onClick={() => copyUrl(id, val.id)}
 
 														className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
@@ -174,13 +198,13 @@ const Workspace = () => {
 							) : loading ? (
 								<div className="w-full flex justify-center">
 									<svg width="50px" height="50px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" fill="none">
-									<circle cx="25" cy="25" r="20" stroke="#ff4262" stroke-width="4" stroke-linecap="round" fill="none"
-										stroke-dasharray="100" stroke-dashoffset="0">
-										<animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25"
-											dur="0.5s" repeatCount="indefinite" />
-										<animate attributeName="stroke-dashoffset" values="100;0" dur="1s" repeatCount="indefinite" />
-									</circle>
-								</svg>
+										<circle cx="25" cy="25" r="20" stroke="#ff4262" stroke-width="4" stroke-linecap="round" fill="none"
+											stroke-dasharray="100" stroke-dashoffset="0">
+											<animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25"
+												dur="0.5s" repeatCount="indefinite" />
+											<animate attributeName="stroke-dashoffset" values="100;0" dur="1s" repeatCount="indefinite" />
+										</circle>
+									</svg>
 								</div>
 
 							) : (
