@@ -61,57 +61,35 @@ const Workspace = () => {
 
 	async function downloadFile(url: string, filename: string) {
 		try {
-			const splitName = filename.split('.');
-			const extension = splitName[splitName.length - 1]?.toLowerCase();
-
-			const directDownloadExtensions = [
-				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
-				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
-				'yml', 'xml', 'ini', 'log', 'conf',
-				'sqlite', 'db', 'sql', 'mdb', 'accdb',
-				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
-				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
-				'ttf', 'otf', 'woff', 'woff2', 'eot',
-				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
-				'js', 'ts', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
-			];
-
-			if (directDownloadExtensions.includes(extension)) {
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = filename || 'downloaded-file';
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			} else {
-				const response = await fetch(url);
-
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				const blob = await response.blob();
-
-				const blobUrl = URL.createObjectURL(blob);
-
-				const a = document.createElement('a');
-				a.href = blobUrl;
-				a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-
-				URL.revokeObjectURL(blobUrl);
-			}
+		  const response = await fetch(url);
+	  
+		  if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		  }
+	  
+		  const blob = await response.blob();
+		  const blobUrl = URL.createObjectURL(blob);
+	  
+		  // Create a hidden anchor tag
+		  const a = document.createElement('a');
+		  a.href = blobUrl;
+		  a.download = filename; // Force the browser to use this filename
+		  document.body.appendChild(a);
+		  a.click();
+		  document.body.removeChild(a);
+	  
+		  URL.revokeObjectURL(blobUrl);
 		} catch (error) {
-			console.error('Error downloading file:', error);
-			toast.error('Error in downloading file');
+		  console.error('Error downloading file:', error);
+		  toast.error('Error in downloading file');
 		}
-	}
+	  }
 
-	const copyUrl = (url: string) => {
-		navigator.clipboard.writeText(`https://rushuploads.com/${url}`);
-		toast('Url Copied')
-	};
+
+	const copyUrl = (url: string,file:String) => {
+			navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
+			toast('Url Copied')
+		};
 
 	return (
 		<div>
@@ -181,7 +159,8 @@ const Workspace = () => {
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span
-														onClick={() => copyUrl(val.id)}
+																				onClick={() => copyUrl(val.id,val.id)}
+
 														className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
 														<IoIosLink className="size-6" />

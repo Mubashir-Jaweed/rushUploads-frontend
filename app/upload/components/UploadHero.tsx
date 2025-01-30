@@ -47,6 +47,20 @@ const UploadHero = () => {
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
+
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+		  if (event.key === "Enter") {
+			handleUpload();
+		  }
+		};
+	
+		window.addEventListener("keydown", handleKeyDown);
+	
+		return () => {
+		  window.removeEventListener("keydown", handleKeyDown);
+		};
+	  }, []);
 	
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -21,10 +21,8 @@ interface CardDataProps {
 }
 const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
-
-console.log(data)
-	const copyUrl = (url: string) => {
-		navigator.clipboard.writeText(`https://rushuploads.com/${url}`);
+	const copyUrl = (url: string,file:String) => {
+		navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
 		toast('Url Copied')
 	};
 
@@ -62,58 +60,39 @@ console.log(data)
 	// 	}
 	// }
 
-
 	async function downloadFile(url: string, filename: string) {
 		try {
-			const splitName = filename.split('.');
-			const extension = splitName[splitName.length - 1]?.toLowerCase();
-
-			const directDownloadExtensions = [
-				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
-				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
-				 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
-				'sqlite', 'db', 'sql', 'mdb', 'accdb',
-				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
-				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
-				'ttf', 'otf', 'woff', 'woff2', 'eot',
-				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
-				'js', 'ts', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
-			];
-
-			if (directDownloadExtensions.includes(extension)) {
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = filename || 'downloaded-file';
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			} else {
-				const response = await fetch(url);
-
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				const blob = await response.blob();
-
-				const blobUrl = URL.createObjectURL(blob);
-
-				const a = document.createElement('a');
-				a.href = blobUrl;
-				a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-
-				URL.revokeObjectURL(blobUrl);
-			}
+		  const response = await fetch(url);
+	  
+		  if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		  }
+	  
+		  const blob = await response.blob();
+		  const blobUrl = URL.createObjectURL(blob);
+	  
+		  // Create a hidden anchor tag
+		  const a = document.createElement('a');
+		  a.href = blobUrl;
+		  a.download = filename; // Force the browser to use this filename
+		  document.body.appendChild(a);
+		  a.click();
+		  document.body.removeChild(a);
+	  
+		  URL.revokeObjectURL(blobUrl);
 		} catch (error) {
-			console.error('Error downloading file:', error);
-			toast.error('Error in downloading file');
+		  console.error('Error downloading file:', error);
+		  toast.error('Error in downloading file');
 		}
-	}
+	  }
 
 
-
+	function formatDownloadNumber(num) {
+		if (num < 1000) return num.toString(); // Show as is if less than 1000
+		if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
+		if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
+		return num.toString();
+	  }
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
@@ -121,9 +100,12 @@ console.log(data)
 				{data.originalName}
 			</span>
 			<div className="flex w-full justify-between items-end">
-				<div className="flex justify-start items-center gap-3">
-					<span className=" max-sm:text-sm text-sm font-normal text-zinc-700">
-						{status} {data.updatedAt.split("T")[0]}
+				<div className="flex justify-start items-center gap-2 text-zinc-500">
+					<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
+						{status} {data.updatedAt.split("T")[0]} 
+					</span>|
+					<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
+						Total downloads : {formatDownloadNumber(data.downloads)}
 					</span>
 					{data.isExpired && (
 						<>
@@ -144,7 +126,7 @@ console.log(data)
 						<span className="list-btn-title">Download</span>
 					</span>
 					<span
-						onClick={() => copyUrl(data.id)}
+						onClick={() => copyUrl('sssdsdsd',data.id)}
 						className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 					>
 						<IoIosLink className="size-6 max-sm:size-4" />

@@ -33,61 +33,48 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 		};
 	}, []);
 
-	const copyUrl = (url: string) => {
-			navigator.clipboard.writeText(`https://rushuploads.com/${url}`);
+	const copyUrl = (url: string,file:String) => {
+			navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
 			toast('Url Copied')
 		};
 
+		function formatDownloadNumber(num) {
+			if (num < 1000) return num.toString(); // Show as is if less than 1000
+			if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
+			if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
+			return num.toString();
+		  }
 
-			async function downloadFile(url: string, filename: string) {
-				try {
-					const splitName = filename.split('.');
-					const extension = splitName[splitName.length - 1]?.toLowerCase();
-		
-					const directDownloadExtensions = [
-				'msi', 'exe', 'dmg', 'apk', 'deb', 'rpm', 'bat', 'sh',
-				'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz',
-				 'yaml', 'yml', 'xml', 'ini', 'log', 'conf',
-				'sqlite', 'db', 'sql', 'mdb', 'accdb',
-				'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv',
-				'mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'mp3', 'wav', 'ogg',
-				'ttf', 'otf', 'woff', 'woff2', 'eot',
-				'iso', 'bin', 'img', 'dll', 'sys', 'lib',
-				'js', 'ts', 'rb', 'pl', 'php', 'html', 'css', 'apk', 'crx', 'pkg', 'appimage'
-			];
-		
-					if (directDownloadExtensions.includes(extension)) {
-						const link = document.createElement('a');
-						link.href = url;
-						link.download = filename || 'downloaded-file';
-						document.body.appendChild(link);
-						link.click();
-						document.body.removeChild(link);
-					} else {
-						const response = await fetch(url);
-		
-						if (!response.ok) {
-							throw new Error(`HTTP error! Status: ${response.status}`);
-						}
-						const blob = await response.blob();
-		
-						const blobUrl = URL.createObjectURL(blob);
-		
-						const a = document.createElement('a');
-						a.href = blobUrl;
-						a.download = splitName[0] + '-rush-upload' || 'downloaded-file';
-						document.body.appendChild(a);
-						a.click();
-						document.body.removeChild(a);
-		
-						URL.revokeObjectURL(blobUrl);
+
+				async function downloadFile(url: string, filename: string) {
+					try {
+					  const response = await fetch(url);
+				  
+					  if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					  }
+				  
+					  const blob = await response.blob();
+					  const blobUrl = URL.createObjectURL(blob);
+				  
+					  // Create a hidden anchor tag
+					  const a = document.createElement('a');
+					  a.href = blobUrl;
+					  a.download = filename; // Force the browser to use this filename
+					  document.body.appendChild(a);
+					  a.click();
+					  document.body.removeChild(a);
+				  
+					  URL.revokeObjectURL(blobUrl);
+					} catch (error) {
+					  console.error('Error downloading file:', error);
+					  toast.error('Error in downloading file');
 					}
-				} catch (error) {
-					console.error('Error downloading file:', error);
-					toast.error('Error in downloading file');
-				}
-			}
+				  }
+			
 		
+
+
 	
 	return (
 		<div className="relative w-[300px]  list-card cursor-pointer hover:bg-[#f5f5f57e] bg-[#f5f5f52d] flex flex-col gap-1 justify-between items-start rounded-[8px]">
@@ -96,8 +83,8 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 			</span>
 			<div className="flex w-full justify-between items-end p-[3px]">
 				<div className="flex justify-start items-center gap-2 p-2">
-					<span className=" text-sm font-normal text-zinc-700">
-						{status} {data.updatedAt.split("T")[0]}
+				<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
+						Total downloads : {formatDownloadNumber(data.downloads)}
 					</span>
 					{data.isExpired && (
 						<>
@@ -132,7 +119,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 						Delete
 					</span>}
 					<span
-						onClick={() => copyUrl(data.id)}
+						onClick={() => copyUrl('sssdsdsd',data.id)}
 						className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center"
 					>
 						Copy_link
