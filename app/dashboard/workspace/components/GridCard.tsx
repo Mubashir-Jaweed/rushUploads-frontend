@@ -119,7 +119,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 						Delete
 					</span>}
 					<span
-						onClick={() => copyUrl('sssdsdsd',data.id)}
+						onClick={() => copyUrl(data.link.id,data.id)}
 						className=" hover:bg-[#a1a1a14d] p-1 rounded-[8px] w-full flex  justify-start items-center"
 					>
 						Copy_link

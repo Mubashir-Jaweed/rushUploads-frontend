@@ -159,7 +159,7 @@ const Workspace = () => {
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span
-																				onClick={() => copyUrl(val.id,val.id)}
+																				onClick={() => copyUrl(id,val.id)}
 
 														className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
 													>
