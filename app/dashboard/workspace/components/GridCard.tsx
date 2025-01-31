@@ -84,7 +84,7 @@ const GridCard = ({ data, status, deleteFile }: CardDataProps) => {
 			<div className="flex w-full justify-between items-end p-[3px]">
 				<div className="flex justify-start items-center gap-2 p-2">
 				<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
-						Total downloads : {formatDownloadNumber(data.downloads)}
+						Downloads : {formatDownloadNumber(data.downloads)}
 					</span>
 					{data.isExpired && (
 						<>

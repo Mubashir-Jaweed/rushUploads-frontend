@@ -11,15 +11,17 @@ import { toast } from "react-toastify";
 
 const PaymentPlans = () => {
 	const { token, user } = useUserContext();
-	const [rewards, setRewards] = useState({});
-	const [linkIds, setLinkIds] = useState<string[]>([]);
 	const [email, setEmail] = useState(`${user?.email}`)
     const [subject, setSubject] = useState(`${user?.email} want to redeem `)
-    const [message, setMessage] = useState(`User rewards: ${rewards}`)
+    const [message, setMessage] = useState(`User rewards`)
+	const [files, setFiles] = useState([]);
 
 
-    const sendMail = async () => {
-		
+    const sendMail = async (reward : boolean) => {
+		if(reward){
+			toast.error('Not eligible for reward')
+			return
+		}
 		try {
 			const data = {
 				email,
@@ -49,41 +51,11 @@ const PaymentPlans = () => {
 	};
 
 
-	// const subscribeClickHandler = async () => {
-	// 	try {
-	// 		return router.push("/pricing");
-	// 	} catch (error) {
-	// 		console.error("Failed to navigate to pricing page:", error);
-	// 	}
-	// };
 
-	// const portalClickHandler = async () => {
-	// 	try {
-	// 		const response = await axios.post(
-	// 			`${process.env.NEXT_PUBLIC_BACKEND_URL}/subscriptions/portal`,
-	// 			{},
-	// 			{
-	// 				headers: {
-	// 					authorization: `Bearer ${token}`,
-	// 				},
-	// 			},
-	// 		);
-
-	// 		const portalUrl = response.data.data.url;
-
-	// 		console.log("Redirecting to portal:", portalUrl);
-
-	// 		window.location.href = portalUrl;
-	// 	} catch (error) {
-	// 		console.error("Failed to create portal session:", error);
-	// 	}
-	// };
-
-	const getData = async () => {
-
+	const getFiles = async () => {
 		try {
 			const response = await axios.get(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/rewards`,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/shared`,
 				{
 					headers: {
 						"Content-Type": "application/json",
@@ -93,26 +65,28 @@ const PaymentPlans = () => {
 			);
 
 			if (response) {
-				setRewards(response.data.data.groupedRewards);
-				console.log(response.data.data.groupedRewards);
-
-				const linkIds = []
-
-				for (const linkId in response.data.data.groupedRewards) {
-					linkIds.push(linkId)
-				}
-
-				console.log({linkIds})
-
-				setLinkIds(linkIds)
+				setFiles(response.data.data.files);
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
 		}
 	};
 
+	function truncateString(str: string): string {
+		if (str.length > 10) {
+		  return str.substring(0, 10) + '...'; // 12 chars + 3 dots = 15
+		}
+		return str;
+	  }
+
+	  function formatRewardNumber(num) {
+		if (num < 1000) return num.toString(); // Show as is if less than 1000
+		if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
+		if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
+		return num.toString();
+	  }
 	useEffect(() => {
-		getData()
+		getFiles()
 	}, []);
 
 	return (
@@ -139,20 +113,20 @@ const PaymentPlans = () => {
 					</span>
 				</div>
 				<span className="text-stone-800 text-xl font-semibold mt-6">
-					Files Rewards
+					Files Reward
 				</span>
 
-				{linkIds.length > 0 ? <div className="  w-full rounded-xl flex flex-col justify-center px-5 items-start">
-					{linkIds.map((linkId, i)=>{
+				{files.length > 0 ? <div className="border border-zinc-600  w-full rounded-xl flex flex-col justify-center px-5 items-start">
+					{files.map((file, i)=>{
 
 						
 						
 						return(
 						<div key={i} className="border-b text-stone-800 text-lg font-medium py-2 border-stone-500 w-full flex justify-between items-center">
-							<span className="flex gap-5"><span>{i + 1}</span>
-							<span className="w-40 ">{rewards[linkId]?.title !== "" ? rewards[linkId]?.title : rewards[linkId]?.files?.[0]?.originalName }</span></span>
-							<span>$ {rewards[linkId]?.rewards.length / 100}</span>
-							<span className="underline hover:no-underline cursor-pointer" onClick={sendMail}>Redeem</span>
+							<span className="flex gap-5">
+							<span className=" text-wrap overflow-hidden cursor-pointer max-sm:text-sm" title={file.originalName}>{truncateString(file.originalName)}</span></span>
+							<span className="max-sm:text-sm">$ {formatRewardNumber(file.downloads * 0.007)}</span>
+							<span className={`underline hover:no-underline max-sm:text-sm ${file.downloads * 0.007 <= 7 ? "cursor-not-allowed": 'cursor-pointer'}`} onClick={()=>sendMail(file.downloads * 0.007 <= 7)}>Redeem</span>
 						</div>
 					)
 					})}

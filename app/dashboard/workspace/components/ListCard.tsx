@@ -93,18 +93,27 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 		return num.toString();
 	  }
 
+
+	  function truncateString(str: string): string {
+		if (str.length > 33) {
+		  return str.substring(0, 30) + '...'; // 12 chars + 3 dots = 15
+		}
+		return str;
+	  }
+
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
-			<span className="text-lg max-sm:text-base font-medium overflow-hidden w-full text-stone-800">
-				{data.originalName}
+			<span title={data.originalName} className="text-lg max-sm:text-base font-medium overflow-hidden w-full text-stone-800">
+				{truncateString(data.originalName)}
 			</span>
 			<div className="flex w-full justify-between items-end">
 				<div className="flex justify-start items-center gap-2 text-zinc-500">
-					<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
+					<span className=" max-sm:hidden text-sm font-medium text-zinc-700">
 						{status} {data.updatedAt.split("T")[0]} 
-					</span>|
-					<span className=" max-sm:text-sm text-sm font-medium text-zinc-800">
-						Total downloads : {formatDownloadNumber(data.downloads)}
+					</span>
+					<span className="max-sm:hidden">|</span>
+					<span className=" max-sm:text-xs text-sm font-medium text-zinc-700">
+						Downloads : {formatDownloadNumber(data.downloads)}
 					</span>
 					{data.isExpired && (
 						<>
