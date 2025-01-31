@@ -95,11 +95,23 @@ const ListCard = ({ data, status, deleteFile }: CardDataProps) => {
 
 
 	  function truncateString(str: string): string {
-		if (str.length > 33) {
-		  return str.substring(0, 30) + '...'; // 12 chars + 3 dots = 15
+		const lastDotIndex = str.lastIndexOf('.');
+		
+		if (lastDotIndex === -1 || lastDotIndex === 0) {
+		  // No extension found or starts with a dot (hidden file), truncate normally
+		  return str.length > 10 ? str.substring(0, 10) + '...' : str;
 		}
+	  
+		const namePart = str.substring(0, lastDotIndex);
+		const extension = str.substring(lastDotIndex); // Includes the dot and extension
+	  
+		if (namePart.length > 10) {
+		  return namePart.substring(0, 10) + '...' + extension;
+		}
+	  
 		return str;
 	  }
+	  
 
 	return (
 		<div className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
