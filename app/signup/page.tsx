@@ -16,6 +16,7 @@ import PulsatingButton from "@/components/ui/pulsating-button";
 import { formatUser, useUserContext } from "@/contexts/user";
 import { googleSignIn } from "@/lib/server";
 import { signIn } from "next-auth/react";
+import { toast } from "react-toastify";
 
 const page = () => {
 	const router = useRouter();
@@ -34,6 +35,9 @@ const page = () => {
 			router.push("/dashboard/workspace");
 		}
 	}, [router.push, token]);
+
+	
+
 
 	const handleSignup = async () => {
 		if (token) return;
@@ -70,6 +74,7 @@ const page = () => {
 
 			// @ts-ignore
 			setMessage(error.response.data.info.message);
+			toast.error(error.response.data.info.message);
 		} finally {
 			setIsProcessing(false);
 		}
@@ -86,6 +91,11 @@ const page = () => {
 				<div className="rounded-xl glass-bg flex justify-between items-center w-80">
 					<RiUser3Fill className="text-2xl ml-3 text-stone-600" />
 					<input
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+						  handleSignup(e);
+						}
+					  }}
 						type="text"
 						placeholder="Full Name"
 						value={fullName}
@@ -96,6 +106,11 @@ const page = () => {
 				<div className="rounded-xl glass-bg flex justify-between items-center w-80">
 					<MdEmail className="text-2xl ml-3 text-stone-600" />
 					<input
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+						  handleSignup(e);
+						}
+					  }}
 						type="email"
 						placeholder="Email"
 						value={email}
@@ -111,6 +126,11 @@ const page = () => {
 					)}
 
 					<input
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+						  handleSignup(e);
+						}
+					  }}
 						type={isHidden ? "password" : "text"}
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
@@ -133,7 +153,7 @@ const page = () => {
 					<span className="text-lg text-red-500 text-center">{message}</span>
 				)}
 				<PulsatingButton
-					onClick={handleSignup}
+					onClick={(e)=>handleSignup(e)}
 					className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 				>
 					Continue with Email

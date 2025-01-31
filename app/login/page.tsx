@@ -14,6 +14,7 @@ import Image from 'next/image';
 
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { formatUser, useUserContext } from "@/contexts/user";
+import { toast } from "react-toastify";
 
 const page = () => {
 	const router = useRouter();
@@ -33,7 +34,9 @@ const page = () => {
 		}
 	}, [router.push, token]);
 
-	const handleSignin = async () => {
+	
+
+	const handleSignin = async (event) => {
 		if (token) return;
 		const data = {
 			email: email,
@@ -74,6 +77,7 @@ const page = () => {
 			} else {
 				// @ts-ignore
 				setMessage(error.response.data.info.message);
+				toast.error(error.response.data.info.message);
 			}
 		} finally {
 			setIsProcessing(false);
@@ -91,6 +95,11 @@ const page = () => {
 				<div className="rounded-xl glass-bg flex justify-between items-center w-80">
 					<MdEmail className="text-2xl ml-3 text-stone-600" />
 					<input
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+						  handleSignin(e);
+						}
+					  }}
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						type="email"
@@ -108,6 +117,11 @@ const page = () => {
 							)}
 
 							<input
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+								  handleSignin(e);
+								}
+							  }}
 								type={isHidden ? "password" : "text"}
 								placeholder="Password"
 								value={password}
@@ -140,7 +154,7 @@ const page = () => {
 					<span className="text-lg text-red-500 text-center">{message}</span>
 				)}
 				<PulsatingButton
-					onClick={handleSignin}
+					onClick={(e)=>handleSignin(e)}
 					className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 				>
 					Continue with Email

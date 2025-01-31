@@ -30,6 +30,8 @@ export const SuspendedPage = () => {
 		}
 	}, [router.push, token]);
 
+
+	
 	const resendOtp = async () => {
 		const verifyToken = localStorage.getItem("ru_anonymous_id");
 
@@ -55,12 +57,13 @@ export const SuspendedPage = () => {
 
 			// @ts-ignore
 			setMessage(error.response?.data.info.message);
+			toast.error(error.response?.data.info.message);
 		} finally {
 			setIsProcessing(false);
 		}
 	};
 
-	const handleOtp = async () => {
+	const handleOtp = async (e) => {
 		const verifyToken = localStorage.getItem("ru_anonymous_id");
 
 		setIsProcessing(true);
@@ -125,6 +128,11 @@ export const SuspendedPage = () => {
 					)}
 
 					<input
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+						  handleOtp(e);
+						}
+					  }}
 						type={isHidden ? "password" : "text"}
 						value={otp}
 						onChange={(e) => setOtp(e.target.value)}
@@ -156,7 +164,7 @@ export const SuspendedPage = () => {
 					</span>
 				</div>
 				<PulsatingButton
-					onClick={handleOtp}
+					onClick={(e)=>handleOtp(e)}
 					className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 				>
 					Submit

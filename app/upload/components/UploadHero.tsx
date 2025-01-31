@@ -48,18 +48,6 @@ const UploadHero = () => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
 
-	useEffect(() => {
-		const handleKeyDown = (event) => {
-			if (event.key === "Enter") {
-				
-				handleUpload();
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-
-
-	}, []);
 
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -68,7 +56,7 @@ const UploadHero = () => {
 		},
 	});
 
-	const handleUpload = async () => {
+	const handleUpload = async (e) => {
 		console.log(files.length)
 		filesData = [];
 		if (files.length < 1) {
@@ -327,7 +315,7 @@ const UploadHero = () => {
 	};
 
 
-	const handleOtp = async () => {
+	const handleOtp = async (e) => {
 		setIsProcessing(true);
 		console.log('handle otp')
 		try {
@@ -582,6 +570,11 @@ const UploadHero = () => {
 							)}
 
 							<input
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+								  handleOtp(e);
+								}
+							  }}
 								type={isHidden ? "password" : "text"}
 								value={otp}
 								onChange={(e) => setOtp(e.target.value)}
@@ -606,7 +599,7 @@ const UploadHero = () => {
 							</span>
 						</div>
 						<PulsatingButton
-							onClick={handleOtp}
+							onClick={(e)=>handleOtp(e)}
 							className={`max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 						>
 							Submit
@@ -664,6 +657,11 @@ const UploadHero = () => {
 										{files.length} Files
 									</span>
 									<input
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+										  handleUpload(e);
+										}
+									  }}
 										id="add-more"
 										type="file"
 										multiple
@@ -711,6 +709,11 @@ const UploadHero = () => {
 						<div className="w-full flex justify-start items-center gap-3 my-3">
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+									  handleUpload(e);
+									}
+								  }}
 									type="radio"
 									checked={isSentToEmail}
 									onClick={() => setIsSentToEmail(true)}
@@ -720,6 +723,11 @@ const UploadHero = () => {
 							</label>
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+									  handleUpload(e);
+									}
+								  }}
 									type="radio"
 									checked={!isSentToEmail}
 									onClick={() => setIsSentToEmail(false)}
@@ -745,6 +753,7 @@ const UploadHero = () => {
 										</span>
 									))}
 									<input
+									
 										type="email"
 										value={emailTo}
 										onChange={(e) => setEmailTo(e.target.value)}
@@ -756,6 +765,11 @@ const UploadHero = () => {
 							)}
 							{!token && (
 								<input
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+									  handleUpload(e);
+									}
+								  }}
 									type="email"
 									placeholder="Your Email"
 									value={email}
@@ -764,6 +778,11 @@ const UploadHero = () => {
 								/>
 							)}
 							<input
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+								  handleUpload(e);
+								}
+							  }}
 								type="text"
 								placeholder="Subject"
 								value={subject}
@@ -771,13 +790,18 @@ const UploadHero = () => {
 								className=" placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
 							/>
 							<textarea
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+								  handleUpload(e);
+								}
+							  }}
 								placeholder="Message"
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
 								className="resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
 							/>
 							<PulsatingButton
-								onClick={handleUpload}
+								onClick={(e)=>handleUpload(e)}
 								className={`max-md:text-base max-sm:text-sm text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 							>
 								Transfer File
