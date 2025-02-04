@@ -44,6 +44,7 @@ const Workspace = () => {
 		getFiles();
 	}, [selectedTab]);
 
+
 	useEffect(() => {
 		if (!token) {
 			router.push("/upload");
