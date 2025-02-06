@@ -8,7 +8,7 @@ const Sidebar = () => {
         <div className='w-[350px] h-screen shadow-lg flex flex-col justify-start '>
             <Link
                 href={"/"}
-                className="font-bold shadow text-2xl h-[90px] flex pl-16 pt-3 items-center"
+                className="font-bold shadow text-2xl h-[9.5%] flex pl-16 pt-3 items-center"
             >
                 <Image alt="logo" src={logo} className="h-[50px] w-[150px]" />
             </Link>

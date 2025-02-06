@@ -82,21 +82,10 @@ const Page = () => {
     return (
         <div className='flex'>
             <Sidebar/>
-            <div className="w-full h-screen flex justify-start items-start">
+            <div className="w-full h-screen flex flex-col justify-start items-start">
                <Navbar/>
-            </div>
-        </div>
-    );
-};
-
-export default Page;
-
-
-
-
-
- {/* {!totalData ? (
-                    <div className="w-full h-[100%] flex justify-center">
+               {!totalData ? (
+                    <div className="w-full  flex justify-center">
                         <svg width="50px" height="50px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" fill="none">
                             <circle cx="25" cy="25" r="20" stroke="#ff4262" strokeWidth="4" strokeLinecap="round" fill="none"
                                 strokeDasharray="100" strokeDashoffset="0">
@@ -108,30 +97,30 @@ export default Page;
                         <button onClick={getData}>Retry</button>
                     </div>
                 ) : (
-                    <div className='border-2 h-full flex flex-col justify-between w-[80%] p-10'>
+                    <div className='w-full bg-zinc-100 h-[90.5%] flex flex-col justify-between p-10'>
                         <div className='w-full flex justify-center gap-5 items-center'>
-                            <div className='h-40 w-72 rounded-[5px] p-2 flex justify-center items-center gap-5 bg-zinc-50 bg-opacity-85'>
+                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuUsers className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total users</span>
                                     <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.users || 0}</span>
                                 </div>
                             </div>
-                            <div className='h-40 w-72 rounded-[5px] p-2 flex justify-center items-center gap-5 bg-zinc-50 bg-opacity-85'>
+                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuFiles className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total files</span>
                                     <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.files || 0}</span>
                                 </div>
                             </div>
-                            <div className='h-40 w-72 rounded-[5px] p-2 flex justify-center items-center gap-5 bg-zinc-50 bg-opacity-85'>
+                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuDownload className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total downloads</span>
                                     <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.downloads || 0}</span>
                                 </div>
                             </div>
-                            <div className='h-40 w-72 rounded-[5px] p-2 flex justify-center items-center gap-5 bg-zinc-50 bg-opacity-85'>
+                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><HiOutlineCloudDownload className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Max downloads</span>
@@ -139,8 +128,20 @@ export default Page;
                                 </div>
                             </div>
                         </div>
-                        <div className='border p-4'>
+                        <div className='h-[70%] overflow-hidden flex justify-center items-center'>
                             <Bar  data={data} options={options} />
                         </div>
                     </div>
-                )} */}
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default Page;
+
+
+
+
+
+ 
