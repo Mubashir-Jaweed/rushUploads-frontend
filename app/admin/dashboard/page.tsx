@@ -35,7 +35,6 @@ const Page = () => {
             if (response.data) {
                 setTotalData(response.data.data);
                 setTopFiles(response.data.data.files.topDownloads || []); // Ensure it's an array
-                console.log(response.data);
             }
         } catch (error) {
             console.error("Error :", error);
@@ -79,6 +78,14 @@ const Page = () => {
         },
     };
 
+
+    function formatNumber(num) {
+		if (num < 1000) return num.toString(); // Show as is if less than 1000
+		if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
+		if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
+		return num.toString();
+	  }
+
     return (
         <div className='flex'>
             <Sidebar/>
@@ -103,21 +110,21 @@ const Page = () => {
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuUsers className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total users</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.users || 0}</span>
+                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.users) || 0}</span>
                                 </div>
                             </div>
                             <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuFiles className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total files</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.files || 0}</span>
+                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.files) || 0}</span>
                                 </div>
                             </div>
                             <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
                                 <span className='bg-[#ff4262] rounded-full p-4'><LuDownload className='size-10 text-white' /></span>
                                 <div className='flex flex-col'>
                                     <span className='text-xl font-medium text-stone-600'>Total downloads</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{totalData.counts.downloads || 0}</span>
+                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.downloads) || 0}</span>
                                 </div>
                             </div>
                             <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
