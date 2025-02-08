@@ -11,7 +11,7 @@ const Navbar = () => {
         const { isLoading, token, user } = useUserContext();
     
   return (
-    <div className='shadow w-full h-[9.5%] flex justify-end items-center px-10'> 
+    <div className='bg-white shadow w-full py-5 flex justify-end items-center px-10'> 
       <Link href={'/dashboard/profile-security'} className='text-stone-800 text-lg  cursor-pointer font-medium flex justify-center items-center gap-2'>
         {user?.email}
         <span className='border-2 rounded-full p-[6px] border-stone-400'>
