@@ -15,19 +15,19 @@ const Sidebar = () => {
             <div className='pt-10'>
             <Link
                 href={"/admin/dashboard"}
-                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3   px-10 flex justify-start items-center"
+                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3 mx-5  px-10 flex justify-start items-center"
             >
                 <span>Statics</span>
             </Link>
             <Link
                 href={"/admin/users"}
-                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3   px-10 flex justify-start items-center"
+                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3 mx-5  px-10 flex justify-start items-center"
             >
                 <span>All users</span>
             </Link>
             <Link
                 href={"/admin/files"}
-                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3   px-10 flex justify-start items-center"
+                className="font-normal text-stone-800  hover:bg-zinc-100 hover:rounded-[10px] border-y text-2xl py-3 mx-5  px-10 flex justify-start items-center"
             >
                 <span>All files</span>
             </Link>

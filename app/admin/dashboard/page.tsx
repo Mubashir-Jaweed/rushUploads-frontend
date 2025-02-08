@@ -5,14 +5,15 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { LuUsers, LuFiles, LuDownload } from "react-icons/lu";
-import { HiOutlineCloudDownload } from "react-icons/hi";
+import { BiMoneyWithdraw } from "react-icons/bi";
+
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
 import Sidebar from '../components/Sidebar';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const Page = () => {
+const page = () => {
     const { isLoading, token, user } = useUserContext();
     const [totalData, setTotalData] = useState(null);
     const [topFiles, setTopFiles] = useState([]);
@@ -34,10 +35,11 @@ const Page = () => {
 
             if (response.data) {
                 setTotalData(response.data.data);
-                setTopFiles(response.data.data.files.topDownloads || []); // Ensure it's an array
+                console.log(response.data.data);
+                setTopFiles(response.data.data.files.topDownloads || []);
             }
         } catch (error) {
-            console.error("Error :", error);
+            console.error("Error:", error);
         }
     };
 
@@ -49,27 +51,23 @@ const Page = () => {
         getData();
     }, []);
 
-    // Fix: Use file names for labels
     const data = {
-        labels: topFiles.map((file) => file.originalName), 
+        labels: topFiles.map((file) => file.originalName),
         datasets: [
             {
                 label: "Download Count",
-                data: topFiles.map((file) => file.downloads), 
+                data: topFiles.map((file) => file.downloads),
                 backgroundColor: "#ff4262",
                 borderColor: "#fff",
                 borderWidth: 1,
-                
             },
         ],
     };
 
     const options = {
-        barThickness:20 ,
-        borderRadius:10 ,
         responsive: true,
         plugins: {
-            legend: { display: false }, 
+            legend: { display: false },
             tooltip: { enabled: true },
         },
         scales: {
@@ -78,65 +76,54 @@ const Page = () => {
         },
     };
 
-
-    function formatNumber(num) {
-		if (num < 1000) return num.toString(); // Show as is if less than 1000
-		if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
-		if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
-		return num.toString();
-	  }
-
+    const formatNumber = (num: number): string => {
+        if (num < 1) return num.toFixed(3).replace(/\.?0+$/, ''); // Show up to 3 decimal places
+        if (num < 1000) return num.toString(); // Show as is if less than 1000
+        if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'; // Millions
+        if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousands
+        return num.toString();
+    };
     return (
-        <div className='flex'>
-            <Sidebar/>
-            <div className="w-full h-screen flex flex-col justify-start items-start">
-               <Navbar/>
-               {!totalData ? (
-                    <div className="w-full  flex justify-center">
-                        <svg width="50px" height="50px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" fill="none">
-                            <circle cx="25" cy="25" r="20" stroke="#ff4262" strokeWidth="4" strokeLinecap="round" fill="none"
-                                strokeDasharray="100" strokeDashoffset="0">
-                                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25"
-                                    dur="0.5s" repeatCount="indefinite" />
-                                <animate attributeName="stroke-dashoffset" values="100;0" dur="1s" repeatCount="indefinite" />
-                            </circle>
-                        </svg>
-                        <button onClick={getData}>Retry</button>
+        <div className='flex h-screen'>
+            <Sidebar />
+            <div className="w-full flex flex-col">
+                <Navbar />
+                {!totalData ? (
+                    <div className="flex flex-col items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#ff4262]"></div>
+                        <button
+                            className="mt-4 px-6 py-2 bg-[#ff4262] text-white rounded-lg shadow hover:bg-[#d93654]"
+                            onClick={getData}>
+                            Retry
+                        </button>
                     </div>
                 ) : (
-                    <div className='w-full bg-zinc-100 h-[90.5%] flex flex-col justify-between p-10'>
-                        <div className='w-full flex justify-center gap-5 items-center'>
-                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
-                                <span className='bg-[#ff4262] rounded-full p-4'><LuUsers className='size-10 text-white' /></span>
-                                <div className='flex flex-col'>
-                                    <span className='text-xl font-medium text-stone-600'>Total users</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.users) || 0}</span>
-                                </div>
-                            </div>
-                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
-                                <span className='bg-[#ff4262] rounded-full p-4'><LuFiles className='size-10 text-white' /></span>
-                                <div className='flex flex-col'>
-                                    <span className='text-xl font-medium text-stone-600'>Total files</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.files) || 0}</span>
-                                </div>
-                            </div>
-                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
-                                <span className='bg-[#ff4262] rounded-full p-4'><LuDownload className='size-10 text-white' /></span>
-                                <div className='flex flex-col'>
-                                    <span className='text-xl font-medium text-stone-600'>Total downloads</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>{formatNumber(totalData.counts.downloads) || 0}</span>
-                                </div>
-                            </div>
-                            <div className='h-40 w-72 rounded-[8px] shadow p-2 flex justify-center items-center gap-5 bg-white bg-opacity-85'>
-                                <span className='bg-[#ff4262] rounded-full p-4'><HiOutlineCloudDownload className='size-10 text-white' /></span>
-                                <div className='flex flex-col'>
-                                    <span className='text-xl font-medium text-stone-600'>Max downloads</span>
-                                    <span className='text-7xl font-semibold text-stone-800'>48</span>
-                                </div>
-                            </div>
+                    <div className='flex flex-col p-10 space-y-10'>
+                        <div className='grid grid-cols-4 gap-6'>
+                            {[['Total users', totalData.counts.users, <LuUsers />],
+                            ['Total files', totalData.counts.files, <LuFiles />],
+                            ['Total downloads', totalData.counts.downloads, <LuDownload />],
+                            ['Reward paid', totalData.counts.claims * 0.007, <BiMoneyWithdraw />]
+                        ]
+                                .map(([label, count, icon], idx) => (
+                                    <div key={idx} className='bg-white p-6 shadow-lg rounded-lg flex items-center space-x-6'>
+                                        <span className='bg-[#ff4262] p-4 text-white rounded-full text-3xl'>
+                                            {icon}
+                                        </span>
+                                        <div>
+                                            <span className='text-gray-600'>{label}</span>
+                                            <h2 className='text-4xl font-bold text-gray-800'>{formatNumber(count)} {label.includes('paid') && '$'}</h2>
+                                        </div>
+                                    </div>
+                                ))}
                         </div>
-                        <div className='h-[70%] overflow-hidden flex justify-center items-center'>
-                            <Bar  data={data} options={options} />
+                        <div className=' bg-white p-6 shadow-lg rounded-lg w-auto overflow-hidden'>
+                            <h2 className='text-xl font-semibold text-gray-700 mb-4'>Top 10 Downloaded Files</h2>
+                            <div className="w-full overflow-x-auto">
+                                <div className="w-[80%]">
+                                    <Bar data={data} options={options} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -145,10 +132,4 @@ const Page = () => {
     );
 };
 
-export default Page;
-
-
-
-
-
- 
+export default page;
