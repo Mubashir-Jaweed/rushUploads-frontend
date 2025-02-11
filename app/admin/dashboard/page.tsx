@@ -100,10 +100,10 @@ const page = () => {
                 ) : (
                     <div className='flex flex-col p-10 space-y-10'>
                         <div className='grid grid-cols-4 gap-6'>
-                            {[['Total users', totalData.counts.users, <LuUsers />],
-                            ['Total files', totalData.counts.files, <LuFiles />],
-                            ['Total downloads', totalData.counts.downloads, <LuDownload />],
-                            ['Reward paid', totalData.counts.claims * 0.007, <BiMoneyWithdraw />]
+                            {[['Total users', totalData.counts.users  || 0, <LuUsers />],
+                            ['Total files', totalData.counts.files  || 0, <LuFiles />],
+                            ['Total downloads', totalData.counts.downloads  || 0, <LuDownload />],
+                            ['Reward paid', totalData.counts.claims * 0.007  || 0, <BiMoneyWithdraw />]
                         ]
                                 .map(([label, count, icon], idx) => (
                                     <div key={idx} className='bg-white p-6 shadow-lg rounded-lg flex items-center space-x-6'>

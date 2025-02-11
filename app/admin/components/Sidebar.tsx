@@ -16,11 +16,11 @@ const Sidebar = () => {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                console.log(response.data.data.settings[0]);
-                setMonetization(response.data.data.settings[0].value === 'ON');
+                // console.log(response.data.data);
+                setMonetization(response.data.data.settings[0].value === 'ON' || false);
             } catch (error) {
-                toast.error('Failed to fetch settings');
-                console.error('Failed to fetch settings:', error);
+                toast.error('Failed to fetch monetization');
+                console.error('Failed to fetch monetization:', error);
             }
         };
 

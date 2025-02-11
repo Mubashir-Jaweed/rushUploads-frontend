@@ -29,6 +29,7 @@ const page = () => {
 
             if (response.data) {
                 setUsers(response.data.data.users);
+                console.log(response.data.data.users);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
