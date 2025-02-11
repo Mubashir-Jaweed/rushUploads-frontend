@@ -105,18 +105,18 @@ const page = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentUsers.map((user, i) => (
+                                {currentUsers.map((currentUser, i) => (
                                     <tr key={i} className='border-b hover:bg-zinc-50'>
                                         <td className='px-4 py-3'>{(currentPage - 1) * itemsPerPage + i + 1}</td>
-                                        <td className='px-4 py-3'>{user.email.split('@')[0]}</td>
-                                        <td className='px-4 py-3'>{user.email}</td>
+                                        <td className='px-4 py-3'>{currentUser.email.split('@')[0]}</td>
+                                        <td className='px-4 py-3'>{currentUser.email}</td>
                                         <td className='px-4 py-3'>
                                             <select
                                                 className='border px-2 py-1 rounded'
-                                                value={user.tier}
-                                                onChange={(e) => updateUser(user.id, 'tier', e.target.value)}
+                                                value={currentUser.tier}
+                                                onChange={(e) => updateUser(currentUser.id, 'tier', e.target.value)}
                                             >
-                                                <option value={user.tier} disabled>{user.tier}</option>
+                                                <option value={currentUser.tier} disabled>{currentUser.tier}</option>
                                                 {['FREE', 'PRO', 'PREMIUM'].map(option => (
                                                     <option key={option} value={option}>{option}</option>
                                                 ))}
@@ -125,19 +125,19 @@ const page = () => {
                                         <td className='px-4 py-3'>
                                             <select
                                                 className='border px-2 py-1 rounded'
-                                                value={user.role}
-                                                onChange={(e) => updateUser(user.id, 'role', e.target.value)}
+                                                value={currentUser.role}
+                                                onChange={(e) => updateUser(currentUser.id, 'role', e.target.value)}
                                             >
-                                                <option value={user.role} disabled>{user.role}</option>
+                                                <option value={currentUser.role} disabled>{currentUser.role}</option>
                                                 {['ADMIN', 'USER'].map(option => (
                                                     <option key={option} value={option}>{option}</option>
                                                 ))}
                                             </select>
                                         </td>
                                         <td className='px-4 py-3 flex gap-4'>
-                                            <button onClick={() => deleteUser(user.id)} className='text-red-500 hover:text-red-700'>
+                                            {currentUser.email != user?.email && <button onClick={() => deleteUser(currentUser.id)} className='text-red-500 hover:text-red-700'>
                                                 <LuTrash size={18} />
-                                            </button>
+                                            </button>}
                                         </td>
                                     </tr>
                                 ))}
