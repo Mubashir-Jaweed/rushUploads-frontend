@@ -34,7 +34,7 @@ const page = () => {
 		}
 	}, [router.push, token]);
 
-	
+
 
 	const handleSignin = async (event) => {
 		if (token) return;
@@ -57,13 +57,24 @@ const page = () => {
 				},
 			);
 
+			console.log(response)
+
+
 			if (isPasswordRequired) {
-				localStorage.removeItem("ru_anonymous_id");
 
-				setToken?.(response.data.data.token);
-				setUser?.(formatUser(response.data.data.user));
+				if (response.data.info.message === "OTP Sent Successfully!") {
+					localStorage.setItem("ru_anonymous_id", response.data.data.token);
+					console.log("ru_anonymous_id", response.data.data.token);
+					return router.push(`/verify?e=${email}`);
+				}
+				else {
+					localStorage.removeItem("ru_anonymous_id");
 
-				router.push("/dashboard/workspace");
+					setToken?.(response.data.data.token);
+					setUser?.(formatUser(response.data.data.user));
+
+					router.push("/dashboard/workspace");
+				}
 			} else {
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
 
@@ -74,7 +85,8 @@ const page = () => {
 			// @ts-ignore
 			if (error.response.data.info.message === "Password Required!") {
 				setIsPasswordRequired(true);
-			} else {
+			}
+			else {
 				// @ts-ignore
 				setMessage(error.response.data.info.message);
 				toast.error(error.response.data.info.message);
@@ -87,7 +99,7 @@ const page = () => {
 		<div className="auth-bg w-full h-screen flex  justify-center items-center">
 			<div className="flex flex-col justify-center items-center gap-5">
 				<Link href={"/"} className="font-bold text-2xl ">
-				<Image alt="logo" src={logo} className="h-[50px] w-[150px]"/>
+					<Image alt="logo" src={logo} className="h-[50px] w-[150px]" />
 				</Link>
 				<span className="text-center  text-zinc-700 text-lg">
 					Your are only a few minutes away
@@ -95,11 +107,11 @@ const page = () => {
 				<div className="rounded-xl glass-bg flex justify-between items-center w-80">
 					<MdEmail className="text-2xl ml-3 text-stone-600" />
 					<input
-					onKeyDown={(e) => {
-						if (e.key === "Enter") {
-						  handleSignin(e);
-						}
-					  }}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								handleSignin(e);
+							}
+						}}
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						type="email"
@@ -117,11 +129,11 @@ const page = () => {
 							)}
 
 							<input
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-								  handleSignin(e);
-								}
-							  }}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleSignin(e);
+									}
+								}}
 								type={isHidden ? "password" : "text"}
 								placeholder="Password"
 								value={password}
@@ -154,7 +166,7 @@ const page = () => {
 					<span className="text-lg text-red-500 text-center">{message}</span>
 				)}
 				<PulsatingButton
-					onClick={(e)=>handleSignin(e)}
+					onClick={(e) => handleSignin(e)}
 					className={`text-lg font-medium px-14 py-3 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 				>
 					Continue with Email

@@ -40,6 +40,7 @@ const page = () => {
 
 
 	const handleSignup = async () => {
+		setMessage('');
 		if (token) return;
 		const data = {
 			fullName: fullName,
