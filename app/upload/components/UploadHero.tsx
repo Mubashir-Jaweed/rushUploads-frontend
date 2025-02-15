@@ -57,7 +57,6 @@ const UploadHero = () => {
 	});
 
 	const handleUpload = async (e) => {
-		console.log(files.length)
 		filesData = [];
 		if (files.length < 1) {
 			toast.error("No file selected!");
@@ -206,6 +205,7 @@ const UploadHero = () => {
 
 			if (response) {
 				const fileName = file.name;
+				const fileSize = file.size;
 				const splitFile = fileName.split(".");
 				const type = splitFile[splitFile.length - 1];
 
@@ -213,6 +213,7 @@ const UploadHero = () => {
 					originalName: fileName,
 					name: key,
 					type: type,
+					size:fileSize
 				};
 				filesData.push(fileData);
 			}
