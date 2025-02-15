@@ -30,7 +30,7 @@ const Navbar = () => {
 	  }, []);
 
 
-	const { token } = useUserContext();
+	const { token, user } = useUserContext();
 
 	return (
 		<div className={`${navState ? 'glass-bg h-[10vh]' : 'h-[13vh]'}  delay-5ms fixed z-30 w-full  flex justify-center items-cente`}>
@@ -121,6 +121,13 @@ const Navbar = () => {
 				<Link href={'/dashboard/payment-plans'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Payment & Plans</Link>
 				<Link href={'/dashboard/profile-security'} className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2">Profile & Security</Link></>)
 				}
+				{user?.role == 'ADMIN' &&
+				 <Link
+					className="text-xl text-stone-800 border-t border-stone-300 w-full py-3 hover:bg-zinc-200 px-2"
+					href={"/admin/dashboard"}
+				>
+				 Admin Panel
+				</Link>}
 			</div>
 		</div>
 	);
