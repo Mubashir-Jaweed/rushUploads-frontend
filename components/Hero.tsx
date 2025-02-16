@@ -7,10 +7,13 @@ import BlurIn from "@/components/ui/blur-in";
 import GridPattern from "@/components/ui/grid-pattern";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { cn } from "@/lib/utils";
+import AdUnit from "./ads/adUnit";
 
 const Hero = () => {
 	return (
 		<div className="scroll-smooth h-screen w-full p-3">
+
+			<AdUnit/>
 			<GridPattern
 				width={40}
 				height={40}
@@ -55,7 +58,6 @@ const Hero = () => {
 					to keep your data safe and always within reach.
 				</BlurIn>
 
-				{/* <button className="bg-white rounded-full px-7 py-3 text-lg font-medium">Get Started</button> */}
 				<BlurIn duration={1.2}>
 					<Link href={"/upload"}>
 						<PulsatingButton className="max-md:text-base max-sm:text-sm text-lg font-medium px-10 py-3 rounded-full flex justify-center items-center">

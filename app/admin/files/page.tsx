@@ -5,14 +5,17 @@ import { useUserContext } from '@/contexts/user';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { HiOutlineClipboardCopy } from 'react-icons/hi';
+import { HiOutlineClipboardCopy, HiOutlinePencil } from 'react-icons/hi';
 import { LuTrash } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 
-const page = () => {
+const Page = () => {
     const { isLoading, token, user } = useUserContext();
     const [files, setFiles] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [editingId, setEditingId] = useState(null);
+    const [newName, setNewName] = useState('');
+    const [originalExtension, setOriginalExtension] = useState('');
     const itemsPerPage = 10;
     const router = useRouter();
 
@@ -52,9 +55,6 @@ const page = () => {
 
     const claimReward = async (file, claimAmount) => {
         if (!token || claimAmount <= 0) return;
-
-        console.log(claimAmount)
-        console.log(file.id)
         try {
             await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/rewards/claim/${file.id}`, {
                 claims: claimAmount,
@@ -65,6 +65,28 @@ const page = () => {
             fetchFiles();
         } catch (error) {
             toast.error('Failed to pay reward');
+            console.error('Error:', error);
+        }
+    };
+
+    const updateFile = async (id) => {
+        if (!token || !newName.trim()) return;
+        try {
+            const updatedName = newName.trim() + originalExtension;
+            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/files/${id}`, {
+                originalName: updatedName,
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            toast.success('File name updated successfully');
+            setFiles(files.map(file => 
+                file.id === id ? { ...file, originalName: updatedName } : file
+            ));
+            setEditingId(null);
+            setNewName('');
+            setOriginalExtension('');
+        } catch (error) {
+            toast.error('Failed to update file name');
             console.error('Error:', error);
         }
     };
@@ -83,7 +105,7 @@ const page = () => {
             return;
         }
         fetchFiles();
-    }, []);
+    }, [user, router]);
 
     const totalPages = Math.ceil(files.length / itemsPerPage);
     const currentFiles = files.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -115,37 +137,112 @@ const page = () => {
                                     return (
                                         <tr key={i} className='border-b hover:bg-zinc-50'>
                                             <td className='px-4 py-3'>{(currentPage - 1) * itemsPerPage + i + 1}</td>
-                                            <td className='px-4 py-3'>{file.originalName}</td>
+                                            <td className='px-4 py-3'>
+                                                {editingId === file.id ? (
+                                                    <input
+                                                        type="text"
+                                                        value={newName}
+                                                        onChange={(e) => setNewName(e.target.value)}
+                                                        className="border rounded px-2 py-1 w-full"
+                                                        autoFocus
+                                                    />
+                                                ) : (
+                                                    file.originalName
+                                                )}
+                                            </td>
                                             <td className='px-4 py-3'>{formatRewardNumber(file.downloads)}</td>
                                             <td className='px-4 py-3'>{formatRewardNumber(file.claims * 0.007)}$</td>
                                             <td className='px-4 py-3'>
                                                 <select
                                                     onChange={(e) => claimReward(file, e.target.value)}
                                                     className='border px-2 py-1 rounded'
+                                                    value={0}
                                                 >
                                                     <option value='0'>0$</option>
                                                     {claimableDownloads > 0 && <option value={claimableDownloads}>{claimableAmount}$</option>}
                                                 </select>
                                             </td>
                                             <td className='px-4 py-3'>{file.user.email}</td>
-                                            <td className='px-4 py-3 flex gap-4'>
-                                                <button onClick={() => copyLink(file)} className='text-blue-500 hover:text-blue-700'>
-                                                    <HiOutlineClipboardCopy size={18} />
-                                                </button>
-                                                <button onClick={() => deleteFile(file.id)} className='text-red-500 hover:text-red-700'>
-                                                    <LuTrash size={18} />
-                                                </button>
+                                            <td className='px-4 py-3 flex gap-4 items-center'>
+                                                {editingId === file.id ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => updateFile(file.id)}
+                                                            className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600'
+                                                        >
+                                                            Save
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setEditingId(null);
+                                                                setNewName('');
+                                                                setOriginalExtension('');
+                                                            }}
+                                                            className='px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600'
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => copyLink(file)} 
+                                                            className='text-blue-500 hover:text-blue-700'
+                                                            title="Copy link"
+                                                        >
+                                                            <HiOutlineClipboardCopy size={18} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => {
+                                                                const lastDotIndex = file.originalName.lastIndexOf('.');
+                                                                if (lastDotIndex === -1) {
+                                                                    setNewName(file.originalName);
+                                                                    setOriginalExtension('');
+                                                                } else {
+                                                                    setNewName(file.originalName.substring(0, lastDotIndex));
+                                                                    setOriginalExtension(file.originalName.substring(lastDotIndex));
+                                                                }
+                                                                setEditingId(file.id);
+                                                            }}
+                                                            className='text-yellow-500 hover:text-yellow-700'
+                                                            title="Edit file name"
+                                                        >
+                                                            <HiOutlinePencil size={18} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => deleteFile(file.id)}
+                                                            className='text-red-500 hover:text-red-700'
+                                                            title="Delete file"
+                                                        >
+                                                            <LuTrash size={18} />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
-                    </div>
-                    <div className='mt-4 flex justify-between items-center'>
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white'}`}>Previous</button>
-                        <span className='text-gray-700'>Page {currentPage} of {totalPages}</span>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white'}`}>Next</button>
+                        <div className='mt-4 flex justify-between items-center'>
+                            <button 
+                                disabled={currentPage === 1} 
+                                onClick={() => setCurrentPage(currentPage - 1)} 
+                                className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                            >
+                                Previous
+                            </button>
+                            <span className='text-gray-700'>
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button 
+                                disabled={currentPage === totalPages} 
+                                onClick={() => setCurrentPage(currentPage + 1)} 
+                                className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -153,4 +250,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;
