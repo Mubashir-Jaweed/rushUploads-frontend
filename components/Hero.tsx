@@ -7,13 +7,11 @@ import BlurIn from "@/components/ui/blur-in";
 import GridPattern from "@/components/ui/grid-pattern";
 import PulsatingButton from "@/components/ui/pulsating-button";
 import { cn } from "@/lib/utils";
-import AdUnit from "./ads/adUnit";
 
 const Hero = () => {
 	return (
 		<div className="scroll-smooth h-screen w-full p-3">
 
-			<AdUnit/>
 			<GridPattern
 				width={40}
 				height={40}

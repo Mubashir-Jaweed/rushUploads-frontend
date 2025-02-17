@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { UserProvider } from "@/contexts/user";
 
 import "./globals.css";
+import Script from "next/script";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -32,6 +33,11 @@ export default function RootLayout({
 			<head>
 
 			</head>
+			<Script
+  id="adsense-init"
+  strategy="afterInteractive"
+			 async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.PUBLIC_GOOGLE_ADSENCE_CLIENT_ID}`}
+     crossOrigin="anonymous"></Script>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
