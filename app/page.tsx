@@ -32,7 +32,7 @@ const [isScroll, setIsScroll] = useState(false);
 	  }, []);
 
 	return (
-		<div className="scroll-smooth ">
+		<div className="scroll-smooth">
 			<Navbar />
 			<span id="top">
 			<Hero />
@@ -45,6 +45,9 @@ const [isScroll, setIsScroll] = useState(false);
 			<Faq/>
 			<TryIt/>
 			<Footer/>
+
+			<div id='home-l' className="fixed bottom-0 left-0 bg-blue-600 opacity-90 w-[200px] h-[800px] rounded"/>
+			<div id='home-r' className="fixed bottom-0 right-0 bg-blue-600 opacity-90 w-[200px] h-[800px] rounded"/>
 
 
 

@@ -219,6 +219,8 @@ const Workspace = () => {
 					</div>
 				</div>
 			</div>
+			<div id='prev-1' className="fixed bottom-0 left-[5%] right-[5%] bg-blue-600 opacity-90 w-[90%] h-[250px] rounded"/>
+
 		</div>
 	);
 };
