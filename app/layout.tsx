@@ -5,8 +5,6 @@ import { ToastContainer } from "react-toastify";
 import { UserProvider } from "@/contexts/user";
 
 import "./globals.css";
-import Script from "next/script";
-import AdInjector from "@/components/AdInjector";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -40,7 +38,6 @@ export default function RootLayout({
 			>
 				<UserProvider>{children}</UserProvider>
 				<ToastContainer />
-				<AdInjector/>
 			</body>
 		</html>
 	);

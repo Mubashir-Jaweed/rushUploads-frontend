@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuDownload, LuMenu } from "react-icons/lu";
 import { HiViewGrid } from "react-icons/hi";
@@ -12,24 +12,42 @@ import { toast } from "react-toastify";
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [isAds, setIsAds] = useState(true);
+	const [adImageUrl, setAdImageUrl] = useState('');
+	const [adRedirectUrl, setAdRedirectUrl] = useState('');
+	const [count, setCount] = useState(5);
+	const [showClose, setShowClose] = useState(false);
+	const intervalRef = useRef<NodeJS.Timeout>();
 	const [searchQuerry, setSearchQuerry] = useState("");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const router = useRouter();
 	const { id } = useParams();
 
+
+
+	
 	useEffect(() => {
+		intervalRef.current = setInterval(() => {
+			setCount((prev) => {
+			  if (prev <= 1) {
+				clearInterval(intervalRef.current!);
+				setShowClose(true);
+				return 0;
+			  }
+			  return prev - 1;
+			});
+		  }, 1000);
+	  
+		  return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		  };
+
+		
 		getFiles();
 	}, []);
 
 	let token: string | null = null;
-
-	// useEffect(() => {
-	// 	token = localStorage.getItem("token");
-	// 	if (!token) {
-	// 		router.push("/upload");
-	// 	}
-	// }, []);
 
 	const filteredFiles = files.filter((file) =>
 		file.originalName.toLowerCase().includes(searchQuerry.toLowerCase()),
@@ -119,6 +137,14 @@ const Workspace = () => {
 		<div>
 			<Navbar />
 			<div className=" w-full h-screen auth-bg flex items-end">
+				{isAds && 
+				<div  className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl">
+					<div onClick={()=>showClose ?setIsAds(false) : null } className="bg-white cursor-pointer uppercase text-lg font-normal text-stone-900 rounded-xl px-3 absolute top-3 right-3">
+					{showClose ? 'Close Ad' : `ad skip in ${count}` }	
+					</div>
+					{ count }Load Ad
+				</div>
+				}
 				<div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
 					<div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
 						{title ? (
@@ -219,7 +245,6 @@ const Workspace = () => {
 					</div>
 				</div>
 			</div>
-			<div id='prev-1' className="fixed bottom-0 left-[5%] right-[5%] bg-blue-600 opacity-90 w-[90%] h-[250px] rounded"/>
 
 		</div>
 	);
