@@ -8,13 +8,13 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Navbar from "@/components/Navbar";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [isAds, setIsAds] = useState(true);
-	const [adImageUrl, setAdImageUrl] = useState('');
-	const [adRedirectUrl, setAdRedirectUrl] = useState('');
+	const [adUrl, setAdUrl] = useState('https://chatgpt.com/c/67dafcc3-5d4c-8013-b094-e405a5fd9c9d');
 	const [count, setCount] = useState(5);
 	const [showClose, setShowClose] = useState(false);
 	const intervalRef = useRef<NodeJS.Timeout>();
@@ -26,24 +26,25 @@ const Workspace = () => {
 
 
 
-	
+
+
 	useEffect(() => {
 		intervalRef.current = setInterval(() => {
 			setCount((prev) => {
-			  if (prev <= 1) {
-				clearInterval(intervalRef.current!);
-				setShowClose(true);
-				return 0;
-			  }
-			  return prev - 1;
+				if (prev <= 1) {
+					clearInterval(intervalRef.current!);
+					setShowClose(true);
+					return 0;
+				}
+				return prev - 1;
 			});
-		  }, 1000);
-	  
-		  return () => {
-			if (intervalRef.current) clearInterval(intervalRef.current);
-		  };
+		}, 1000);
 
-		
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		};
+
+
 		getFiles();
 	}, []);
 
@@ -77,10 +78,10 @@ const Workspace = () => {
 	};
 
 
-	async function increaseDownload(fileId : string){
+	async function increaseDownload(fileId: string) {
 		try {
-			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,{
-			} ,{
+			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`, {
+			}, {
 				headers: {
 					"Content-Type": "application/json",
 					// Authorization: `Bearer ${token}`,
@@ -100,7 +101,7 @@ const Workspace = () => {
 		}
 	}
 
-	async function downloadFile(fileId:string, url: string, filename: string) {
+	async function downloadFile(fileId: string, url: string, filename: string) {
 		increaseDownload(fileId)
 		try {
 			const response = await fetch(url);
@@ -137,13 +138,26 @@ const Workspace = () => {
 		<div>
 			<Navbar />
 			<div className=" w-full h-screen auth-bg flex items-end">
-				{isAds && 
-				<div  className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl">
-					<div onClick={()=>showClose ?setIsAds(false) : null } className="bg-white cursor-pointer uppercase text-lg font-normal text-stone-900 rounded-xl px-3 absolute top-3 right-3">
-					{showClose ? 'Close Ad' : `ad skip in ${count}` }	
+				{isAds &&
+					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl">
+						<div onClick={() => showClose ? setIsAds(false) : null} className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3">
+							{showClose ? 'Close Ad' : `Generating Link | ad skip in ${count}`}
+						</div>
+
+
+						<Link href={adUrl} target="_blank" className='adContainer'>
+							<iframe
+								src={adUrl}
+								width="100%"
+								height="100%"
+								style={{ border: "none" }}
+							></iframe>
+
+						</Link>
+
+
+
 					</div>
-					{ count }Load Ad
-				</div>
 				}
 				<div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
 					<div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
