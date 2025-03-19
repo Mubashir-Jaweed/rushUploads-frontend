@@ -160,20 +160,23 @@ const Workspace = () => {
                                             </span>
                                             <div className="flex w-full justify-between items-end">
                                                 <div className="flex justify-start items-center gap-3">
-                                                    <span className=" text-sm font-normal text-zinc-700">
-                                                        {val.updatedAt.split("T")[0]}
-                                                    </span>
-                                                    {val.isExpired && (
-                                                        <>
-                                                            {" "}
-                                                            <span className=" text-xs font-normal text-zinc-700">
-                                                                |
-                                                            </span>
-                                                            <span className=" text-sm font-normal text-zinc-700">
-                                                                Expired
-                                                            </span>
-                                                        </>
-                                                    )}
+                                                <span className=" text-sm font-[500] text-zinc-500">
+														{val.user.email}
+													</span>
+													<span className=" text-xs font-[500] text-zinc-500">
+														{val.updatedAt.split("T")[0]}
+													</span>
+													<span className=" text-xs font-[500] text-zinc-500">
+														(17.8 MB)
+													</span>
+													{val.isExpired && (
+														<>
+															{" "}
+															<span className=" text-sm font-normal text-zinc-700">
+																Expired
+															</span>
+														</>
+													)}
                                                 </div>
                                                 <div className="flex justify-center items-center ">
                                                     <a

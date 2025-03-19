@@ -14,7 +14,7 @@ const Workspace = () => {
 	const [files, setFiles] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [isAds, setIsAds] = useState(true);
-	const [adUrl, setAdUrl] = useState('https://chatgpt.com/c/67dafcc3-5d4c-8013-b094-e405a5fd9c9d');
+	const [adUrl, setAdUrl] = useState('https://www.google.com/search?q=iamegs&oq=iamegs&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzc0NmowajGoAgCwAgA&sourceid=chrome&ie=UTF-8');
 	const [count, setCount] = useState(5);
 	const [showClose, setShowClose] = useState(false);
 	const intervalRef = useRef<NodeJS.Timeout>();
@@ -29,6 +29,8 @@ const Workspace = () => {
 
 
 	useEffect(() => {
+		getFiles();
+
 		intervalRef.current = setInterval(() => {
 			setCount((prev) => {
 				if (prev <= 1) {
@@ -45,7 +47,6 @@ const Workspace = () => {
 		};
 
 
-		getFiles();
 	}, []);
 
 	let token: string | null = null;
@@ -69,6 +70,8 @@ const Workspace = () => {
 				setFiles(response.data.data.link.files);
 				setTitle(response.data.data.link.title);
 				setDescription(response.data.data.link.message);
+
+				console.log(response.data.data.link.files);
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
@@ -145,15 +148,14 @@ const Workspace = () => {
 						</div>
 
 
-						<Link href={adUrl} target="_blank" className='adContainer'>
-							<iframe
-								src={adUrl}
-								width="100%"
-								height="100%"
-								style={{ border: "none" }}
-							></iframe>
-
-						</Link>
+						<a href={adUrl} target="_blank" rel="noopener noreferrer">
+      <iframe
+        src={adUrl}
+        width="100%"
+        height="300"
+        style={{ border: "none", cursor: "pointer" }}
+      ></iframe>
+    </a>
 
 
 
@@ -194,19 +196,22 @@ const Workspace = () => {
 									<>
 										<div key={i} className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
 											<span className="text-lg font-medium overflow-hidden w-full text-stone-800">
-												{val.originalName}
+												{val.originalName} 
 											</span>
 											<div className="flex w-full justify-between items-end">
 												<div className="flex justify-start items-center gap-3">
-													<span className=" text-sm font-normal text-zinc-700">
+													<span className=" text-sm font-[500] text-zinc-500">
+														{val.user.email}
+													</span>
+													<span className=" text-xs font-[500] text-zinc-500">
 														{val.updatedAt.split("T")[0]}
+													</span>
+													<span className=" text-xs font-[500] text-zinc-500">
+														(17.8 MB)
 													</span>
 													{val.isExpired && (
 														<>
 															{" "}
-															<span className=" text-xs font-normal text-zinc-700">
-																|
-															</span>
 															<span className=" text-sm font-normal text-zinc-700">
 																Expired
 															</span>
