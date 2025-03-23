@@ -205,7 +205,6 @@ const UploadHero = () => {
 
 			if (response) {
 				const fileName = file.name;
-				const fileSize = file.size;
 				const splitFile = fileName.split(".");
 				const type = splitFile[splitFile.length - 1];
 
@@ -213,7 +212,7 @@ const UploadHero = () => {
 					originalName: fileName,
 					name: key,
 					type: type,
-					size:fileSize
+					size:file.size
 				};
 				filesData.push(fileData);
 			}

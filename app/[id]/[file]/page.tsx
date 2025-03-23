@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Navbar from "@/components/Navbar";
 import { toast } from "react-toastify";
+import { formatFileSize } from "@/lib/utils";
 
 const Workspace = () => {
     const [files, setFiles] = useState([]);
@@ -47,6 +48,7 @@ const Workspace = () => {
 
                 if (filteredFile) {
                     setFiles([filteredFile]); // Set only the matched file
+                    console.log([filteredFile]); // Set only the matched file
                     setTitle(response.data.data.link.title);
                     setDescription(response.data.data.link.message);
                 } else {
@@ -167,7 +169,7 @@ const Workspace = () => {
 														{val.updatedAt.split("T")[0]}
 													</span>
 													<span className=" text-xs font-[500] text-zinc-500">
-														(17.8 MB)
+														({formatFileSize(val.size)})
 													</span>
 													{val.isExpired && (
 														<>

@@ -9,6 +9,7 @@ import axios from "axios";
 import Navbar from "@/components/Navbar";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { formatFileSize } from "@/lib/utils";
 
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
@@ -207,7 +208,7 @@ const Workspace = () => {
 														{val.updatedAt.split("T")[0]}
 													</span>
 													<span className=" text-xs font-[500] text-zinc-500">
-														(17.8 MB)
+														({formatFileSize(val.size)})
 													</span>
 													{val.isExpired && (
 														<>
