@@ -7,7 +7,7 @@ import { useUserContext } from '@/contexts/user';
 import { toast } from 'react-toastify';
 
 const Sidebar = () => {
-    const [monetization, setMonetization] = useState(false);
+    const [isMonetization, setIsMonetization] = useState(false);
     const { isLoading, token, user } = useUserContext();
 
     useEffect(() => {
@@ -16,10 +16,9 @@ const Sidebar = () => {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                // console.log(response.data.data);
-                setMonetization(response.data.data.settings[0].value === 'ON' || false);
+                setIsMonetization(response.data.data.value === 'ON' ? true : false);
             } catch (error) {
-                toast.error('Failed to fetch monetization');
+                // toast.error('Failed to fetch monetization');
                 console.error('Failed to fetch monetization:', error);
             }
         };
@@ -28,15 +27,17 @@ const Sidebar = () => {
     }, [token]);
 
     const handleToggle = async () => {
-        const newValue = !monetization;
-        setMonetization(newValue);
+        
 
         try {
-            await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings/monetization`, {
-                value: newValue ? 'ON' : 'OFF'
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings/monetization`, {
+                value: isMonetization ? "OFF" : "ON"
             }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
+            console.log(response.data.data)
+            setIsMonetization(response.data.data.value === 'ON' ? true : false);
         } catch (error) {
             toast.error('Failed to update monetization');
             console.error('Failed to update monetization:', error);
@@ -71,10 +72,10 @@ const Sidebar = () => {
                 <span className='text-gray-800 font-medium'>Monetization</span>
                 <button 
                     onClick={handleToggle} 
-                    className={`relative w-14 h-7 flex items-center bg-gray-300 rounded-full p-1 transition ${monetization ? 'bg-[#ff4262eb]' : 'bg-gray-400'}`}
+                    className={`relative w-14 h-7 flex items-center rounded-full p-1 transition ${isMonetization ? 'bg-[#ff4262eb]' : 'bg-gray-400'}`}
                 >
                     <div 
-                        className={`h-5 w-5 bg-white rounded-full shadow-md transform transition ${monetization ? 'translate-x-7' : ''}`} 
+                        className={`h-5 w-5 bg-white rounded-full shadow-md transform transition ${isMonetization ? 'translate-x-7' : ''}`} 
                     />
                 </button>
             </div>
