@@ -10,12 +10,14 @@ import Navbar from "@/components/Navbar";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { formatFileSize } from "@/lib/utils";
+import { useUserContext } from "@/contexts/user";
 
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [isAds, setIsAds] = useState(true);
-	const [adUrl, setAdUrl] = useState('https://www.google.com/search?q=iamegs&oq=iamegs&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzc0NmowajGoAgCwAgA&sourceid=chrome&ie=UTF-8');
+	const [isAds, setIsAds] = useState(false);
+	const [redirectUrl, setRedirectUrl] = useState('');
+	const [adBannerUrl, setAdBannerUrl] = useState('');
 	const [count, setCount] = useState(5);
 	const [showClose, setShowClose] = useState(false);
 	const intervalRef = useRef<NodeJS.Timeout>();
@@ -25,9 +27,28 @@ const Workspace = () => {
 	const router = useRouter();
 	const { id } = useParams();
 
+	const { token } = useUserContext();
 
 
 
+
+	useEffect(() => {
+		const fetchSettings = async () => {
+			try {
+				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setIsAds(response.data.data.value === 'ON' ? true : false);
+				setRedirectUrl(response.data.data.redirectUrl)
+				setAdBannerUrl(response.data.data.bannerUrl)
+			} catch (error) {
+				// toast.error('Failed to fetch monetization');
+				console.error('Failed to fetch monetization:', error);
+			}
+		};
+
+		fetchSettings();
+	}, [token]);
 
 	useEffect(() => {
 		getFiles();
@@ -50,7 +71,6 @@ const Workspace = () => {
 
 	}, []);
 
-	let token: string | null = null;
 
 	const filteredFiles = files.filter((file) =>
 		file.originalName.toLowerCase().includes(searchQuerry.toLowerCase()),
@@ -62,7 +82,6 @@ const Workspace = () => {
 			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/link/${id}`, {
 				headers: {
 					"Content-Type": "application/json",
-					// Authorization: `Bearer ${token}`,
 				},
 			});
 
@@ -72,7 +91,6 @@ const Workspace = () => {
 				setTitle(response.data.data.link.title);
 				setDescription(response.data.data.link.message);
 
-				console.log(response.data.data.link.files);
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
@@ -88,7 +106,6 @@ const Workspace = () => {
 			}, {
 				headers: {
 					"Content-Type": "application/json",
-					// Authorization: `Bearer ${token}`,
 				},
 			});
 
@@ -149,14 +166,14 @@ const Workspace = () => {
 						</div>
 
 
-						<a href={adUrl} target="_blank" rel="noopener noreferrer">
-      <iframe
-        src={adUrl}
-        width="100%"
-        height="300"
-        style={{ border: "none", cursor: "pointer" }}
-      ></iframe>
-    </a>
+						<a href={redirectUrl} target="_blank" rel="noopener noreferrer">
+							<iframe
+								src={adBannerUrl}
+								width="100%"
+								height="300"
+								style={{ border: "none", cursor: "pointer" }}
+							></iframe>
+						</a>
 
 
 
@@ -195,9 +212,9 @@ const Workspace = () => {
 							{files.length !== 0 && !loading ? (
 								filteredFiles.map((val, i) => (
 									<>
-										<div key={i} className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
+										<div key={val.id} className="hover:bg-[#f5f5f57e] bg-[#f5f5f52d] w-full list-card cursor-pointer flex flex-col  justify-center items-center rounded-[8px] p-3">
 											<span className="text-lg font-medium overflow-hidden w-full text-stone-800">
-												{val.originalName} 
+												{val.originalName}
 											</span>
 											<div className="flex w-full justify-between items-end">
 												<div className="flex justify-start items-center gap-3">
