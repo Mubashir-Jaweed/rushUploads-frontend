@@ -12,6 +12,8 @@ import Link from "next/link";
 import { formatFileSize } from "@/lib/utils";
 import { useUserContext } from "@/contexts/user";
 
+
+
 const Workspace = () => {
 	const [files, setFiles] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -39,8 +41,8 @@ const Workspace = () => {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				setIsAds(response.data.data.value === 'ON' ? true : false);
-				setRedirectUrl(response.data.data.redirectUrl)
-				setAdBannerUrl(response.data.data.bannerUrl)
+				setRedirectUrl('https://www.youtube.com/watch?v=uxjhN_Donfw')
+				setAdBannerUrl('https://www.youtube.com/watch?v=uxjhN_Donfw')
 			} catch (error) {
 				// toast.error('Failed to fetch monetization');
 				console.error('Failed to fetch monetization:', error);
@@ -159,26 +161,55 @@ const Workspace = () => {
 		<div>
 			<Navbar />
 			<div className=" w-full h-screen auth-bg flex items-end">
-				{isAds &&
-					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl">
-						<div onClick={() => showClose ? setIsAds(false) : null} className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3">
+				{isAds && (
+					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
+						<div
+							onClick={() => showClose ? setIsAds(false) : null}
+							className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3 z-10"
+						>
 							{showClose ? 'Close Ad' : `Generating Link | ad skip in ${count}`}
 						</div>
 
-
-						<a href={redirectUrl} target="_blank" rel="noopener noreferrer">
-							<iframe
-								src={adBannerUrl}
-								width="100%"
-								height="300"
-								style={{ border: "none", cursor: "pointer" }}
-							></iframe>
-						</a>
-
-
-
+						<div className="w-full h-full relative">
+							<a
+								href={redirectUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="w-full h-full block"
+							>
+								{/* Video Player Section */}
+								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
+									<video
+										autoPlay
+										muted
+										loop
+										controls={false}
+										className="w-full h-full object-cover"
+										onError={(e) => console.error('Video failed to load', e)}
+									>
+										<source src={adBannerUrl} type={`video/${adBannerUrl.split('.').pop()}`} />
+										Your browser does not support the video tag.
+									</video>
+								) : adBannerUrl.endsWith('.html') ? (
+									<iframe
+										src={adBannerUrl}
+										className="w-full h-full border-none"
+										title="Advertisement"
+									/>
+								) : (
+									<img
+										src={adBannerUrl}
+										alt="Advertisement"
+										className="w-full h-full object-contain"
+										onError={(e) => {
+											e.currentTarget.src = '/fallback-ad-image.jpg';
+										}}
+									/>
+								)}
+							</a>
+						</div>
 					</div>
-				}
+				)}
 				<div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
 					<div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
 						{title ? (
