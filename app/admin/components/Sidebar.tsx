@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
@@ -54,12 +55,13 @@ const Sidebar = () => {
                     {[
                         { href: '/admin/dashboard', label: 'Dashboard' },
                         { href: '/admin/users', label: 'All Users' },
-                        { href: '/admin/files', label: 'All Files' }
+                        { href: '/admin/files', label: 'All Files' },
+                        { href: '/admin/monetize', label: 'Monetization' }
                     ].map((item) => (
                         <Link 
                             key={item.href} 
                             href={item.href} 
-                            className='block text-lg text-gray-800 hover:bg-gray-100 rounded-lg py-3 px-6 transition'
+                            className='block text-lg text-gray-800 rounded hover:bg-gray-100  py-3 px-6 transition'
                         >
                             {item.label}
                         </Link>
