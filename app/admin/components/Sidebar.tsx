@@ -28,8 +28,6 @@ const Sidebar = () => {
     }, [token]);
 
     const handleToggle = async () => {
-        
-
         try {
             const response = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings/monetization`, {
                 value: isMonetization ? "OFF" : "ON"
@@ -37,10 +35,9 @@ const Sidebar = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log(response.data.data)
-            setIsMonetization(response.data.data.value === 'ON' ? true : false);
+            setIsMonetization(!isMonetization);
+            toast.success(response.data.message);
         } catch (error) {
-            toast.error('Failed to update monetization');
             console.error('Failed to update monetization:', error);
         }
     };
