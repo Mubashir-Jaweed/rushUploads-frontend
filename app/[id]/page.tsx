@@ -170,7 +170,7 @@ const Workspace = () => {
 							{showClose ? 'Close Ad' : `Generating Link | ad skip in ${count}`}
 						</div>
 
-						<div className=" relative h-[90%] w-[90%] flex justify-center items-center">
+						<div className=" relative  h-[90%] w-[90%] flex justify-center items-center">
 							<a
 								href={redirectUrl}
 								target="_blank"
