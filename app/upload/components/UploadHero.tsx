@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
@@ -44,11 +44,62 @@ const UploadHero = () => {
 	let verifyToken: string | null = null;
 	let filesData = [];
 
+
+	const [isAds, setIsAds] = useState(false);
+		const [redirectUrl, setRedirectUrl] = useState('');
+		const [adBannerUrl, setAdBannerUrl] = useState('');
+		const [count, setCount] = useState(5);
+		const [showClose, setShowClose] = useState(false);
+		const intervalRef = useRef<NodeJS.Timeout>();
+
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
 
 
+
+
+	useEffect(() => {
+		const fetchSettings = async () => {
+			try {
+				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setIsAds(response.data.data.value === 'ON' ? true : false);
+				setRedirectUrl(response.data.data.redirectUrl ?? '')
+				setAdBannerUrl(response.data.data.bannerUrl ?? '')
+			} catch (error) {
+				// toast.error('Failed to fetch monetization');
+				console.error('Failed to fetch monetization:', error);
+			}
+		};
+
+		fetchSettings();
+	}, [token]);
+
+
+		useEffect(() => {
+	
+			
+	
+	
+		}, []);
+const startAdCount = ()=>{
+	intervalRef.current = setInterval(() => {
+		setCount((prev) => {
+			if (prev <= 1) {
+				clearInterval(intervalRef.current!);
+				setShowClose(true);
+				return 0;
+			}
+			return prev - 1;
+		});
+	}, 1000);
+
+	return () => {
+		if (intervalRef.current) clearInterval(intervalRef.current);
+	};
+}
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -81,6 +132,10 @@ const UploadHero = () => {
 		setIsProcessing(true);
 		setProgress(0);
 		setIsUploading(true);
+
+		if(isAds){
+			startAdCount()
+		}
 
 		try {
 			for (const file of files) {
@@ -468,6 +523,58 @@ const UploadHero = () => {
 				)}
 			/>
 			<div className="h-[100%] w-[100%] py-32  hero-bg rounded-xl flex  justify-center items-center">
+			{isAds && isProcessing && (
+					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
+						<div
+							onClick={() => showClose ? setIsAds(false) : null}
+							className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3 z-10"
+						>
+							{showClose ? 'Close Ad' : `Prepare to upload | ad skip in ${count}`}
+						</div>
+
+						<div className=" relative  h-[90%] w-[90%] flex justify-center items-center">
+							<a
+								href={redirectUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								
+							>
+								{/* Video Player Section */}
+								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
+									<video
+										autoPlay
+										muted
+										loop
+										controls={false}
+										className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded"
+										onError={(e) => console.error('Video failed to load', e)}
+									>
+										<source src={adBannerUrl} type={`video/${adBannerUrl.split('.').pop()}`} />
+										Your browser does not support the video tag.
+									</video>
+								) : adBannerUrl.endsWith('.html') ? (
+									<iframe
+										src={adBannerUrl}
+										className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded border-none"
+										title="Advertisement"
+									/>
+								) : (
+									<img
+										src={adBannerUrl}
+										alt="Advertisement"
+										className="max-w-[80%] min-w-[500px] max-h-[90%] rounded object-contain"
+										onError={(e) => {
+											e.currentTarget.src = '/fallback-ad-image.jpg';
+										}}
+									/>
+								)}
+							</a>
+						</div>
+					</div>
+				)}
+
+
+
 				{/*if btn press shoew progress else show form */}
 				{isUploading ? (
 					isFileUploaded ? (
