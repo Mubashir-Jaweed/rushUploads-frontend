@@ -68,7 +68,7 @@ const Dashboard = () => {
           <div className="flex flex-col items-center justify-center h-full">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#ff4262]"></div>
             <button
-              className="mt-4 px-6 py-2 bg-[#ff4262] text-white rounded-lg shadow-md hover:bg-[#d93654] transition-all"
+              className="mt-4 px-6 py-2 bg-[#ff4262] text-white rounded-xl shadow-md hover:bg-[#d93654] transition-all"
               onClick={getData}
             >
               Retry
@@ -85,7 +85,7 @@ const Dashboard = () => {
                 ['Reward Paid', totalData.counts.claims * 0.007 || 0, <BiMoneyWithdraw className="w-6 h-6 md:w-8 md:h-8" />],
               ].map(([label, count, Icon], idx) => (
                 <div key={idx} className="bg-white p-4 rounded-xl flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="bg-[#ff4262]/10 p-2 md:p-3 text-[#ff4262] rounded-lg">
+                  <div className="bg-[#ff4262]/10 p-2 md:p-3 text-[#ff4262] rounded-xl">
                     {Icon}
                   </div>
                   <div>
@@ -164,8 +164,8 @@ const Dashboard = () => {
                     ['Total Views', adsStats.views, <LuMonitor className="w-6 h-6 md:w-8 md:h-8" />],
                     ['Total Clicks', adsStats.clicks, <LuMousePointerClick className="w-6 h-6 md:w-8 md:h-8" />],
                   ].map(([label, count, Icon], idx) => (
-                    <div key={idx} className="bg-gray-50 p-4 rounded-lg flex items-center gap-4">
-                      <div className="bg-[#ff4262]/10 p-2 md:p-3 text-[#ff4262] rounded-lg">
+                    <div key={idx} className="bg-gray-50 p-4 rounded-xl flex items-center gap-4">
+                      <div className="bg-[#ff4262]/10 p-2 md:p-3 text-[#ff4262] rounded-xl">
                         {Icon}
                       </div>
                       <div>
