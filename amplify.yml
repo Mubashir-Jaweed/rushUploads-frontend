@@ -1,0 +1,14 @@
+# amplify.yml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci  # Clean install
+    build:
+      commands:
+        - npm run build  # Next.js build
+  cache:
+    paths:
+      - node_modules/**/*  # Cache dependencies
+      - .next/cache/**/*   # Cache Next.js build
