@@ -4,7 +4,7 @@ applications:
       phases:
         preBuild:
           commands:
-            - cd CLIENT2  # Navigate to the app directory
+            - cd client2  # Navigate to the app directory
             - npm ci
         build:
           commands:
