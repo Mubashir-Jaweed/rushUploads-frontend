@@ -523,7 +523,7 @@ const startAdCount = ()=>{
 				)}
 			/>
 			<div className="h-[100%] w-[100%] py-32  hero-bg rounded-xl flex  justify-center items-center">
-			{isAds && isProcessing && (
+			{isAds && isUploading && token ?(
 					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
 						<div
 							onClick={() => showClose ? setIsAds(false) : null}
@@ -571,7 +571,7 @@ const startAdCount = ()=>{
 							</a>
 						</div>
 					</div>
-				)}
+				) : null}
 
 
 

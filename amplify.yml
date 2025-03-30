@@ -1,18 +1,14 @@
+# amplify.yml
 version: 1
-applications:
-  - frontend:
-      phases:
-        preBuild:
-          commands:
-            - cd client2  # Navigate to the app directory
-            - npm ci
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: client2/out  # Update if build output is in CLIENT2/out
-        files:
-          - "**/*"
-      cache:
-        paths:
-          - client2/node_modules/**/*
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci  # Clean install
+    build:
+      commands:
+        - npm run build  # Next.js build
+  cache:
+    paths:
+      - node_modules/**/*  # Cache dependencies
+      - .next/cache/**/*   # Cache Next.js build
