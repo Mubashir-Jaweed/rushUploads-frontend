@@ -4,14 +4,15 @@ applications:
       phases:
         preBuild:
           commands:
+            - cd CLIENT2  # Navigate to the app directory
             - npm ci
         build:
           commands:
             - npm run build
       artifacts:
-        baseDirectory: out
+        baseDirectory: CLIENT2/out  # Update if build output is in CLIENT2/out
         files:
           - "**/*"
       cache:
         paths:
-          - node_modules/**/*
+          - CLIENT2/node_modules/**/*
