@@ -43,6 +43,7 @@ const Workspace = () => {
 				setIsAds(response.data.data.value === 'ON' ? true : false);
 				setRedirectUrl(response.data.data.redirectUrl ?? '')
 				setAdBannerUrl(response.data.data.bannerUrl ?? '')
+				console.log(response)
 			} catch (error) {
 				// toast.error('Failed to fetch monetization');
 				console.error('Failed to fetch monetization:', error);
