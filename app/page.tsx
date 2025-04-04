@@ -26,6 +26,8 @@ const [isScroll, setIsScroll] = useState(false);
 		
 		}
 	  };
+
+	  console.log(process.env.NEXT_PUBLIC_BACKEND_URL)
 	
 	  useEffect(() => {
 		window.addEventListener("scroll", onScroll);
