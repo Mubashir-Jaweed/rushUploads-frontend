@@ -152,7 +152,11 @@ const startAdCount = ()=>{
 			setProgress(100); // Set progress to 100% on successful completion
 		} catch (error) {
 			console.error("Error in handleUpload:", error);
-			toast.error("Upload failed. Please try again.");
+			if(error.response.data.info.message = 'File Contain Virus'){
+				toast.error(error.response.data.info.message);
+			}else{
+				toast.error("Upload failed. Please try again.");
+			}
 			setIsUploading(false);
 		} finally {
 			setIsProcessing(false);
@@ -188,7 +192,6 @@ const startAdCount = ()=>{
 			}
 		} catch (error) {
 			console.error("Error in handleMultiUpload:", error);
-			toast.error("Failed to initialize file upload. Please try again.");
 			throw error;
 		}
 	};
@@ -236,7 +239,6 @@ const startAdCount = ()=>{
 			await finalizeMultipartUpload(file, key, uploadId, uploadedParts);
 		} catch (error) {
 			console.error("Error in uploadFileChunks:", error);
-			toast.error("Error uploading file chunks. Please try again.");
 			throw error;
 		}
 	};
