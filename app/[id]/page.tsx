@@ -92,6 +92,7 @@ const Workspace = () => {
 				setLoading(false)
 				setFiles(response.data.data.link.files);
 				setTitle(response.data.data.link.title);
+				console.log(response.data)
 				setDescription(response.data.data.link.message);
 
 			}

@@ -45,12 +45,12 @@ const UploadHero = () => {
 	let filesData = [];
 
 
-	const [isAds, setIsAds] = useState(false);
-		const [redirectUrl, setRedirectUrl] = useState('');
-		const [adBannerUrl, setAdBannerUrl] = useState('');
-		const [count, setCount] = useState(5);
-		const [showClose, setShowClose] = useState(false);
-		const intervalRef = useRef<NodeJS.Timeout>();
+	// const [isAds, setIsAds] = useState(false);
+	// 	const [redirectUrl, setRedirectUrl] = useState('');
+	// 	const [adBannerUrl, setAdBannerUrl] = useState('');
+	// 	const [count, setCount] = useState(5);
+	// 	const [showClose, setShowClose] = useState(false);
+	// 	const intervalRef = useRef<NodeJS.Timeout>();
 
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
@@ -59,47 +59,42 @@ const UploadHero = () => {
 
 
 
-	useEffect(() => {
-		const fetchSettings = async () => {
-			try {
-				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setIsAds(response.data.data.value === 'ON' ? true : false);
-				setRedirectUrl(response.data.data.redirectUrl ?? '')
-				setAdBannerUrl(response.data.data.bannerUrl ?? '')
-			} catch (error) {
-				// toast.error('Failed to fetch monetization');
-				console.error('Failed to fetch monetization:', error);
-			}
-		};
+	// useEffect(() => {
+	// 	const fetchSettings = async () => {
+	// 		try {
+	// 			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+	// 				headers: { Authorization: `Bearer ${token}` },
+	// 			});
+	// 			setIsAds(response.data.data.value === 'ON' ? true : false);
+	// 			setRedirectUrl(response.data.data.redirectUrl ?? '')
+	// 			setAdBannerUrl(response.data.data.bannerUrl ?? '')
+	// 		} catch (error) {
+	// 			// toast.error('Failed to fetch monetization');
+	// 			console.error('Failed to fetch monetization:', error);
+	// 		}
+	// 	};
 
-		fetchSettings();
-	}, [token]);
+	// 	fetchSettings();
+	// }, [token]);
 
 
-		useEffect(() => {
-	
-			
-	
-	
-		}, []);
-const startAdCount = ()=>{
-	intervalRef.current = setInterval(() => {
-		setCount((prev) => {
-			if (prev <= 1) {
-				clearInterval(intervalRef.current!);
-				setShowClose(true);
-				return 0;
-			}
-			return prev - 1;
-		});
-	}, 1000);
 
-	return () => {
-		if (intervalRef.current) clearInterval(intervalRef.current);
-	};
-}
+	// const startAdCount = () => {
+	// 	intervalRef.current = setInterval(() => {
+	// 		setCount((prev) => {
+	// 			if (prev <= 1) {
+	// 				clearInterval(intervalRef.current!);
+	// 				setShowClose(true);
+	// 				return 0;
+	// 			}
+	// 			return prev - 1;
+	// 		});
+	// 	}, 1000);
+
+	// 	return () => {
+	// 		if (intervalRef.current) clearInterval(intervalRef.current);
+	// 	};
+	// }
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -133,35 +128,128 @@ const startAdCount = ()=>{
 		setProgress(0);
 		setIsUploading(true);
 
-		if(isAds){
-			startAdCount()
-		}
+		// if(isAds){
+		// 	startAdCount()
+		// }
 
 		try {
 			for (const file of files) {
-				await handleMultiUpload(file);
+				await uploadFile(file);
 			}
 
 			// Proceed with generating file link or sending email after all uploads are done
 			if (isSentToEmail) {
-				await sendToMail();
+				// await sendToMail();
+				console.log('lol')
 			} else {
-				await createFileLink();
+				// await createFileLink();
+				console.log('lol')
+
 			}
 
 			setProgress(100); // Set progress to 100% on successful completion
 		} catch (error) {
 			console.error("Error in handleUpload:", error);
-			if(error.response.data.info.message = 'File Contain Virus'){
+			if (error.response.data.info.message = 'File Contain Virus') {
 				toast.error(error.response.data.info.message);
-			}else{
+			} else {
 				toast.error("Upload failed. Please try again.");
 			}
 			setIsUploading(false);
+			setIsProcessing(false);
 		} finally {
 			setIsProcessing(false);
 		}
 	};
+
+	const uploadFile = async (file) => {
+		try {
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/initiate`, {
+				filename: file.name
+			}, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			}
+			)
+			if (response) {
+				console.log(response.data.uploadId)
+				await getPreSignedUrlForChunk(response.data.uploadId, file)
+			}
+		} catch (error) {
+			return error
+		}
+
+	}
+
+	const getPreSignedUrlForChunk = async (uploadId: String, file: File) => {
+		const chunkSize = 30 * 1024 * 1024; // 30MB
+		const totalChunks = Math.ceil(file.size / chunkSize);
+		try {
+			for (let index = 0; index < totalChunks; index++) {
+				const start = index * chunkSize;
+				const end = Math.min(file.size, start + chunkSize);
+				const chunk = file.slice(start, end);
+				const arrayBuffer = await chunk.arrayBuffer();
+				let uploadedParts = [];
+
+				const response = await axios.post(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/presigned-url`,
+					{
+						filename: file.name,
+						uploadId: uploadId,
+						partNumber: index + 1
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+
+				if (response) {
+					console.log(response.data.url)
+					const uploadChunks = await axios.put(response.data.url, {
+						body: arrayBuffer
+					})
+					console.log(uploadChunks)
+
+					const eTag = uploadChunks.headers.get('etag')
+					uploadedParts.push({ ETag: eTag.replace(/"/g, ''), PartNumber: index + 1 })
+
+					setProgress(Math.round(((index + 1) / totalChunks) * 100));
+					await finalizeUpload(file.name, uploadId, uploadedParts)
+					// Update progress as chunks are uploaded
+				}
+			}
+		} catch (error) {
+			return error
+		}
+	}
+
+	const finalizeUpload = async (fileName: string, uploadId: string, parts) => {
+
+		try {
+			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/complete-multipart`, {
+				filename: fileName,
+				uploadId: uploadId,
+				parts: parts
+			}, {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+
+			})
+
+			console.log(response)
+		} catch (error) {
+			return error
+		}
+	}
 
 	const handleMultiUpload = async (file) => {
 		const fileName = file.name;
@@ -269,7 +357,7 @@ const startAdCount = ()=>{
 					originalName: fileName,
 					name: key,
 					type: type,
-					size:file.size
+					size: file.size
 				};
 				filesData.push(fileData);
 			}
@@ -525,7 +613,7 @@ const startAdCount = ()=>{
 				)}
 			/>
 			<div className="h-[100%] w-[100%] py-32  hero-bg rounded-xl flex  justify-center items-center">
-			{isAds && isUploading && token ?(
+				{/* {isAds && isUploading && token ?(
 					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
 						<div
 							onClick={() => showClose ? setIsAds(false) : null}
@@ -541,7 +629,6 @@ const startAdCount = ()=>{
 								rel="noopener noreferrer"
 								
 							>
-								{/* Video Player Section */}
 								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
 									<video
 										autoPlay
@@ -573,7 +660,7 @@ const startAdCount = ()=>{
 							</a>
 						</div>
 					</div>
-				) : null}
+				) : null} */}
 
 
 
@@ -679,11 +766,11 @@ const startAdCount = ()=>{
 							)}
 
 							<input
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-								  handleOtp(e);
-								}
-							  }}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleOtp(e);
+									}
+								}}
 								type={isHidden ? "password" : "text"}
 								value={otp}
 								onChange={(e) => setOtp(e.target.value)}
@@ -708,7 +795,7 @@ const startAdCount = ()=>{
 							</span>
 						</div>
 						<PulsatingButton
-							onClick={(e)=>handleOtp(e)}
+							onClick={(e) => handleOtp(e)}
 							className={`max-md:text-base max-sm:text-sm text-lg font-medium p-3 w-[80%] my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 						>
 							Submit
@@ -766,11 +853,11 @@ const startAdCount = ()=>{
 										{files.length} Files
 									</span>
 									<input
-									onKeyDown={(e) => {
-										if (e.key === "Enter") {
-										  handleUpload(e);
-										}
-									  }}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												handleUpload(e);
+											}
+										}}
 										id="add-more"
 										type="file"
 										multiple
@@ -818,11 +905,11 @@ const startAdCount = ()=>{
 						<div className="w-full flex justify-start items-center gap-3 my-3">
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-									  handleUpload(e);
-									}
-								  }}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handleUpload(e);
+										}
+									}}
 									type="radio"
 									checked={isSentToEmail}
 									onClick={() => setIsSentToEmail(true)}
@@ -832,11 +919,11 @@ const startAdCount = ()=>{
 							</label>
 							<label className="flex gap-1 justify-center items-center text-stone-800 text-[15px] font-medium">
 								<input
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-									  handleUpload(e);
-									}
-								  }}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handleUpload(e);
+										}
+									}}
 									type="radio"
 									checked={!isSentToEmail}
 									onClick={() => setIsSentToEmail(false)}
@@ -862,7 +949,7 @@ const startAdCount = ()=>{
 										</span>
 									))}
 									<input
-									
+
 										type="email"
 										value={emailTo}
 										onChange={(e) => setEmailTo(e.target.value)}
@@ -874,11 +961,11 @@ const startAdCount = ()=>{
 							)}
 							{!token && (
 								<input
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-									  handleUpload(e);
-									}
-								  }}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handleUpload(e);
+										}
+									}}
 									type="email"
 									placeholder="Your Email"
 									value={email}
@@ -887,11 +974,11 @@ const startAdCount = ()=>{
 								/>
 							)}
 							<input
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-								  handleUpload(e);
-								}
-							  }}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleUpload(e);
+									}
+								}}
 								type="text"
 								placeholder="Subject"
 								value={subject}
@@ -899,18 +986,18 @@ const startAdCount = ()=>{
 								className=" placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
 							/>
 							<textarea
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-								  handleUpload(e);
-								}
-							  }}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleUpload(e);
+									}
+								}}
 								placeholder="Message"
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
 								className="resize-none placeholder:text-zinc-500 upload-input text-stone-800 text-lg font-normal outline-none p-3  w-full rounded-xl"
 							/>
 							<PulsatingButton
-								onClick={(e)=>handleUpload(e)}
+								onClick={(e) => handleUpload(e)}
 								className={`max-md:text-base max-sm:text-sm text-lg font-medium p-4 my-2 rounded-full flex justify-center items-center ${isProcessing ? "cursor-wait" : "cursor-pointer"}`}
 							>
 								Transfer File
