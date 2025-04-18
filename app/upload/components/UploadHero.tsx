@@ -43,7 +43,8 @@ const UploadHero = () => {
 	const { token, user, setToken, setUser } = useUserContext();
 	let verifyToken: string | null = null;
 	let filesData = [];
-
+	let totalChunksCount = 0;
+	let uploadedChunksCount = 0;
 
 	// const [isAds, setIsAds] = useState(false);
 	// 	const [redirectUrl, setRedirectUrl] = useState('');
@@ -102,6 +103,7 @@ const UploadHero = () => {
 		},
 	});
 
+
 	const handleUpload = async (e) => {
 		filesData = [];
 		if (files.length < 1) {
@@ -118,43 +120,40 @@ const UploadHero = () => {
 				return;
 			}
 		}
-
 		if (!token && email.length > 0) {
 			quickSignUp();
-			return
+			return;
 		}
 
 		setIsProcessing(true);
 		setProgress(0);
 		setIsUploading(true);
 
-		// if(isAds){
-		// 	startAdCount()
-		// }
-
 		try {
+			// Calculate total chunks across all files
+			const chunkSize = 30 * 1024 * 1024; // 30MB
+			totalChunksCount = files.reduce(
+				(acc, file) => acc + Math.ceil(file.size / chunkSize),
+				0
+			);
+			uploadedChunksCount = 0;
+
+			// Upload each file
 			for (const file of files) {
 				await uploadFile(file);
 			}
 
-			// Proceed with generating file link or sending email after all uploads are done
+			// After all files are uploaded
 			if (isSentToEmail) {
-				// await sendToMail();
-				console.log('lol')
+				await sendToMail();
 			} else {
-				// await createFileLink();
-				console.log('lol')
-
+				await createFileLink();
 			}
 
-			setProgress(100); // Set progress to 100% on successful completion
+			setProgress(100);
 		} catch (error) {
 			console.error("Error in handleUpload:", error);
-			if (error.response.data.info.message = 'File Contain Virus') {
-				toast.error(error.response.data.info.message);
-			} else {
-				toast.error("Upload failed. Please try again.");
-			}
+			toast.error("Upload failed. Please try again.");
 			setIsUploading(false);
 			setIsProcessing(false);
 		} finally {
@@ -165,42 +164,42 @@ const UploadHero = () => {
 	const uploadFile = async (file) => {
 		try {
 			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/initiate`, {
-				filename: file.name
-			}, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			}
-			)
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/initiate`,
+				{ filename: file.name },
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
 			if (response) {
-				console.log(response.data.uploadId)
-				await getPreSignedUrlForChunk(response.data.uploadId, file)
+				await getPreSignedUrlForChunk(response.data.uploadId, file);
 			}
 		} catch (error) {
-			return error
+			console.error("Error in uploadFile:", error);
 		}
+	};
 
-	}
-
-	const getPreSignedUrlForChunk = async (uploadId: String, file: File) => {
-		const chunkSize = 30 * 1024 * 1024; // 30MB
+	const getPreSignedUrlForChunk = async (uploadId, file) => {
+		const chunkSize = 30 * 1024 * 1024;
 		const totalChunks = Math.ceil(file.size / chunkSize);
-		try {
-			for (let index = 0; index < totalChunks; index++) {
-				const start = index * chunkSize;
-				const end = Math.min(file.size, start + chunkSize);
-				const chunk = file.slice(start, end);
-				const arrayBuffer = await chunk.arrayBuffer();
-				let uploadedParts = [];
+		let uploadedParts = [];
 
+		for (let index = 0; index < totalChunks; index++) {
+			const start = index * chunkSize;
+			const end = Math.min(file.size, start + chunkSize);
+			const chunk = file.slice(start, end);
+			const arrayBuffer = await chunk.arrayBuffer();
+
+			try {
 				const response = await axios.post(
 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/presigned-url`,
 					{
 						filename: file.name,
 						uploadId: uploadId,
-						partNumber: index + 1
+						partNumber: index + 1,
 					},
 					{
 						headers: {
@@ -211,59 +210,39 @@ const UploadHero = () => {
 				);
 
 				if (response) {
-					console.log(response.data.url)
-					const uploadChunks = await axios.put(response.data.url, {
-						body: arrayBuffer
-					})
-					console.log(uploadChunks)
+					const uploadChunks = await axios.put(response.data.url, arrayBuffer, {
+						headers: { "Content-Type": "application/octet-stream" },
+					});
 
-					const eTag = uploadChunks.headers.get('etag')
-					uploadedParts.push({ ETag: eTag.replace(/"/g, ''), PartNumber: index + 1 })
+					const eTag = uploadChunks.headers["etag"]?.replace(/"/g, "");
+					uploadedParts.push({ ETag: eTag, PartNumber: index + 1 });
 
-					setProgress(Math.round(((index + 1) / totalChunks) * 100));
-					await finalizeUpload(file.name, uploadId, uploadedParts)
-					// Update progress as chunks are uploaded
+					// Update overall progress
+					uploadedChunksCount++;
+					const globalProgress = Math.round(
+						(uploadedChunksCount / totalChunksCount) * 100
+					);
+					setProgress(globalProgress);
 				}
+			} catch (error) {
+				console.error("Error uploading chunk:", error);
 			}
-		} catch (error) {
-			return error
 		}
-	}
 
-	const finalizeUpload = async (fileName: string, uploadId: string, parts) => {
-
-		try {
-			const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/complete-multipart`, {
-				filename: fileName,
-				uploadId: uploadId,
-				parts: parts
-			}, {
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`,
-				},
-
-			})
-
-			console.log(response)
-		} catch (error) {
-			return error
+		// Finalize upload after all chunks uploaded
+		if (uploadedParts.length === totalChunks) {
+			await finalizeUpload(file, uploadId, uploadedParts);
 		}
-	}
+	};
 
-	const handleMultiUpload = async (file) => {
-		const fileName = file.name;
-		const splitFile = fileName.split(".");
-		const type = splitFile[splitFile.length - 1];
-		let key = "";
-		let uploadId = "";
-
+	const finalizeUpload = async (file, uploadId, parts) => {
 		try {
 			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/complete-multipart`,
 				{
-					originalName: fileName,
-					mimeType: type,
+					filename: file.name,
+					uploadId: uploadId,
+					parts: parts,
 				},
 				{
 					headers: {
@@ -274,97 +253,16 @@ const UploadHero = () => {
 			);
 
 			if (response) {
-				key = response.data.data.key;
-				uploadId = response.data.data.uploadId;
-				await uploadFileChunks(file, key, uploadId);
-			}
-		} catch (error) {
-			console.error("Error in handleMultiUpload:", error);
-			throw error;
-		}
-	};
-
-	const uploadFileChunks = async (file, key, uploadId) => {
-		const CHUNK_SIZE = 30 * 1024 * 1024; // 30 MB
-		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-		let uploadedParts = [];
-
-		try {
-			for (let index = 0; index < totalChunks; index++) {
-				const start = index * CHUNK_SIZE;
-				const end = Math.min(file.size, start + CHUNK_SIZE);
-				const chunk = file.slice(start, end);
-
-				const formData = new FormData();
-				formData.append("key", key);
-				formData.append("uploadId", uploadId);
-				formData.append("chunkNumber", index + 1);
-				formData.append("file", chunk);
-
-				const response = await axios.post(
-					`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
-					formData,
-					{
-						headers: {
-							"Content-Type": "multipart/form-data",
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-
-				if (response) {
-					const data = {
-						ETag: JSON.parse(response.data.data.eTag),
-						PartNumber: index + 1,
-					};
-					uploadedParts.push(data);
-
-					// Update progress as chunks are uploaded
-					setProgress(Math.round(((index + 1) / totalChunks) * 100));
-				}
-			}
-
-			await finalizeMultipartUpload(file, key, uploadId, uploadedParts);
-		} catch (error) {
-			console.error("Error in uploadFileChunks:", error);
-			throw error;
-		}
-	};
-
-	const finalizeMultipartUpload = async (file, key, uploadId, uploadedParts) => {
-		try {
-			const response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/finalize`,
-				{
-					key,
-					uploadId,
-					uploadedParts,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
-			if (response) {
-				const fileName = file.name;
-				const splitFile = fileName.split(".");
-				const type = splitFile[splitFile.length - 1];
-
 				const fileData = {
-					originalName: fileName,
-					name: key,
-					type: type,
-					size: file.size
+					originalName: file.name,
+					name: file.name,
+					type: file.type,
+					size: file.size,
 				};
 				filesData.push(fileData);
 			}
 		} catch (error) {
-			console.error("Error in finalizeMultipartUpload:", error);
-			toast.error("Error finalizing file upload. Please try again.");
-			throw error;
+			console.error("Error in finalizeUpload:", error);
 		}
 	};
 
@@ -383,13 +281,6 @@ const UploadHero = () => {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
 					},
-					onUploadProgress: (ProgressEvent) => {
-						setProgress(
-							Math.round(
-								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1)
-							)
-						);
-					},
 				}
 			);
 
@@ -401,7 +292,6 @@ const UploadHero = () => {
 		} catch (error) {
 			console.error("Error in createFileLink:", error);
 			toast.error("Error creating file link. Please try again.");
-			throw error;
 		}
 	};
 
@@ -429,13 +319,6 @@ const UploadHero = () => {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
 					},
-					onUploadProgress: (ProgressEvent) => {
-						setProgress(
-							Math.round(
-								(ProgressEvent.loaded * 100) / (ProgressEvent.total ?? 1)
-							)
-						);
-					},
 				}
 			);
 
@@ -446,9 +329,128 @@ const UploadHero = () => {
 		} catch (error) {
 			console.error("Error in sendToMail:", error);
 			toast.error("Error sending email. Please try again.");
-			throw error;
 		}
 	};
+
+
+	// const handleMultiUpload = async (file) => {
+	// 	const fileName = file.name;
+	// 	const splitFile = fileName.split(".");
+	// 	const type = splitFile[splitFile.length - 1];
+	// 	let key = "";
+	// 	let uploadId = "";
+
+	// 	try {
+	// 		const response = await axios.post(
+	// 			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/start`,
+	// 			{
+	// 				originalName: fileName,
+	// 				mimeType: type,
+	// 			},
+	// 			{
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 					Authorization: `Bearer ${token}`,
+	// 				},
+	// 			}
+	// 		);
+
+	// 		if (response) {
+	// 			key = response.data.data.key;
+	// 			uploadId = response.data.data.uploadId;
+	// 			await uploadFileChunks(file, key, uploadId);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Error in handleMultiUpload:", error);
+	// 		throw error;
+	// 	}
+	// };
+
+	// const uploadFileChunks = async (file, key, uploadId) => {
+	// 	const CHUNK_SIZE = 30 * 1024 * 1024; // 30 MB
+	// 	const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+	// 	let uploadedParts = [];
+
+	// 	try {
+	// 		for (let index = 0; index < totalChunks; index++) {
+	// 			const start = index * CHUNK_SIZE;
+	// 			const end = Math.min(file.size, start + CHUNK_SIZE);
+	// 			const chunk = file.slice(start, end);
+
+	// 			const formData = new FormData();
+	// 			formData.append("key", key);
+	// 			formData.append("uploadId", uploadId);
+	// 			formData.append("chunkNumber", index + 1);
+	// 			formData.append("file", chunk);
+
+	// 			const response = await axios.post(
+	// 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/upload`,
+	// 				formData,
+	// 				{
+	// 					headers: {
+	// 						"Content-Type": "multipart/form-data",
+	// 						Authorization: `Bearer ${token}`,
+	// 					},
+	// 				}
+	// 			);
+
+	// 			if (response) {
+	// 				const data = {
+	// 					ETag: JSON.parse(response.data.data.eTag),
+	// 					PartNumber: index + 1,
+	// 				};
+	// 				uploadedParts.push(data);
+
+	// 				// Update progress as chunks are uploaded
+	// 				setProgress(Math.round(((index + 1) / totalChunks) * 100));
+	// 			}
+	// 		}
+
+	// 		await finalizeMultipartUpload(file, key, uploadId, uploadedParts);
+	// 	} catch (error) {
+	// 		console.error("Error in uploadFileChunks:", error);
+	// 		throw error;
+	// 	}
+	// };
+
+	// const finalizeMultipartUpload = async (file, key, uploadId, uploadedParts) => {
+	// 	try {
+	// 		const response = await axios.post(
+	// 			`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/finalize`,
+	// 			{
+	// 				key,
+	// 				uploadId,
+	// 				uploadedParts,
+	// 			},
+	// 			{
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 					Authorization: `Bearer ${token}`,
+	// 				},
+	// 			}
+	// 		);
+
+	// 		if (response) {
+	// 			const fileName = file.name;
+	// 			const splitFile = fileName.split(".");
+	// 			const type = splitFile[splitFile.length - 1];
+
+	// 			const fileData = {
+	// 				originalName: fileName,
+	// 				name: key,
+	// 				type: type,
+	// 				size: file.size
+	// 			};
+	// 			filesData.push(fileData);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Error in finalizeMultipartUpload:", error);
+	// 		toast.error("Error finalizing file upload. Please try again.");
+	// 		throw error;
+	// 	}
+	// };
+
+
 
 	const resetForm = () => {
 		setFiles([]);
@@ -519,7 +521,6 @@ const UploadHero = () => {
 				localStorage.setItem("ru_anonymous_id", response.data.data.token);
 				setVerificationInProgress(true);
 				setIsProcessing(false);
-
 			}
 		} catch (error) {
 			toast.error('Network problem!')
