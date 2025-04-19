@@ -20,8 +20,7 @@ import PulsatingButton from "@/components/ui/pulsating-button";
 import WordRotate from "@/components/ui/word-rotate";
 import { cn, formatFileSize } from "@/lib/utils";
 import { formatUser, useUserContext } from "@/contexts/user";
-import { list } from "postcss";
-import { title } from "process";
+;
 
 const UploadHero = () => {
 	const [files, setFiles] = useState<File[]>([]);
@@ -46,56 +45,69 @@ const UploadHero = () => {
 	let totalChunksCount = 0;
 	let uploadedChunksCount = 0;
 
-	// const [isAds, setIsAds] = useState(false);
-	// 	const [redirectUrl, setRedirectUrl] = useState('');
-	// 	const [adBannerUrl, setAdBannerUrl] = useState('');
-	// 	const [count, setCount] = useState(5);
-	// 	const [showClose, setShowClose] = useState(false);
-	// 	const intervalRef = useRef<NodeJS.Timeout>();
+	const [isAds, setIsAds] = useState(false);
+	const [showAds, setShowAds] = useState(false);
+	const [redirectUrl, setRedirectUrl] = useState('');
+	const [adBannerUrl, setAdBannerUrl] = useState('');
+	const [count, setCount] = useState(5);
+	const [showClose, setShowClose] = useState(false);
+	const intervalRef = useRef<NodeJS.Timeout>();
 
 	useEffect(() => {
 		verifyToken = localStorage.getItem("ru_anonymous_id");
 	});
 
+	const showAdsRef = useRef(showAds);
+	const countRef = useRef(count);
+
+	useEffect(() => {
+		showAdsRef.current = showAds;
+	}, [showAds]);
+
+	useEffect(() => {
+		countRef.current = count;
+	}, [count]);
+
+	useEffect(() => {
+		const fetchSettings = async () => {
+			try {
+				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setIsAds(response.data.data.value === 'ON' ? true : false);
+				console.log(response)
+				setRedirectUrl(response.data.data.redirectUrl ?? '')
+				setAdBannerUrl(response.data.data.bannerUrl ?? '')
+			} catch (error) {
+				// toast.error('Failed to fetch monetization');
+				console.error('Failed to fetch monetization:', error);
+			}
+		};
+
+		fetchSettings();
+	}, [token]);
 
 
 
-	// useEffect(() => {
-	// 	const fetchSettings = async () => {
-	// 		try {
-	// 			const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
-	// 				headers: { Authorization: `Bearer ${token}` },
-	// 			});
-	// 			setIsAds(response.data.data.value === 'ON' ? true : false);
-	// 			setRedirectUrl(response.data.data.redirectUrl ?? '')
-	// 			setAdBannerUrl(response.data.data.bannerUrl ?? '')
-	// 		} catch (error) {
-	// 			// toast.error('Failed to fetch monetization');
-	// 			console.error('Failed to fetch monetization:', error);
-	// 		}
-	// 	};
 
-	// 	fetchSettings();
-	// }, [token]);
+	const startAdCount = () => {
+		setCount(5)
+		setShowClose(false)
+		intervalRef.current = setInterval(() => {
+			setCount((prev) => {
+				if (prev <= 1) {
+					clearInterval(intervalRef.current!);
+					setShowClose(true);
+					return 0;
+				}
+				return prev - 1;
+			});
+		}, 1000);
 
-
-
-	// const startAdCount = () => {
-	// 	intervalRef.current = setInterval(() => {
-	// 		setCount((prev) => {
-	// 			if (prev <= 1) {
-	// 				clearInterval(intervalRef.current!);
-	// 				setShowClose(true);
-	// 				return 0;
-	// 			}
-	// 			return prev - 1;
-	// 		});
-	// 	}, 1000);
-
-	// 	return () => {
-	// 		if (intervalRef.current) clearInterval(intervalRef.current);
-	// 	};
-	// }
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		};
+	}
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop: (acceptedFiles) => {
@@ -123,6 +135,21 @@ const UploadHero = () => {
 		if (!token && email.length > 0) {
 			quickSignUp();
 			return;
+		}
+		if (isAds) {
+			setShowAds(true)
+			startAdCount()
+
+			await new Promise((resolve) => {
+				const checkAdClose = setInterval(() => {
+					if (!showAdsRef.current && countRef.current === 0) {
+						clearInterval(checkAdClose);
+						setCount(5); // Reset count
+						resolve();
+					}
+				}, 100)
+			})
+
 		}
 
 		setIsProcessing(true);
@@ -162,6 +189,7 @@ const UploadHero = () => {
 	};
 
 	const uploadFile = async (file) => {
+
 		try {
 			const response = await axios.post(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/initiate`,
@@ -614,13 +642,13 @@ const UploadHero = () => {
 				)}
 			/>
 			<div className="h-[100%] w-[100%] py-32  hero-bg rounded-xl flex  justify-center items-center">
-				{/* {isAds && isUploading && token ?(
+				{isAds && showAds ? (
 					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
 						<div
-							onClick={() => showClose ? setIsAds(false) : null}
+							onClick={() => showClose ? setShowAds(false) : null}
 							className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3 z-10"
 						>
-							{showClose ? 'Close Ad' : `Prepare to upload | ad skip in ${count}`}
+							{showClose ? 'Close Ad' : `Prepare to upload | ad skip in ${countRef.current}`}
 						</div>
 
 						<div className=" relative  h-[90%] w-[90%] flex justify-center items-center">
@@ -628,7 +656,7 @@ const UploadHero = () => {
 								href={redirectUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								
+
 							>
 								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
 									<video
@@ -661,7 +689,7 @@ const UploadHero = () => {
 							</a>
 						</div>
 					</div>
-				) : null} */}
+				) : null}
 
 
 
