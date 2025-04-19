@@ -115,6 +115,21 @@ const UploadHero = () => {
 		},
 	});
 
+	const trackAdView = async () => {
+		try {
+		  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
+		} catch (error) {
+		  console.error('Ad view tracking failed');
+		}
+	  };
+	  
+	  const trackAdClick = async () => {
+		try {
+		  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
+		} catch (error) {
+		  console.error('Ad click tracking failed');
+		}
+	  };
 
 	const handleUpload = async (e) => {
 		filesData = [];
@@ -139,6 +154,7 @@ const UploadHero = () => {
 		if (isAds) {
 			setShowAds(true)
 			startAdCount()
+			trackAdView()
 
 			await new Promise((resolve) => {
 				const checkAdClose = setInterval(() => {
@@ -654,6 +670,7 @@ const UploadHero = () => {
 						<div className=" relative  h-[90%] w-[90%] flex justify-center items-center">
 							<a
 								href={redirectUrl}
+								onClick={()=>trackAdClick()}
 								target="_blank"
 								rel="noopener noreferrer"
 

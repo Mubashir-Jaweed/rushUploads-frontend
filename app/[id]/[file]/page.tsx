@@ -36,6 +36,9 @@ const Workspace = () => {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+                    if(response.data.data.value === 'ON'){
+                        trackAdView()
+                    }
                     setIsAds(response.data.data.value === 'ON' ? true : false);
                     setRedirectUrl(response.data.data.redirectUrl ?? '')
 				setAdBannerUrl(response.data.data.bannerUrl ?? '')
@@ -47,11 +50,27 @@ const Workspace = () => {
     
             fetchSettings();
         }, [token]);
-
+        const trackAdView = async () => {
+            try {
+              await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
+            } catch (error) {
+              console.error('Ad view tracking failed');
+            }
+          };
+          
+          const trackAdClick = async () => {
+            try {
+              await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
+            } catch (error) {
+              console.error('Ad click tracking failed');
+            }
+          };
     useEffect(() => {
         getFiles();
 
-        intervalRef.current = setInterval(() => {
+        setCount(5)
+		setShowClose(false)
+		intervalRef.current = setInterval(() => {
 			setCount((prev) => {
 				if (prev <= 1) {
 					clearInterval(intervalRef.current!);
@@ -178,6 +197,7 @@ const Workspace = () => {
 						<div className=" relative h-[90%] w-[90%] flex justify-center items-center">
 							<a
 								href={redirectUrl}
+                                onClick={()=>trackAdClick()}
 								target="_blank"
 								rel="noopener noreferrer"
 								
