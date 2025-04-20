@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       {
         source: "/preview/:id",
         destination: "/:id",
-        permanent: false,
+        permanent: true,
       },
     ];
   },
