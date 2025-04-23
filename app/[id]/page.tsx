@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { formatFileSize } from "@/lib/utils";
 import { useUserContext } from "@/contexts/user";
+import { join } from "path";
 
 
 
@@ -180,6 +181,21 @@ const Workspace = () => {
 		toast('Url Copied')
 	};
 
+	const hideTxt = (txt: string)=>{
+		const [username, domain] = txt.split('@');
+
+		if (username.length <= 4) {
+		  // If username is too short, just replace all with *
+		  return '*'.repeat(username.length) + '@' + domain;
+		}
+	  
+		const visibleStart = username.slice(0, 4);
+		const hiddenLength = username.length - 4;
+		const hiddenPart = '*'.repeat(hiddenLength);
+	  
+		return `${visibleStart}${hiddenPart}@${domain}`;
+	}
+
 	return (
 		<div>
 			<Navbar />
@@ -274,7 +290,7 @@ const Workspace = () => {
 											<div className="flex w-full justify-between items-end">
 												<div className="flex justify-start items-center gap-3">
 													<span className="max-sm:hidden text-sm font-[500] text-zinc-500">
-														{val.user.email}
+														{hideTxt(val.user.email)}
 													</span>
 													<span className="max-sm:hidden text-xs font-[500] text-zinc-500">
 														{val.updatedAt.split("T")[0]}
