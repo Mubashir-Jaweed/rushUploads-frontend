@@ -181,6 +181,19 @@ const Workspace = () => {
         toast('Url Copied')
     };
 
+    const hideTxt = (txt: string)=>{
+		const [username, domain] = txt.split('@');
+
+		if (username.length <= 4) {
+		  return '*'.repeat(username.length) + '@' + domain;
+		}
+	  
+		const visibleStart = username.slice(0, 4);
+		const hiddenLength = username.length - 4;
+		const hiddenPart = '*'.repeat(hiddenLength);
+		return `${visibleStart}${hiddenPart}@${domain}`;
+	}
+
     return (
         <div>
             <Navbar />
@@ -275,7 +288,7 @@ const Workspace = () => {
                                             <div className="flex w-full justify-between items-end">
                                                 <div className="flex justify-start items-center gap-3">
                                                     <span className="max-sm:hidden text-sm font-[500] text-zinc-500">
-                                                        {val.user.email}
+                                                        {hideTxt(val.user.email)}
                                                     </span>
                                                     <span className="max-sm:hidden text-xs font-[500] text-zinc-500">
                                                         {val.updatedAt.split("T")[0]}
@@ -292,21 +305,21 @@ const Workspace = () => {
                                                         </>
                                                     )}
                                                 </div>
-                                                <div className="flex justify-center items-center ">
+                                                <div className="flex justify-center gap-2 items-center ">
                                                     <a
                                                         download={true}
                                                         onClick={() => downloadFile(val.id, val.url, val.originalName)}
-                                                        className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
+                                                        className="list-btn-title-cont delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
                                                     >
-                                                        <LuDownload className="size-6" />
+                                                        {/* <LuDownload className="size-6" /> */}Download
                                                         <span className="list-btn-title">Download</span>
                                                     </a>
                                                     <span
                                                         onClick={() => copyUrl(id, val.id)}
 
-                                                        className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
+                                                        className="list-btn-title-cont  delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
                                                     >
-                                                        <IoIosLink className="size-6" />
+                                                        {/* <IoIosLink className="size-6" /> */}Copy link
                                                         <span className="list-btn-title">Copy_Link</span>
                                                     </span>
                                                 </div>

@@ -185,14 +185,12 @@ const Workspace = () => {
 		const [username, domain] = txt.split('@');
 
 		if (username.length <= 4) {
-		  // If username is too short, just replace all with *
 		  return '*'.repeat(username.length) + '@' + domain;
 		}
 	  
 		const visibleStart = username.slice(0, 4);
 		const hiddenLength = username.length - 4;
 		const hiddenPart = '*'.repeat(hiddenLength);
-	  
 		return `${visibleStart}${hiddenPart}@${domain}`;
 	}
 
@@ -307,21 +305,23 @@ const Workspace = () => {
 														</>
 													)}
 												</div>
-												<div className="flex justify-center items-center ">
+												<div className="flex justify-center gap-2 items-center ">
 													<a
 														download={true}
 														onClick={() => downloadFile(val.id, val.url, val.originalName)}
-														className="list-btn-title-cont delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
+														className="list-btn-title-cont delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
 													>
-														<LuDownload className="size-6" />
+														{/* <LuDownload className="size-6" /> */}
+														Download
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span
 														onClick={() => copyUrl(id, val.id)}
 
-														className="list-btn-title-cont  delay-5ms hover:bg-[#32323218] text-stone-800 p-2 rounded-full flex justify-center items-center"
+														className="list-btn-title-cont  delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
 													>
-														<IoIosLink className="size-6" />
+														{/* <IoIosLink className="size-6" /> */}
+														Copy link
 														<span className="list-btn-title">Copy_Link</span>
 													</span>
 												</div>
