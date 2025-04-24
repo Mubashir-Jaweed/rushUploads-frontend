@@ -16,6 +16,7 @@ const Page = () => {
     const [editingId, setEditingId] = useState(null);
     const [newName, setNewName] = useState('');
     const [originalExtension, setOriginalExtension] = useState('');
+    const [sortOption, setSortOption] = useState('newest');
     const itemsPerPage = 10;
     const router = useRouter();
 
@@ -27,6 +28,7 @@ const Page = () => {
             });
             if (response.data) {
                 setFiles(response.data.data.files);
+                console.log(response.data.data.files);
             }
         } catch (error) {
             console.error('Error fetching files:', error);
@@ -99,6 +101,28 @@ const Page = () => {
         return num.toString();
     };
 
+    const truncateFileName = (name, maxLength = 20) => {
+        if (name.length <= maxLength) return name;
+        return `${name.substring(0, maxLength)}...`;
+    };
+
+    const getSortedFiles = () => {
+        const filesToSort = [...files];
+        
+        switch (sortOption) {
+            case 'downloads_high':
+                return filesToSort.sort((a, b) => b.downloads - a.downloads);
+            case 'downloads_low':
+                return filesToSort.sort((a, b) => a.downloads - b.downloads);
+            case 'newest':
+                return filesToSort.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            case 'oldest':
+                return filesToSort.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+            default:
+                return filesToSort;
+        }
+    };
+
     useEffect(() => {
         if (user?.role !== 'ADMIN') {
             router.push('/upload');
@@ -107,8 +131,9 @@ const Page = () => {
         fetchFiles();
     }, [user, router]);
 
-    const totalPages = Math.ceil(files.length / itemsPerPage);
-    const currentFiles = files.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const sortedFiles = getSortedFiles();
+    const totalPages = Math.ceil(sortedFiles.length / itemsPerPage);
+    const currentFiles = sortedFiles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
         <div className='flex'>
@@ -117,7 +142,21 @@ const Page = () => {
                 <Navbar />
                 <div className='p-6'>
                     <div className='bg-white p-6 rounded-lg shadow-lg'>
-                        <h2 className='text-2xl font-semibold mb-4'>Files ({files.length})</h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className='text-2xl font-semibold'>Files ({files.length})</h2>
+                            <div className="flex gap-2">
+                                <select
+                                    value={sortOption}
+                                    onChange={(e) => setSortOption(e.target.value)}
+                                    className="border px-3 py-1 rounded bg-white text-sm"
+                                >
+                                    <option value="newest">Newest Uploads</option>
+                                    <option value="oldest">Oldest Uploads</option>
+                                    <option value="downloads_high">Highest Downloads</option>
+                                    <option value="downloads_low">Lowest Downloads</option>
+                                </select>
+                            </div>
+                        </div>
                         <table className='w-full border-collapse'>
                             <thead>
                                 <tr className='bg-zinc-100 text-left'>
@@ -127,6 +166,7 @@ const Page = () => {
                                     <th className='px-6 py-4'>Total Paid</th>
                                     <th className='px-6 py-4'>Pay Reward</th>
                                     <th className='px-6 py-4'>User</th>
+                                    <th className='px-6 py-4'>Upload Date</th>
                                     <th className='px-6 py-4'>Actions</th>
                                 </tr>
                             </thead>
@@ -134,6 +174,7 @@ const Page = () => {
                                 {currentFiles.map((file, i) => {
                                     const claimableDownloads = file.downloads - file.claims;
                                     const claimableAmount = claimableDownloads > 0 ? formatRewardNumber(claimableDownloads * 0.007) : '0';
+                                    const uploadDate = new Date(file.updatedAt).toLocaleDateString();
                                     return (
                                         <tr key={i} className='border-b hover:bg-zinc-50'>
                                             <td className='px-4 py-3'>{(currentPage - 1) * itemsPerPage + i + 1}</td>
@@ -147,7 +188,9 @@ const Page = () => {
                                                         autoFocus
                                                     />
                                                 ) : (
-                                                    file.originalName
+                                                    <span title={file.originalName}>
+                                                        {truncateFileName(file.originalName)}
+                                                    </span>
                                                 )}
                                             </td>
                                             <td className='px-4 py-3'>{formatRewardNumber(file.downloads)}</td>
@@ -163,6 +206,7 @@ const Page = () => {
                                                 </select>
                                             </td>
                                             <td className='px-4 py-3'>{file.user.email}</td>
+                                            <td className='px-4 py-3'>{uploadDate}</td>
                                             <td className='px-4 py-3 flex gap-4 items-center'>
                                                 {editingId === file.id ? (
                                                     <>
