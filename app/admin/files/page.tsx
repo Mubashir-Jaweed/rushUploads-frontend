@@ -28,7 +28,6 @@ const Page = () => {
             });
             if (response.data) {
                 setFiles(response.data.data.files);
-                console.log(response.data.data.files);
             }
         } catch (error) {
             console.error('Error fetching files:', error);
