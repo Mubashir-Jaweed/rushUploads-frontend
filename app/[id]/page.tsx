@@ -29,6 +29,7 @@ const Workspace = () => {
 	const [description, setDescription] = useState("");
 	const router = useRouter();
 	const { id } = useParams();
+	const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
 
 	const { token } = useUserContext();
 
@@ -41,7 +42,7 @@ const Workspace = () => {
 				const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
-				if(response.data.data.value === 'ON'){
+				if (response.data.data.value === 'ON') {
 					trackAdView()
 				}
 				setIsAds(response.data.data.value === 'ON' ? true : false);
@@ -59,19 +60,19 @@ const Workspace = () => {
 
 	const trackAdView = async () => {
 		try {
-		  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
+			await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
 		} catch (error) {
-		  console.error('Ad view tracking failed');
+			console.error('Ad view tracking failed');
 		}
-	  };
-	  
-	  const trackAdClick = async () => {
+	};
+
+	const trackAdClick = async () => {
 		try {
-		  await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
+			await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
 		} catch (error) {
-		  console.error('Ad click tracking failed');
+			console.error('Ad click tracking failed');
 		}
-	  };
+	};
 
 	useEffect(() => {
 		getFiles();
@@ -125,39 +126,39 @@ const Workspace = () => {
 		}
 	};
 
+	async function downloadFile(fileId: string, fileName: string) {
+		setDownloadingFileId(fileId); // Start loading
+		try {
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,
+				{},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 
-	async function downloadFile(fileId: string ,fileName : string) {
-        try {
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,
-            {},
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-      
-          if (response && response.data.url) {
-            toast('Downloading start')
-            const downloadResponse = await fetch(response.data.url)
-            const blob = await downloadResponse.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = fileName; 
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(blobUrl);
-          }
-        } catch (error) {
-            toast.error("Download failed")
-          console.error('Error downloading file:', error);
-        }
-      }
-
+			if (response && response.data.url) {
+				const downloadResponse = await fetch(response.data.url);
+				const blob = await downloadResponse.blob();
+				const blobUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = blobUrl;
+				a.download = fileName;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(blobUrl);
+			}
+		} catch (error) {
+			toast.error("Download failed");
+			console.error('Error downloading file:', error);
+		} finally {
+			setDownloadingFileId(null); // Stop loading
+		}
+	}
 
 
 	const copyUrl = (url: string, file: String) => {
@@ -165,13 +166,13 @@ const Workspace = () => {
 		toast('Url Copied')
 	};
 
-	const hideTxt = (txt: string)=>{
+	const hideTxt = (txt: string) => {
 		const [username, domain] = txt.split('@');
 
 		if (username.length <= 4) {
-		  return '*'.repeat(username.length) + '@' + domain;
+			return '*'.repeat(username.length) + '@' + domain;
 		}
-	  
+
 		const visibleStart = username.slice(0, 4);
 		const hiddenLength = username.length - 4;
 		const hiddenPart = '*'.repeat(hiddenLength);
@@ -194,10 +195,10 @@ const Workspace = () => {
 						<div className=" relative  h-[90%] w-[90%] flex justify-center items-center">
 							<a
 								href={redirectUrl}
-								onClick={()=>trackAdClick()}
+								onClick={() => trackAdClick()}
 								target="_blank"
 								rel="noopener noreferrer"
-								
+
 							>
 								{/* Video Player Section */}
 								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
@@ -292,11 +293,18 @@ const Workspace = () => {
 												<div className="flex justify-center gap-2 items-center ">
 													<a
 														download={true}
-														onClick={() => downloadFile(val.id, val.url)}
+														onClick={() => downloadFile(val.id, val.originalName)}
 														className="list-btn-title-cont delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
+														disabled={downloadingFileId === val.id}
 													>
-														{/* <LuDownload className="size-6" /> */}
-														Download
+														{downloadingFileId === val.id ? (
+															<svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+																<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+																<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+															</svg>
+														) : (
+															"Download"
+														)}
 														<span className="list-btn-title">Download</span>
 													</a>
 													<span

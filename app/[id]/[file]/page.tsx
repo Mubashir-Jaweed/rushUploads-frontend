@@ -19,71 +19,72 @@ const Workspace = () => {
     const [description, setDescription] = useState("");
     const router = useRouter();
     const { id, file } = useParams();
+    const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
 
-        const [isAds, setIsAds] = useState(false);
-        const [redirectUrl, setRedirectUrl] = useState('');
-        const [adBannerUrl, setAdBannerUrl] = useState('');
-        const [count, setCount] = useState(5);
-        const [showClose, setShowClose] = useState(false);
-        const intervalRef = useRef<NodeJS.Timeout>();
-        const { token } = useUserContext();
-        
+    const [isAds, setIsAds] = useState(false);
+    const [redirectUrl, setRedirectUrl] = useState('');
+    const [adBannerUrl, setAdBannerUrl] = useState('');
+    const [count, setCount] = useState(5);
+    const [showClose, setShowClose] = useState(false);
+    const intervalRef = useRef<NodeJS.Timeout>();
+    const { token } = useUserContext();
 
 
-        useEffect(() => {
-            const fetchSettings = async () => {
-                try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    if(response.data.data.value === 'ON'){
-                        trackAdView()
-                    }
-                    setIsAds(response.data.data.value === 'ON' ? true : false);
-                    setRedirectUrl(response.data.data.redirectUrl ?? '')
-				setAdBannerUrl(response.data.data.bannerUrl ?? '')
-                } catch (error) {
-                    // toast.error('Failed to fetch monetization');
-                    console.error('Failed to fetch monetization:', error);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (response.data.data.value === 'ON') {
+                    trackAdView()
                 }
-            };
-    
-            fetchSettings();
-        }, [token]);
-        const trackAdView = async () => {
-            try {
-              await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
+                setIsAds(response.data.data.value === 'ON' ? true : false);
+                setRedirectUrl(response.data.data.redirectUrl ?? '')
+                setAdBannerUrl(response.data.data.bannerUrl ?? '')
             } catch (error) {
-              console.error('Ad view tracking failed');
+                // toast.error('Failed to fetch monetization');
+                console.error('Failed to fetch monetization:', error);
             }
-          };
-          
-          const trackAdClick = async () => {
-            try {
-              await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
-            } catch (error) {
-              console.error('Ad click tracking failed');
-            }
-          };
+        };
+
+        fetchSettings();
+    }, [token]);
+    const trackAdView = async () => {
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/view`);
+        } catch (error) {
+            console.error('Ad view tracking failed');
+        }
+    };
+
+    const trackAdClick = async () => {
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/click`);
+        } catch (error) {
+            console.error('Ad click tracking failed');
+        }
+    };
     useEffect(() => {
         getFiles();
 
         setCount(5)
-		setShowClose(false)
-		intervalRef.current = setInterval(() => {
-			setCount((prev) => {
-				if (prev <= 1) {
-					clearInterval(intervalRef.current!);
-					setShowClose(true);
-					return 0;
-				}
-				return prev - 1;
-			});
-		}, 1000);
+        setShowClose(false)
+        intervalRef.current = setInterval(() => {
+            setCount((prev) => {
+                if (prev <= 1) {
+                    clearInterval(intervalRef.current!);
+                    setShowClose(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
 
-		return () => {
-			if (intervalRef.current) clearInterval(intervalRef.current);
-		};
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
     }, []);
 
 
@@ -124,39 +125,39 @@ const Workspace = () => {
         }
     };
 
-
-    async function downloadFile(fileId: string ,fileName : string) {
+    async function downloadFile(fileId: string, fileName: string) {
+        setDownloadingFileId(fileId); // Start loading
         try {
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,
-            {},
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-      
-          if (response && response.data.url) {
-            toast('Downloading start')
-            const downloadResponse = await fetch(response.data.url)
-            const blob = await downloadResponse.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = fileName; 
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(blobUrl);
-          }
-        } catch (error) {
-            toast.error("Download failed")
-          console.error('Error downloading file:', error);
-        }
-      }
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,
+                {},
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
+            if (response && response.data.url) {
+                const downloadResponse = await fetch(response.data.url);
+                const blob = await downloadResponse.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            }
+        } catch (error) {
+            toast.error("Download failed");
+            console.error('Error downloading file:', error);
+        } finally {
+            setDownloadingFileId(null); // Stop loading
+        }
+    }
     // async function downloadFile(fileId: string, url: string, filename: string) {
     //     // downloadFile(fileId)
     //     try {
@@ -190,73 +191,73 @@ const Workspace = () => {
         toast('Url Copied')
     };
 
-    const hideTxt = (txt: string)=>{
-		const [username, domain] = txt.split('@');
+    const hideTxt = (txt: string) => {
+        const [username, domain] = txt.split('@');
 
-		if (username.length <= 4) {
-		  return '*'.repeat(username.length) + '@' + domain;
-		}
-	  
-		const visibleStart = username.slice(0, 4);
-		const hiddenLength = username.length - 4;
-		const hiddenPart = '*'.repeat(hiddenLength);
-		return `${visibleStart}${hiddenPart}@${domain}`;
-	}
+        if (username.length <= 4) {
+            return '*'.repeat(username.length) + '@' + domain;
+        }
+
+        const visibleStart = username.slice(0, 4);
+        const hiddenLength = username.length - 4;
+        const hiddenPart = '*'.repeat(hiddenLength);
+        return `${visibleStart}${hiddenPart}@${domain}`;
+    }
 
     return (
         <div>
             <Navbar />
             <div className=" w-full h-screen auth-bg flex items-end">
-            {isAds && (
-					<div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
-						<div
-							onClick={() => showClose ? setIsAds(false) : null}
-							className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3 z-10"
-						>
-							{showClose ? 'Close Ad' : `Generating Link | ad skip in ${count}`}
-						</div>
+                {isAds && (
+                    <div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
+                        <div
+                            onClick={() => showClose ? setIsAds(false) : null}
+                            className="bg-white cursor-pointer uppercase text-sm font-normal text-stone-900 rounded-xl px-3 py-2 absolute top-3 right-3 z-10"
+                        >
+                            {showClose ? 'Close Ad' : `Generating Link | ad skip in ${count}`}
+                        </div>
 
-						<div className=" relative h-[90%] w-[90%] flex justify-center items-center">
-							<a
-								href={redirectUrl}
-                                onClick={()=>trackAdClick()}
-								target="_blank"
-								rel="noopener noreferrer"
-								
-							>
-								{/* Video Player Section */}
-								{['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
-									<video
-										autoPlay
-										muted
-										loop
-										controls={false}
-										className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded"
-										onError={(e) => console.error('Video failed to load', e)}
-									>
-										<source src={adBannerUrl} type={`video/${adBannerUrl.split('.').pop()}`} />
-										Your browser does not support the video tag.
-									</video>
-								) : adBannerUrl.endsWith('.html') ? (
-									<iframe
-										src={adBannerUrl}
-										className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded border-none"
-										title="Advertisement"
-									/>
-								) : (
-									<img
-										src={adBannerUrl}
-										alt="Advertisement"
-										className="max-w-[80%] min-w-[500px] max-h-[90%] rounded object-contain"
-										onError={(e) => {
-											e.currentTarget.src = '/fallback-ad-image.jpg';
-										}}
-									/>
-								)}
-							</a>
-						</div>
-					</div>
-				)}
+                        <div className=" relative h-[90%] w-[90%] flex justify-center items-center">
+                            <a
+                                href={redirectUrl}
+                                onClick={() => trackAdClick()}
+                                target="_blank"
+                                rel="noopener noreferrer"
+
+                            >
+                                {/* Video Player Section */}
+                                {['.mp4', '.webm', '.mov'].some(ext => adBannerUrl.includes(ext)) ? (
+                                    <video
+                                        autoPlay
+                                        muted
+                                        loop
+                                        controls={false}
+                                        className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded"
+                                        onError={(e) => console.error('Video failed to load', e)}
+                                    >
+                                        <source src={adBannerUrl} type={`video/${adBannerUrl.split('.').pop()}`} />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                ) : adBannerUrl.endsWith('.html') ? (
+                                    <iframe
+                                        src={adBannerUrl}
+                                        className="max-w-[80%] min-w-[500px] max-h-[90%] object-cover rounded border-none"
+                                        title="Advertisement"
+                                    />
+                                ) : (
+                                    <img
+                                        src={adBannerUrl}
+                                        alt="Advertisement"
+                                        className="max-w-[80%] min-w-[500px] max-h-[90%] rounded object-contain"
+                                        onError={(e) => {
+                                            e.currentTarget.src = '/fallback-ad-image.jpg';
+                                        }}
+                                    />
+                                )}
+                            </a>
+                        </div>
+                    </div>
+                )}
                 <div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
                     <div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
                         {title ? (
@@ -319,8 +320,16 @@ const Workspace = () => {
                                                         download={true}
                                                         onClick={() => downloadFile(val.id, val.originalName)}
                                                         className="list-btn-title-cont delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
+                                                        disabled={downloadingFileId === val.id}
                                                     >
-                                                        {/* <LuDownload className="size-6" /> */}Download
+                                                        {downloadingFileId === val.id ? (
+                                                            <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                        ) : (
+                                                            "Download"
+                                                        )}
                                                         <span className="list-btn-title">Download</span>
                                                     </a>
                                                     <span
