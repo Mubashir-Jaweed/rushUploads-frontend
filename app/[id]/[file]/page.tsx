@@ -125,55 +125,64 @@ const Workspace = () => {
     };
 
 
-    async function increaseDownload(fileId: string) {
+    async function downloadFile(fileId: string ,fileName : string) {
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`, {
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response) {
-                console.log(response)
-                // setLoading(false)
-                // setFiles(response.data.data.link.files);
-                // setTitle(response.data.data.link.title);
-                // setDescription(response.data.data.link.message);
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/files/download/${fileId}`,
+            {},
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
             }
-        } catch (error) {
-            console.error("Error getting 2 files:", error);
-
-        }
-    }
-
-    async function downloadFile(fileId: string, url: string, filename: string) {
-        increaseDownload(fileId)
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const blob = await response.blob();
+          );
+      
+          if (response && response.data.url) {
+            toast('Downloading start')
+            const downloadResponse = await fetch(response.data.url)
+            const blob = await downloadResponse.blob();
             const blobUrl = URL.createObjectURL(blob);
-
-            // Create a hidden anchor tag
             const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = filename; // Force the browser to use this filename
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            URL.revokeObjectURL(blobUrl);
+                    a.href = blobUrl;
+                    a.download = fileName; 
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+          }
         } catch (error) {
-            console.error('Error downloading file:', error);
-            toast.error('Error in downloading file');
+            toast.error("Download failed")
+          console.error('Error downloading file:', error);
         }
-    }
+      }
+
+    // async function downloadFile(fileId: string, url: string, filename: string) {
+    //     // downloadFile(fileId)
+    //     try {
+    //         const response = await fetch(url);
+
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+
+    //         const blob = await response.blob();
+    //         const blobUrl = URL.createObjectURL(blob);
+
+    //         // Create a hidden anchor tag
+    //         const a = document.createElement('a');
+    //         a.href = blobUrl;
+    //         a.download = filename; // Force the browser to use this filename
+    //         document.body.appendChild(a);
+    //         a.click();
+    //         document.body.removeChild(a);
+
+    //         URL.revokeObjectURL(blobUrl);
+    //     } catch (error) {
+    //         console.error('Error downloading file:', error);
+    //         toast.error('Error in downloading file');
+    //     }
+    // }
 
     const copyUrl = (url: string, file: String) => {
         console.log(url, file)
@@ -308,7 +317,7 @@ const Workspace = () => {
                                                 <div className="flex justify-center gap-2 items-center ">
                                                     <a
                                                         download={true}
-                                                        onClick={() => downloadFile(val.id, val.url, val.originalName)}
+                                                        onClick={() => downloadFile(val.id, val.originalName)}
                                                         className="list-btn-title-cont delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
                                                     >
                                                         {/* <LuDownload className="size-6" /> */}Download
