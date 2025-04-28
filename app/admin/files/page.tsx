@@ -8,6 +8,29 @@ import { useEffect, useState } from 'react';
 import { HiOutlineClipboardCopy, HiOutlinePencil } from 'react-icons/hi';
 import { LuTrash } from 'react-icons/lu';
 import { toast } from 'react-toastify';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import React from 'react';
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Page = () => {
     const { isLoading, token, user } = useUserContext();
@@ -17,6 +40,7 @@ const Page = () => {
     const [newName, setNewName] = useState('');
     const [originalExtension, setOriginalExtension] = useState('');
     const [sortOption, setSortOption] = useState('newest');
+    const [expandedRow, setExpandedRow] = useState(null);
     const itemsPerPage = 10;
     const router = useRouter();
 
@@ -122,6 +146,97 @@ const Page = () => {
         }
     };
 
+    const prepareChartData = (downloadedAt) => {
+        const downloadsByDate = {};
+        
+        downloadedAt?.forEach((dateString) => {
+            const date = new Date(dateString);
+            const dateKey = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            downloadsByDate[dateKey] = (downloadsByDate[dateKey] || 0) + 1;
+        });
+
+        const sortedDates = Object.keys(downloadsByDate).sort((a, b) => {
+            return new Date(a).getTime() - new Date(b).getTime();
+        });
+
+        return {
+            labels: sortedDates,
+            datasets: [
+                {
+                    label: 'Downloads',
+                    data: sortedDates.map(date => downloadsByDate[date]),
+                    borderColor: '#ff4262eb',
+                    backgroundColor: 'rgba(255, 66, 98, 0.1)',
+                    tension: 0.3,
+                    pointBackgroundColor: '#ff4262eb',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: '#ff4262eb',
+                    pointHoverBorderColor: '#fff',
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                },
+            ],
+        };
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        return `${context.parsed.y} download${context.parsed.y !== 1 ? 's' : ''}`;
+                    },
+                    title: (context) => {
+                        return context[0].label;
+                    }
+                }
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    precision: 0,
+                },
+                grid: {
+                    drawBorder: false,
+                },
+            },
+            x: {
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    callback: function(value) {
+                        const date = new Date(this.getLabelForValue(value));
+                        return date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                    },
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+            },
+        },
+    };
+
+    const toggleRowExpansion = (fileId) => {
+        setExpandedRow(expandedRow === fileId ? null : fileId);
+    };
+
     useEffect(() => {
         if (user?.role !== 'ADMIN') {
             router.push('/upload');
@@ -174,95 +289,130 @@ const Page = () => {
                                     const claimableDownloads = file.downloads - file.claims;
                                     const claimableAmount = claimableDownloads > 0 ? formatRewardNumber(claimableDownloads * 0.007) : '0';
                                     const uploadDate = new Date(file.updatedAt).toLocaleDateString();
+                                    const isExpanded = expandedRow === file.id;
+                                    const chartData = prepareChartData(file.downloadedAt);
+
                                     return (
-                                        <tr key={i} className='border-b hover:bg-zinc-50'>
-                                            <td className='px-4 py-3'>{(currentPage - 1) * itemsPerPage + i + 1}</td>
-                                            <td className='px-4 py-3'>
-                                                {editingId === file.id ? (
-                                                    <input
-                                                        type="text"
-                                                        value={newName}
-                                                        onChange={(e) => setNewName(e.target.value)}
-                                                        className="border rounded px-2 py-1 w-full"
-                                                        autoFocus
-                                                    />
-                                                ) : (
-                                                    <span title={file.originalName}>
-                                                        {truncateFileName(file.originalName)}
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className='px-4 py-3'>{formatRewardNumber(file.downloads)}</td>
-                                            <td className='px-4 py-3'>{formatRewardNumber(file.claims * 0.007)}$</td>
-                                            <td className='px-4 py-3'>
-                                                <select
-                                                    onChange={(e) => claimReward(file, e.target.value)}
-                                                    className='border px-2 py-1 rounded'
-                                                    value={0}
-                                                >
-                                                    <option value='0'>0$</option>
-                                                    {claimableDownloads > 0 && <option value={claimableDownloads}>{claimableAmount}$</option>}
-                                                </select>
-                                            </td>
-                                            <td className='px-4 py-3'>{file.user.email}</td>
-                                            <td className='px-4 py-3'>{uploadDate}</td>
-                                            <td className='px-4 py-3 flex gap-4 items-center'>
-                                                {editingId === file.id ? (
-                                                    <>
-                                                        <button 
-                                                            onClick={() => updateFile(file.id)}
-                                                            className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600'
-                                                        >
-                                                            Save
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => {
-                                                                setEditingId(null);
-                                                                setNewName('');
-                                                                setOriginalExtension('');
-                                                            }}
-                                                            className='px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600'
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <button 
-                                                            onClick={() => copyLink(file)} 
-                                                            className='text-blue-500 hover:text-blue-700'
-                                                            title="Copy link"
-                                                        >
-                                                            <HiOutlineClipboardCopy size={18} />
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => {
-                                                                const lastDotIndex = file.originalName.lastIndexOf('.');
-                                                                if (lastDotIndex === -1) {
-                                                                    setNewName(file.originalName);
+                                        <React.Fragment key={i}>
+                                            <tr 
+                                                className='border-b hover:bg-zinc-50 cursor-pointer'
+                                                onClick={() => toggleRowExpansion(file.id)}
+                                            >
+                                                <td className='px-4 py-3'>{(currentPage - 1) * itemsPerPage + i + 1}</td>
+                                                <td className='px-4 py-3'>
+                                                    {editingId === file.id ? (
+                                                        <input
+                                                            type="text"
+                                                            value={newName}
+                                                            onChange={(e) => setNewName(e.target.value)}
+                                                            className="border rounded px-2 py-1 w-full"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <span title={file.originalName}>
+                                                            {truncateFileName(file.originalName)}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className='px-4 py-3'>{formatRewardNumber(file.downloads)}</td>
+                                                <td className='px-4 py-3'>{formatRewardNumber(file.claims * 0.007)}$</td>
+                                                <td className='px-4 py-3'>
+                                                    <select
+                                                        onChange={(e) => claimReward(file, e.target.value)}
+                                                        className='border px-2 py-1 rounded'
+                                                        value={0}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <option value='0'>0$</option>
+                                                        {claimableDownloads > 0 && <option value={claimableDownloads}>{claimableAmount}$</option>}
+                                                    </select>
+                                                </td>
+                                                <td className='px-4 py-3'>{file.user.email}</td>
+                                                <td className='px-4 py-3'>{uploadDate}</td>
+                                                <td className='px-4 py-3 flex gap-4 items-center'>
+                                                    {editingId === file.id ? (
+                                                        <>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    updateFile(file.id);
+                                                                }}
+                                                                className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600'
+                                                            >
+                                                                Save
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setEditingId(null);
+                                                                    setNewName('');
                                                                     setOriginalExtension('');
-                                                                } else {
-                                                                    setNewName(file.originalName.substring(0, lastDotIndex));
-                                                                    setOriginalExtension(file.originalName.substring(lastDotIndex));
-                                                                }
-                                                                setEditingId(file.id);
-                                                            }}
-                                                            className='text-yellow-500 hover:text-yellow-700'
-                                                            title="Edit file name"
-                                                        >
-                                                            <HiOutlinePencil size={18} />
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => deleteFile(file.id)}
-                                                            className='text-red-500 hover:text-red-700'
-                                                            title="Delete file"
-                                                        >
-                                                            <LuTrash size={18} />
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </td>
-                                        </tr>
+                                                                }}
+                                                                className='px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600'
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    copyLink(file);
+                                                                }} 
+                                                                className='text-blue-500 hover:text-blue-700'
+                                                                title="Copy link"
+                                                            >
+                                                                <HiOutlineClipboardCopy size={18} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const lastDotIndex = file.originalName.lastIndexOf('.');
+                                                                    if (lastDotIndex === -1) {
+                                                                        setNewName(file.originalName);
+                                                                        setOriginalExtension('');
+                                                                    } else {
+                                                                        setNewName(file.originalName.substring(0, lastDotIndex));
+                                                                        setOriginalExtension(file.originalName.substring(lastDotIndex));
+                                                                    }
+                                                                    setEditingId(file.id);
+                                                                }}
+                                                                className='text-yellow-500 hover:text-yellow-700'
+                                                                title="Edit file name"
+                                                            >
+                                                                <HiOutlinePencil size={18} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    deleteFile(file.id);
+                                                                }}
+                                                                className='text-red-500 hover:text-red-700'
+                                                                title="Delete file"
+                                                            >
+                                                                <LuTrash size={18} />
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                            {isExpanded && (
+                                                <tr className="border-b">
+                                                    <td colSpan={8} className="px-4 py-3">
+                                                        <div className="h-[150px] w-full">
+                                                            {file.downloadedAt?.length > 0 ? (
+                                                                <Line data={chartData} options={chartOptions} />
+                                                            ) : (
+                                                                <div className="h-full flex items-center justify-center text-gray-400">
+                                                                    No download activity recorded
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     );
                                 })}
                             </tbody>
