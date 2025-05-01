@@ -37,6 +37,7 @@ const page = () => {
 
             if (response.data) {
                 const fetchedUsers = response.data.data.users;
+                console.log(fetchedUsers)
                 setUsers(fetchedUsers);
                 applyFilters(fetchedUsers);
             }
@@ -325,7 +326,7 @@ const page = () => {
                                             <td className='px-4 py-3 text-sm'>
                                                 {formatFileSize(currentUser.usedStorage)}
                                             </td>
-                                            <td className='px-4 py-3 text-sm'>{currentUser._count?.files || 0}</td>
+                                            <td className='px-4 py-3 text-sm'>{currentUser.files.length || 0}</td>
                                             <td className='px-4 py-3'>
                                                 <select
                                                     className={`rounded-md border px-2 py-1 text-sm ${
