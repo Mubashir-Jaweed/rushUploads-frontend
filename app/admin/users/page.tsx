@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiSearch, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { IoIosArrowForward } from "react-icons/io";
+import Link from 'next/link';
 
 const page = () => {
     const { isLoading, token, user } = useUserContext();
@@ -295,7 +297,10 @@ const page = () => {
                                         <tr key={currentUser.id} className='hover:bg-gray-50'>
                                             <td className='px-4 py-3'>
                                                 <div className='flex flex-col'>
-                                                    <span className='font-medium'>{currentUser.profile?.fullName || currentUser.email.split('@')[0]}</span>
+                                                    
+                                                   <Link href={`/admin/users/${currentUser.id}`}>
+                                                   <span className='font-medium'>{currentUser.profile?.fullName || currentUser.email.split('@')[0]}</span>
+                                                   </Link>
                                                     <span className='text-sm text-gray-500'>{currentUser.email}</span>
                                                 </div>
                                             </td>
@@ -362,6 +367,7 @@ const page = () => {
                                                         {currentUser.isDeleted ? 'Enable' : 'Disable'}
                                                     </button>
                                                 )}
+                                                
                                             </td>
                                         </tr>
                                     ))}
