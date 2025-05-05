@@ -96,7 +96,7 @@ const PaymentPlans = () => {
 	  
 		const link = document.createElement("a");
 		link.href = url;
-		link.setAttribute("download", "rushuploads-earnings.csv");
+		link.setAttribute("download", "rushuploads-report.csv");
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
