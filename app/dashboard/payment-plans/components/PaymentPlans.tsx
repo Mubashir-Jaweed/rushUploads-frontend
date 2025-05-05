@@ -64,7 +64,6 @@ const PaymentPlans = () => {
 
 			if (response) {
 				setFiles(response.data.data.files);
-				console.log(response.data.data.files);
 			}
 		} catch (error) {
 			console.error("Error getting files:", error);
@@ -77,6 +76,33 @@ const PaymentPlans = () => {
 		if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
 		return num.toString();
 	}
+
+	const generateCSV = (files) => {
+		const header = "File Name,Claims,Downloads,Earnings (USD),Uploaded By\n";
+	  console.log(header)
+		const rows = files.map(file => {
+		  const fileName = file.originalName;
+		  const claims = file.downloadedAt.length;
+		  const downloads = file.downloads;
+		  const earnings = (claims * 0.007).toFixed(3);
+		  const uploadedBy = file.user?.profile?.fullName || file.user?.email || "Unknown";
+	  
+		  return `${fileName},${claims},${downloads},${earnings},${uploadedBy}`;
+		});
+	  
+		const csv = header + rows.join("\n");
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+	  
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "rushuploads-report.csv");
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	  };
+	  
+
 
 	// Calculate stats from files
 	const calculateStats = () => {
@@ -166,12 +192,15 @@ const PaymentPlans = () => {
 
 				{/* Withdraw Button Container - spans full width on mobile, aligns with grid on desktop */}
 				<div className="md:col-span-3 flex flex-col gap-2 pl-1">
-					<button
-						onClick={() => sendMail(stats.remainingBalance)}
-						className="bg-stone-800 hover:bg-stone-700 transition-colors rounded-xl text-zinc-100 font-medium cursor-pointer px-6 py-3 w-full md:w-max"
-					>
-						Withdraw Amount
-					</button>
+					<div className="flex gap-5">
+						<button
+							onClick={() => sendMail(stats.remainingBalance)}
+							className="bg-stone-800 hover:bg-stone-700 transition-colors rounded-xl text-zinc-100 font-medium cursor-pointer px-6 py-3 w-full md:w-max"
+						>
+							Withdraw Amount
+						</button>
+						<button onClick={() => generateCSV(files)} className="font-medium text-[17px] hover:underline">Download CSV</button>
+					</div>
 					<p className="text-xs text-zinc-600">
 						Minimum $10 required for withdrawal
 					</p>
