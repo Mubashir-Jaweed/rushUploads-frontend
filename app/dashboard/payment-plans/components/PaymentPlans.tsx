@@ -78,15 +78,16 @@ const PaymentPlans = () => {
 	}
 
 	const generateCSV = (files) => {
-		const header = "File Name,Claims,Downloads,Earnings (USD),Uploaded By\n";
+		const header = "File Name,Total Downloads,Rewarded Amount (USD),Uploaded By\n";
+	  
 		const rows = files.map(file => {
 		  const fileName = file.originalName;
-		  const claims = file.downloadedAt.length;
-		  const downloads = file.downloads;
-		  const earnings = (claims * 0.007).toFixed(3);
+		  const downloads = file.downloads || file.downloadedAt?.length || 0;
+		  const claims = file.claims || 0;
+		  const rewardedAmount = (claims * 0.007).toFixed(3);
 		  const uploadedBy = file.user?.profile?.fullName || file.user?.email || "Unknown";
 	  
-		  return `${fileName},${claims},${downloads},${earnings},${uploadedBy}`;
+		  return `${fileName},${downloads},${rewardedAmount},${uploadedBy}`;
 		});
 	  
 		const csv = header + rows.join("\n");
@@ -95,7 +96,7 @@ const PaymentPlans = () => {
 	  
 		const link = document.createElement("a");
 		link.href = url;
-		link.setAttribute("download", "rushuploads-report.csv");
+		link.setAttribute("download", "rushuploads-earnings.csv");
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
