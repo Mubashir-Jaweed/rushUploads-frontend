@@ -79,7 +79,6 @@ const PaymentPlans = () => {
 
 	const generateCSV = (files) => {
 		const header = "File Name,Claims,Downloads,Earnings (USD),Uploaded By\n";
-	  console.log(header)
 		const rows = files.map(file => {
 		  const fileName = file.originalName;
 		  const claims = file.downloadedAt.length;
