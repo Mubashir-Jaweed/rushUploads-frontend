@@ -349,7 +349,7 @@ const UserProfilePage = () => {
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
-                                                                    copyLink(file.id)
+                                                                    copyLink(file.linkId+ '/' + file.id)
                                                                 }}
                                                                 className='text-blue-500 hover:text-blue-700'
                                                                 title="Copy link"
