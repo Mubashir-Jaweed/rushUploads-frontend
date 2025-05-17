@@ -60,10 +60,9 @@ const subscriptions = [
         price: '0',
         text: 'Perfect for light users or those new to file sharing',
         features: [
-            'Upload 2 files at once',
+            'Upload 15 files at once',
             'Get upto 50Gb of total Storage',
             'Attach upto 2GB per file ',
-            'Store your files for 3 days'
             
         ],
         disable:false
@@ -75,10 +74,9 @@ const subscriptions = [
         price: '30',
         text: 'The perfect solution for power users to send large files anytime.',
         features: [
-            'Upload 5 files at once',
+            'Upload 25 files at once',
             'Get upto 200Gb of total Storage',
             'Attach upto 15GB per file',
-            'Store your files for 7 days'
         ],
         disable:true
 
@@ -91,7 +89,6 @@ const subscriptions = [
             'Upload 10 files at once',
             'Get unlimited Storage',
             'Attach unlimited file size ',
-            'Store your files for 1 year'
         ],
         disable:true
 
