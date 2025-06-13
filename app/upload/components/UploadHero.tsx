@@ -151,7 +151,7 @@ const UploadHero = () => {
 			quickSignUp();
 			return;
 		}
-		if (isAds) {
+		if (isAds && redirectUrl.length > 0 && adBannerUrl.length > 0) {
 			setShowAds(true)
 			startAdCount()
 			trackAdView()

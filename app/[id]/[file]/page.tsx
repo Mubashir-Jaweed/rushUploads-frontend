@@ -209,7 +209,7 @@ const Workspace = () => {
         <div>
             <Navbar />
             <div className=" w-full h-screen auth-bg flex items-end">
-                {isAds && (
+                {isAds && adBannerUrl.length > 0 && redirectUrl.length > 0 ? (
                     <div className="bg-[#333333] text-gray-400 flex justify-center items-center h-[96%] w-[98%] fixed z-50 top-[2%] left-[1%] rounded-xl overflow-hidden">
                         <div
                             onClick={() => showClose ? setIsAds(false) : null}
@@ -256,7 +256,7 @@ const Workspace = () => {
                             </a>
                         </div>
                     </div>
-                )}
+                ) :null}
                 <div className=" w-full  h-[87vh] flex  justify-center pt-11  gap-10 overflow-style">
                     <div className="  w-[80%] h-[80vh] flex flex-col gap-2 justify-start items-start p-5">
                         {title ? (
