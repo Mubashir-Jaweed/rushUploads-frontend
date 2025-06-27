@@ -16,9 +16,14 @@ const MonetizationPage = () => {
     bannerUrl: ''
   });
   const [stats, setStats] = useState({ views: 0, clicks: 0 });
+    const [isMonetization, setIsMonetization] = useState(false);
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    fetchSettings();
+    fetchMonetizationSettings()
+}, [token]);
+
+const fetchSettings = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/stats`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -30,11 +35,21 @@ const MonetizationPage = () => {
             console.error('Failed to fetch data:', error);
         }
     };
-
-    fetchSettings();
-}, [token]);
-
-
+   const fetchMonetizationSettings = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/settings`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setIsMonetization(response.data.data.value === 'ON' ? true : false);
+                setSettings(e =>({
+                  ...e,
+                  value: response.data.data.value,
+                }))
+            } catch (error) {
+                // toast.error('Failed to fetch monetization');
+                console.error('Failed to fetch monetization:', error);
+            }
+        };
 
   const handleUrlUpdate = async (e) => {
     e.preventDefault();
