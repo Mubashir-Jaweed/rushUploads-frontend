@@ -53,7 +53,8 @@ const Sidebar = () => {
                         { href: '/admin/dashboard', label: 'Dashboard' },
                         { href: '/admin/users', label: 'All Users' },
                         { href: '/admin/files', label: 'All Files' },
-                        { href: '/admin/monetize', label: 'Monetization' }
+                        { href: '/admin/monetize', label: 'Monetization' },
+                        { href: '/admin/notifications', label: 'Notifications' },
                     ].map((item) => (
                         <Link 
                             key={item.href} 

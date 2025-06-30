@@ -43,12 +43,36 @@ const PaymentPlans = () => {
 
 			if (response) {
 				console.log(response);
+				sendNotification()
 				toast("Message sent successfully");
 			}
 		} catch (error) {
-			console.error("Error chnage pass:", error.response.data.info.message);
+			console.error("Error :", error.response.data.info.message);
 		}
 	};
+
+	const sendNotification = async ()=>{
+		try{
+			const response = await axios.post(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/notification/one`,
+				{
+					email,
+					description:`user want to claim reward of total amount (${stats.remainingBalance}$)`,
+					dateTime: Date.now()
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				},
+			);
+			console.log(response)
+		}
+		catch (error) {
+			console.error("Error :", error.response);
+		}
+	}
 
 	const getFiles = async () => {
 		try {
