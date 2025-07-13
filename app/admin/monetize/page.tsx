@@ -28,7 +28,7 @@ const fetchSettings = async () => {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ads/stats`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log(response.data.data)
+           
             setStats(response.data.data)
           } catch (error) {
             // toast.error('Failed to fetch monetization');
@@ -44,6 +44,8 @@ const fetchSettings = async () => {
                 setSettings(e =>({
                   ...e,
                   value: response.data.data.value,
+                  bannerUrl: response.data.data.bannerUrl,
+                  redirectUrl: response.data.data.redirectUrl,
                 }))
             } catch (error) {
                 // toast.error('Failed to fetch monetization');
@@ -146,6 +148,40 @@ const fetchSettings = async () => {
                 Update URLs
               </button>
             </form>
+          </div>
+
+
+           <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <LuLink className="text-[#ff4262]" /> Current monetization setting 
+            </h2>
+            
+            <div  className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Monetization is {settings.value}
+                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Redirect URL
+                </label>
+                <div
+                 
+                  className="w-full p-2 border rounded-xl focus:ring-2 focus:ring-[#ff4262] focus:border-transparent"
+                >{settings.redirectUrl}</div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Banner URL
+                </label>
+               <div
+                 
+                  className="w-full p-2 border rounded-xl focus:ring-2 focus:ring-[#ff4262] focus:border-transparent"
+                >{settings.bannerUrl}</div>
+              </div>
+
+             
+            </div>
           </div>
 
         
