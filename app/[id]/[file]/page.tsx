@@ -192,10 +192,10 @@ const Workspace = () => {
         }
     }
 
-    const copyUrl = (url: string, file: String) => {
-        navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
-        toast('Url Copied')
-    };
+    // const copyUrl = (url: string, file: String) => {
+    //     navigator.clipboard.writeText(`https://rushuploads.com/${url}/${file}`);
+    //     toast('Url Copied')
+    // };
 
     const hideTxt = (txt: string) => {
         const [username, domain] = txt.split('@');
@@ -335,13 +335,13 @@ const Workspace = () => {
                                                         </>
                                                     )}
                                                 </a>
-                                                <span
+                                                {/* <span
                                                     onClick={() => copyUrl(id, val.id)}
                                                     className="list-btn-title-cont  delay-5ms bg-[#32323218] text-stone-800 p-2 rounded text-sm font-medium flex justify-center items-center"
                                                 >
                                                     Copy link
                                                     <span className="list-btn-title">Copy_Link</span>
-                                                </span>
+                                                </span> */}
                                             </div>
                                         </div>
                                     </div>
